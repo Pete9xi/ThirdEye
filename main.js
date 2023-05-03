@@ -304,7 +304,9 @@ bot.on('text', (packet) => {
                     case "death.attack.player":
                         reason = "Was killed by " + packet.parameters[1];
                         break;
-
+                    case "death.attack.inFire":
+                        reason ="tried to take a bath in lava."   
+                        break; 
                     default:
                         reason = "General Death" +"  ---  "  + packet.message + " ----  " + packet.parameters;  
                         break;    
