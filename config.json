@@ -1,0 +1,20 @@
+{
+    "token": "",
+    "username": "",
+    "isRealm": false,
+    "realmInviteCode": "",
+    "ip": "",
+    "port": 19132,
+    "guild": "",
+    "channel": "",
+    "ParadoxEnabled": true, 
+    "paradoxLogsChannel": "",
+    
+	"useEmbed": true,
+  "setColor": [0,153,255],
+  "setTitle": "My Servers Name!",
+  "AuthType": false,
+    "admins": [
+		""
+    ]
+}
