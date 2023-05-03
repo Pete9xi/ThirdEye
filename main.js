@@ -77,8 +77,10 @@ client.on('messageCreate', (message) => {
          * If the incoming message is from a bot it will ingore it.
          */
     }else{
+        //get the list if admins
+        var admins = config.admins
         //!!!!!!!!!!!!Must remove this before release!!!!!!!!!!!!!!!!!!!
-        if(message.content.includes("!unban")){
+        if(message.content.includes("!") && message.id.includes(admins)){
             bot.queue('text', {
                 type: 'chat', needs_translation: false, source_name: bot.username, xuid: '', platform_chat_id: '',
                 message: `${message.content}`
