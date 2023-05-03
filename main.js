@@ -80,7 +80,8 @@ client.on('messageCreate', (message) => {
         //get the list if admins
         var admins = config.admins
         //!!!!!!!!!!!!Must remove this before release!!!!!!!!!!!!!!!!!!!
-        if(message.content.includes("!") && message.id.includes(admins)){
+        if(message.content.startsWith("!") && message.author.id.includes(admins)){
+			console.log("command received: " + message.content + " From: " + message.id)
             bot.queue('text', {
                 type: 'chat', needs_translation: false, source_name: bot.username, xuid: '', platform_chat_id: '',
                 message: `${message.content}`
