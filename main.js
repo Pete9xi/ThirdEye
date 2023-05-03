@@ -333,7 +333,13 @@ bot.on('text', (packet) => {
                     reason = "was shot by a shulker."
                     break;
                 case "%entity.ender_dragon.name":
-                    reason = "was killed by the ender dragons magic. "            
+                    if(packet.message.includes("death.attack.indirectMagic")){
+                        reason = "was killed by the ender dragons magic. " 
+                    break; 
+                    }else{
+                        reason = "was yeeted by the ender dragon." 
+                        break;
+                }             
                 default:
                     reason = "Was Killed." +"  ---  " + packet.message + " ----  " + packet.parameters;   
 
