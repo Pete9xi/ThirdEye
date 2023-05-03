@@ -286,7 +286,10 @@ bot.on('text', (packet) => {
                     break;
                 case "%entity.wither_skeleton.name":
                 reason = "was killed by a Wither Skeleton"
-                break;       
+                break;  
+                case "%entity.bee.name":
+                    reason = "was chased by bees and got stung to death";
+                    break;     
                 
                 default:
                     reason = "Was Killed." +"  ---  " + packet.message + " ----  " + packet.parameters;   
