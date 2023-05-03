@@ -25,7 +25,6 @@ client.login(token)
 
 // load Bedrock-Protocol
 const bedrock = require('bedrock-protocol');
-const { resourceUsage } = require('process');
 let options
 console.log("ThirdEye v1.0.0");
 // bot options
