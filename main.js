@@ -260,7 +260,7 @@ bot.on('text', (packet) => {
               reason = packet.parameters[1];
             // General death messages
                
-            if(packet.message.includes("death.attack.mob")||(packet.message.includes("death.attack.arrow"))){
+            if(packet.message.includes("death.attack.mob")||(packet.message.includes("death.attack.arrow"))||(packet.message.includes("death.attack.indirectMagic"))||packet.message.includes("death.attack.bullet")){
               switch(reason){
                 case "%entity.zombie.name":
                     reason ="was killed by a Zombie."
@@ -298,7 +298,42 @@ bot.on('text', (packet) => {
                     break;
                 case "%entity.blaze.name":
                     reason = "was killed by a blaze."
-                    break;        
+                    break;
+                case "%entity.polar_bear.name":
+                    reason = "was killed by a polar bear."
+                    break;
+                case "%entity.wolf.name":
+                    reason = "was killed by a pack of wolfs."
+                    break;
+                case "%entity.guardian.name":
+                    reason ="was killed by a guardian."
+                    break;
+                case "%entity.elder_guardian.name": 
+                     reason = "was killed by a elder gaurdain."
+                     break;
+                case "%entity.stray.name":
+                    reason = "was killed by a stray."
+                    break;
+                case "%entity.husk.name":
+                    reason = "was killed by a Husk."
+                    break; 
+                case "%entity.pillager.name":
+                    reason = "was killed by a Pillger."   
+                    break;
+                case "%entity.vex.name":
+                    reason = "was killed by a Vex."
+                    break;
+                case "%entity.evocation_illager.name":
+                    reason = "was killed by an Evoker's magic powers."
+                    break;   
+                case "%entity.vindicator.name":
+                    reason = "was killed by a vindicator."
+                    break; 
+                case "%entity.shulker.name":
+                    reason = "was shot by a shulker."
+                    break;
+                case "%entity.ender_dragon.name":
+                    reason = "was killed by the ender dragons magic. "            
                 default:
                     reason = "Was Killed." +"  ---  " + packet.message + " ----  " + packet.parameters;   
 
@@ -320,7 +355,7 @@ bot.on('text', (packet) => {
                         break;
                     case "death.attack.inFire":
                         reason ="tried to take a bath in lava."   
-                        break; 
+                        break;  
                     default:
                         reason = "General Death" +"  ---  "  + packet.message + " ----  " + packet.parameters;  
                         break;    
