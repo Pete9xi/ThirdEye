@@ -182,6 +182,7 @@ bot.on('text', (packet) => {
         }
         
     } 
+    // this may no longer be needed...
     //Check to see if player message is using a chat rank system. where the message maybe a json_whisper.
         const pattern = /§7(.+?): (.+)/;
         var matches = pattern.exec(obj.rawtext[0].text);
