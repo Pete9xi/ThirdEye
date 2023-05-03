@@ -263,34 +263,42 @@ bot.on('text', (packet) => {
             if(packet.message.includes("death.attack.mob")||(packet.message.includes("death.attack.arrow"))){
               switch(reason){
                 case "%entity.zombie.name":
-                    reason ="was killed by a Zombie"
+                    reason ="was killed by a Zombie."
                     break;
                 case "%entity.skeleton.name":
-                    reason = "was killed by a Skeletons Arrow"
+                    reason = "was killed by a Skeletons Arrow."
                 case "%entity.spider.name":
-                    reason = "was killed by a Spider"
+                    reason = "was killed by a Spider."
                 case "%entity.enderman.name":
-                    reason = "was killed by a Enderman"   
+                    reason = "was killed by a Enderman."   
                     break;
                 case "%entity.zombie_pigman.name":
-                    reason = "was killed by a Zombie Pigman"
+                    reason = "was killed by a Zombie Pigman."
                     break;
                 case "%entity.iron_golem.name":
-                    reason = "was killed by an Iron Golem"
+                    reason = "was killed by an Iron Golem."
                     break;
                 case "%entity.piglin_brute.name":
                     reason = "was killed by a Piglin Brute."
                     break;
                 case "%entity.piglin.name":
-                    reason = "was killed by a Piglin" 
+                    reason = "was killed by a Piglin." 
                     break;
                 case "%entity.wither_skeleton.name":
-                reason = "was killed by a Wither Skeleton"
+                reason = "was killed by a Wither Skeleton."
                 break;  
                 case "%entity.bee.name":
-                    reason = "was chased by bees and got stung to death";
+                    reason = "was chased by bees and got stung to death.";
                     break;     
-                
+                case "%entity.magma_cube.name":
+                    reason = "was killed by a magma cube."
+                    break;
+                case "%entity.zoglin.name":
+                    reason = "was killed by a zoglin."
+                    break;
+                case "%entity.blaze.name":
+                    reason = "was killed by a blaze."
+                    break;        
                 default:
                     reason = "Was Killed." +"  ---  " + packet.message + " ----  " + packet.parameters;   
 
