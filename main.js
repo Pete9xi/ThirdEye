@@ -348,7 +348,8 @@ bot.on('text', (packet) => {
                     reason = "was killed by a witch."
                     break;
                 case "%entity.warden.name":
-                    reason = "got flattend by the warden."                 
+                    reason = "got flattend by the warden."
+                    break;                 
                 default:
                     reason = "Was Killed." +"  ---  " + packet.message + " ----  " + packet.parameters;   
 
