@@ -88,8 +88,9 @@ client.on('messageCreate', (message) => {
                 type: 'chat', needs_translation: false, source_name: bot.username, xuid: '', platform_chat_id: '',
                 message: `${message.content}`
               })
-
+              return;
         }
+        if(message.channel.id === channel.id){
         //We will then send a command to the server to trigger the message sent in discord.
         const cmd = `/tellraw @a {"rawtext":[{"text":"§8[§9Discord§8] §7${message.author.username}: §f${message.content}"}]}`
          bot.queue('command_request', {
@@ -102,6 +103,7 @@ client.on('messageCreate', (message) => {
     internal: false,
           version: 52,
   })
+}
 
     }
  
