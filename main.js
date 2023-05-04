@@ -343,7 +343,12 @@ bot.on('text', (packet) => {
                     }else{
                         reason = "was yeeted by the ender dragon." 
                         break;
-                }             
+                }
+                case "%entity.witch.name":
+                    reason = "was killed by a witch."
+                    break;
+                case "%entity.warden.name":
+                    reason = "got flattend by the warden."                 
                 default:
                     reason = "Was Killed." +"  ---  " + packet.message + " ----  " + packet.parameters;   
 
@@ -366,6 +371,15 @@ bot.on('text', (packet) => {
                     case "death.attack.inFire":
                         reason ="tried to take a bath in lava."   
                         break;  
+                    case "death.attack.drown":
+                        reason = packet.parameters[1] + " drowned to death!"
+                        break; 
+                    case "death.attack.outOfWorld":
+                        reason ="Fell into the void."
+                        break;
+                    case "death.attack.sonicBoom.player":
+                        reason = "Was blasted by the wardens sonic boom."    
+                        break;       
                     default:
                         reason = "General Death" +"  ---  "  + packet.message + " ----  " + packet.parameters;  
                         break;    
