@@ -82,7 +82,7 @@ client.on('messageCreate', (message) => {
         //get the list if admins
         var admins = config.admins
         //!!!!!!!!!!!!Must remove this before release!!!!!!!!!!!!!!!!!!!
-        if(message.content.startsWith("!") && message.author.id.includes(admins)){
+        if(message.content.startsWith("!") && message.author.id.includes(admins) && message.channel.id === paradoxChannel.id){
 			console.log("command received: " + message.content + " From: " + message.id)
             bot.queue('text', {
                 type: 'chat', needs_translation: false, source_name: bot.username, xuid: '', platform_chat_id: '',
