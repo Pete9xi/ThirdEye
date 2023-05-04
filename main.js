@@ -13,7 +13,9 @@ const correction = {
         "§4[§6Paradox§4]": "Paradox",
         "§r": "",
         "§6": "",
-        "§4": ""
+        "§4": "",
+        "§2": ""
+
       };
 
 //Device OS ids to be converted to more friendly names
