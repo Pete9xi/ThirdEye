@@ -156,6 +156,10 @@ bot.on('add_player', (packet) => {
         //continue to send the message to discord
          // this is required by can be worked on 
     //Check to see if player message is using a chat rank system. where the message maybe a json_whisper.
+    if (obj.rawtext[0].text.startsWith("§r§4[§6Paradox§4]§r")){
+        // this will crash when it trys to run the regex.
+        return;
+    }
     const pattern = /§7(.+?): (.+)/;
     var matches = pattern.exec(obj.rawtext[0].text);
     const Playername = matches[1]
@@ -257,145 +261,7 @@ bot.on('text', (packet) => {
 })
 // Death messages
 bot.on('text', (packet) => { 
-        if(packet.message.includes("death.attack.mob")||(packet.message.includes("death.attack.arrow"))||(packet.message.includes("death.attack.indirectMagic"))||packet.message.includes("death.attack.bullet")){
-            let playername;
-            let reason;
-            playername = packet.parameters[0];
-            reason = packet.parameters[1];
-        switch(reason){
-          case "%entity.zombie.name":
-              reason ="was killed by a Zombie."
-              break;
-          case "%entity.skeleton.name":
-              reason = "was killed by a Skeletons Arrow."
-          case "%entity.spider.name":
-              reason = "was killed by a Spider."
-          case "%entity.enderman.name":
-              reason = "was killed by a Enderman."   
-              break;
-          case "%entity.zombie_pigman.name":
-              reason = "was killed by a Zombie Pigman."
-              break;
-          case "%entity.iron_golem.name":
-              reason = "was killed by an Iron Golem."
-              break;
-          case "%entity.piglin_brute.name":
-              reason = "was killed by a Piglin Brute."
-              break;
-          case "%entity.piglin.name":
-              reason = "was killed by a Piglin." 
-              break;
-          case "%entity.wither_skeleton.name":
-          reason = "was killed by a Wither Skeleton."
-          break;  
-          case "%entity.bee.name":
-              reason = "was chased by bees and got stung to death.";
-              break;     
-          case "%entity.magma_cube.name":
-              reason = "was killed by a magma cube."
-              break;
-          case "%entity.zoglin.name":
-              reason = "was killed by a zoglin."
-              break;
-          case "%entity.blaze.name":
-              reason = "was killed by a blaze."
-              break;
-          case "%entity.polar_bear.name":
-              reason = "was killed by a polar bear."
-              break;
-          case "%entity.wolf.name":
-              reason = "was killed by a pack of wolfs."
-              break;
-          case "%entity.guardian.name":
-              reason ="was killed by a guardian."
-              break;
-          case "%entity.elder_guardian.name": 
-               reason = "was killed by a elder gaurdain."
-               break;
-          case "%entity.stray.name":
-              reason = "was killed by a stray."
-              break;
-          case "%entity.husk.name":
-              reason = "was killed by a Husk."
-              break; 
-          case "%entity.pillager.name":
-              reason = "was killed by a Pillger."   
-              break;
-          case "%entity.vex.name":
-              reason = "was killed by a Vex."
-              break;
-          case "%entity.evocation_illager.name":
-              reason = "was killed by an Evoker's magic powers."
-              break;   
-          case "%entity.vindicator.name":
-              reason = "was killed by a vindicator."
-              break; 
-          case "%entity.shulker.name":
-              reason = "was shot by a shulker."
-              break;
-          case "%entity.ender_dragon.name":
-              if(packet.message.includes("death.attack.indirectMagic")){
-                  reason = "was killed by the ender dragons magic. " 
-              break; 
-              }else{
-                  reason = "was yeeted by the ender dragon." 
-                  break;
-          }
-          case "%entity.witch.name":
-              reason = "was killed by a witch."
-              break;
-          case "%entity.warden.name":
-              reason = "got flattend by the warden."
-              break;                 
-          default:
-              reason = "Was Killed." +"  ---  " + packet.message + " ----  " + packet.parameters;   
-
-        }
-      } else{
-          switch(packet.message){
-      
-              case "death.attack.inWall":
-                  reason ="Suffocated to death!"
-                  break;
-              case "death.attack.explosion.player":
-              reason = "Was Blown to bits by an explosion"
-              break;
-              case "death.attack.onFire":
-              reason = "Went up in flames!"
-              break;
-              case "death.attack.player":
-                  reason = "Was killed by " + packet.parameters[1];
-                  break;
-              case "death.attack.inFire":
-                  reason ="tried to take a bath in lava."   
-                  break;  
-              case "death.attack.drown":
-                  reason = packet.parameters[1] + " drowned to death!"
-                  break; 
-              case "death.attack.outOfWorld":
-                  reason ="Fell into the void."
-                  break;
-              case "death.attack.sonicBoom.player":
-                  reason = "Was blasted by the wardens sonic boom."    
-                  break;       
-              default:
-                  reason = "General Death" +"  ---  "  + packet.message + " ----  " + packet.parameters;  
-                  break;    
-
-            }
-      }
-
-          if(config.useEmbed === true){
-              const msgEmbed = new EmbedBuilder()
-              .setColor(config.setColor)
-              .setTitle(config.setTitle)
-              .setDescription('[In Game] '+ playername + ": " + reason )
-              channel.send({ embeds: [msgEmbed] });
-              return;
-     }else{
-         channel.send(`[In Game] **${playername}**: ${reason}`)
-         return;
-     }
+   
 })
 
 
