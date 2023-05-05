@@ -257,16 +257,11 @@ bot.on('text', (packet) => {
 })
 // Death messages
 bot.on('text', (packet) => { 
-    if(packet.message.includes("§e%multiplayer.player.left")||packet.message.includes("§e%multiplayer.player.joined")){
-        return;
-        }
-        let playername;
-        let reason;
-        playername = packet.parameters[0];
-        reason = packet.parameters[1];
-      // General death messages
-         
-      if(packet.message.includes("death.attack.mob")||(packet.message.includes("death.attack.arrow"))||(packet.message.includes("death.attack.indirectMagic"))||packet.message.includes("death.attack.bullet")){
+        if(packet.message.includes("death.attack.mob")||(packet.message.includes("death.attack.arrow"))||(packet.message.includes("death.attack.indirectMagic"))||packet.message.includes("death.attack.bullet")){
+            let playername;
+            let reason;
+            playername = packet.parameters[0];
+            reason = packet.parameters[1];
         switch(reason){
           case "%entity.zombie.name":
               reason ="was killed by a Zombie."
