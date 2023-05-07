@@ -1,7 +1,7 @@
 const fs = require('fs')
 const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'))
 const uuid = require('uuid');
-const { Client, GatewayIntentBits, EmbedBuilder} = require('discord.js')
+const { Client, GatewayIntentBits, EmbedBuilder, messageLink} = require('discord.js')
 const { MessageContent, GuildMessages, Guilds, } = GatewayIntentBits
 
 let channel = config.channel
@@ -410,6 +410,83 @@ bot.on('text', (packet) => {
 
       }
    
+})
+// Logging system commands
+bot.on('text', (packet) => { 
+    var systemMessage;
+    var playerName;
+    var successMessage;
+    var dontSendMessage = false;
+    if (packet.type === "json") {
+      var obj = JSON.parse(packet.message);
+      playerName = obj.rawtext[1].translate;
+      if (obj.rawtext[3] && obj.rawtext[3].with && obj.rawtext[3].with.rawtext && obj.rawtext[3].with.rawtext[0]) {
+        systemMessage = obj.rawtext[3].with.rawtext[0].text;
+      } else {
+        systemMessage = "";
+      }
+      successMessage = obj.rawtext[3].translate;
+    } else {
+      dontSendMessage = true;
+    }
+    
+
+    switch(successMessage){
+        case "commands.time.set":
+            successMessage = "set time";
+            break;
+        case "commands.gamemode.success.self":
+        successMessage = "Set their gamemode"
+        switch(systemMessage){
+            case "%createWorldScreen.gameMode.creative":
+            systemMessage = "to Creative"
+            break;
+            case "%createWorldScreen.gameMode.survival":
+                systemMessage = "to Survival"
+                break;
+            case "%createWorldScreen.gameMode.adventure":
+                systemMessage = "to Adventure"
+                break;
+            case "%createWorldScreen.gameMode.spectator":
+                systemMessage = "to Spectator"
+                break;
+
+            default:
+        }
+        case "commands.weather.clear":
+            systemMessage = "Clear"
+            successMessage = "Set the weather to "
+            break;
+        case "commands.weather.rain":
+            systemMessage = "Rain"
+            successMessage = "Set the weather to "
+            break;
+        case "commands.weather.thunder":
+            systemMessage = "Thunder"
+            successMessage = "Set the weather to "
+            break;
+
+
+            
+        default:
+
+    }
+    //Send packet to the discord channel.
+    if(dontSendMessage === false){
+        if(config.useEmbed === true ){
+            const msgEmbed = new EmbedBuilder()
+            .setColor(config.setColor)
+            .setTitle(config.setTitle)
+            .setDescription('[System Message] ' + 'playerName = '+ playerName +  ' successMessage = ' + successMessage + ' systemMessage = ' + systemMessage )
+            channel.send({ embeds: [msgEmbed] });
+            return;
+    }else{
+       channel.send(`[System Message] **${systemMessage}`)
+       return;
+    }
+    }
+    
+
 })
 
 
