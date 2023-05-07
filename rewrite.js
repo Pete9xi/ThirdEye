@@ -14,7 +14,8 @@ const correction = {
         "§r": "",
         "§6": "",
         "§4": "",
-        "§2": ""
+        "§2": "",
+        "§7": ""
 
       };
 
@@ -254,10 +255,12 @@ return;
 } 
 }
 })
-// Handling the multiplayer.player.joined system message as we dont need it. 
+// Handling the multiplayer.player.joined system message 
 bot.on('text', (packet) => { 
     if(packet.message.includes("§e%multiplayer.player.joined")){
-        // we dont want to duplicate the join message as this is handled in the add_player packet.
+        /* we dont want to duplicate the join message as this is handled in the add_player packet.
+        in the event that the packet is not sent by the server allow the user to enable this message.
+        */
         if(config.useSystemPlayerJoinMessage === true){
             if(config.useEmbed === true){
                 var msg = packet.parameters+ ": Has joined the server."
@@ -273,7 +276,8 @@ bot.on('text', (packet) => {
            return;
         } 
 
-        } 
+        }
+        //if not enabled it wont be sent. 
         return;
     }
 })
