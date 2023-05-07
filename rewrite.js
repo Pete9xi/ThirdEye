@@ -258,7 +258,22 @@ return;
 bot.on('text', (packet) => { 
     if(packet.message.includes("§e%multiplayer.player.joined")){
         // we dont want to duplicate the join message as this is handled in the add_player packet.
-        //todo add config option to use this as a fail safe in the event that the server doesnt send the add player packet.  
+        if(config.useSystemPlayerJoinMessage === true){
+            if(config.useEmbed === true){
+                var msg = packet.parameters+ ": Has joined the server."
+                var username="Server"
+                const msgEmbed = new EmbedBuilder()
+        .setColor(config.setColor)
+        .setTitle(config.setTitle)
+        .setDescription('[In Game] '+ username +': '+msg)
+        channel.send({ embeds: [msgEmbed] });
+        return;
+        }else{
+           channel.send(`[In Game] **${username}**: ${msg}`)
+           return;
+        } 
+
+        } 
         return;
     }
 })

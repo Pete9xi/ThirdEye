@@ -9,6 +9,7 @@
     "channel": "",
     "ParadoxEnabled": true, 
     "paradoxLogsChannel": "",
+    "useSystemPlayerJoinMessage": false,
     
 	"useEmbed": true,
   "setColor": [0,153,255],
