@@ -110,12 +110,13 @@ client.on('messageCreate', (message) => {
 })
 
 //Send connecting players device os to discord.
-bot.on('add_player', (packet) => { 
+bot.on('add_player', (packet) => {
+    console.log(packet) 
     switch(packet.device_os){
         case "Win10":
             DeviceOS = "Windows PC";
             break;
-        case "iOS":
+        case "IOS":
             DeviceOS = "Apple Device";
             break;
         case "Nintendo":
@@ -256,7 +257,8 @@ return;
 // Handling the multiplayer.player.joined system message as we dont need it. 
 bot.on('text', (packet) => { 
     if(packet.message.includes("§e%multiplayer.player.joined")){
-        // we dont want to duplicate the join message as this is handled in the add_player packet. 
+        // we dont want to duplicate the join message as this is handled in the add_player packet.
+        //todo add config option to use this as a fail safe in the event that the server doesnt send the add player packet.  
         return;
     }
 })
@@ -388,7 +390,9 @@ bot.on('text', (packet) => {
                   beeak;
               case "death.attack.sonicBoom.player":
                   reason = "Was blasted by the wardens sonic boom." 
-                  break;						
+                  break;
+              case "death.fell.accident.generic":
+                  reason = "Fell to their death."  						
               default:
                   reason = "General Death" +"  ---  "  + packet.message + " ----  " + packet.parameters;  
                   break;    
@@ -413,6 +417,7 @@ bot.on('text', (packet) => {
 })
 // Logging system commands
 bot.on('text', (packet) => { 
+    console.log(packet)
     var systemMessage;
     var playerName;
     var successMessage;
@@ -465,6 +470,24 @@ bot.on('text', (packet) => {
             systemMessage = "Thunder"
             successMessage = "Set the weather to "
             break;
+        case "commands.difficulty.success":
+            successMessage ="Set the worlds difficulty to "
+            switch(systemMessage){
+                case "PEACEFUL":
+                systemMessage = "Peaceful"
+                break;
+                case "EASY":
+                systemMessage = "Easy"
+                break;
+                case "NORMAL":
+                systemMessage = "Normal"
+                break;
+                case "HARD":
+                systemMessage = "Hard"
+                break;
+            }
+            break;
+
 
 
             
