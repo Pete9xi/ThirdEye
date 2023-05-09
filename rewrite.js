@@ -8,15 +8,29 @@ let channel = config.channel
 const token = config.token
 let paradoxChannel = config.paradoxLogsChannel
 var paradoxLogs = config.ParadoxEnabled
+const cmdPrefix = config.cmdPrefix
 const correction = {
         "§r§4[§6Paradox§4]§r": "Paradox",
         "§4[§6Paradox§4]": "Paradox",
         "§r": "",
+        "§a": "",
+        "§b": "",
+        "§c": "",
+        "§d": "",
+        "§f": "",
+        "§9": "",
+        "§8": "",
+        "§7": "",
         "§6": "",
+        "§5": "",
         "§4": "",
+        "§3": "",
         "§2": "",
-        "§7": ""
-
+        "§1": "",
+        "§0": "",
+        "§3[§bUAC§3]§": "[UAC]",
+        "§¶§cUAC ►": "UAC ►",
+        "§r§6[§aScythe§6]§r":""
       };
 
 //Device OS ids to be converted to more friendly names
@@ -82,9 +96,8 @@ client.on('messageCreate', (message) => {
     }else{
         //get the list if admins
         var admins = config.admins
-        //!!!!!!!!!!!!Must remove this before release!!!!!!!!!!!!!!!!!!!
-        if(message.content.startsWith("!") && message.author.id.includes(admins) && message.channel.id === paradoxChannel.id){
-			console.log("command received: " + message.content + " From: " + message.id)
+        if(message.content.startsWith(cmdPrefix) && message.author.id.includes(admins) && message.channel.id === paradoxChannel.id){
+			console.log("command received: " + message.content + " From: " + message.author.id)
             bot.queue('text', {
                 type: 'chat', needs_translation: false, source_name: bot.username, xuid: '', platform_chat_id: '',
                 message: `${message.content}`
@@ -255,29 +268,11 @@ return;
 } 
 }
 })
-// Handling the multiplayer.player.joined system message 
+// Handling the multiplayer.player.joined system message as we dont need it. 
 bot.on('text', (packet) => { 
     if(packet.message.includes("§e%multiplayer.player.joined")){
-        /* we dont want to duplicate the join message as this is handled in the add_player packet.
-        in the event that the packet is not sent by the server allow the user to enable this message.
-        */
-        if(config.useSystemPlayerJoinMessage === true){
-            if(config.useEmbed === true){
-                var msg = packet.parameters+ ": Has joined the server."
-                var username="Server"
-                const msgEmbed = new EmbedBuilder()
-        .setColor(config.setColor)
-        .setTitle(config.setTitle)
-        .setDescription('[In Game] '+ username +': '+msg)
-        channel.send({ embeds: [msgEmbed] });
-        return;
-        }else{
-           channel.send(`[In Game] **${username}**: ${msg}`)
-           return;
-        } 
-
-        }
-        //if not enabled it wont be sent. 
+        // we dont want to duplicate the join message as this is handled in the add_player packet.
+        //todo add config option to use this as a fail safe in the event that the server doesnt send the add player packet.  
         return;
     }
 })

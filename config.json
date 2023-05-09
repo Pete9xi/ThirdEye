@@ -9,6 +9,7 @@
     "channel": "",
     "ParadoxEnabled": true, 
     "paradoxLogsChannel": "",
+    "cmdPrefix": "!",
     "useSystemPlayerJoinMessage": false,
     
 	"useEmbed": true,
