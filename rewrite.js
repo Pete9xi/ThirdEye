@@ -28,8 +28,13 @@ const correction = {
     "§2": "",
     "§1": "",
     "§0": "",
+    "§o": "",
+    "§l": "",
+    "§k": "",
+    "§¶":"",
     "§3[§bUAC§3]§": "[UAC]",
     "§¶§cUAC ►": "UAC ►",
+    "§¶§cUAC STAFF §b► §d":"UAC STAFF ►",
     "§r§6[§aScythe§6]§r":""
   };
 
@@ -166,32 +171,33 @@ bot.on('add_player', (packet) => {
         case "json_whisper":
             const msg = packet.message;
             var obj = JSON.parse(msg)
+            var correctedText
             if (obj.rawtext[0].text.includes("Discord")){
                 //dont send the message otherwise it will loop 
                 break;
         }
         //continue to send the message to discord
-         // this is required by can be worked on 
-    //Check to see if player message is using a chat rank system. where the message maybe a json_whisper.
-    if (obj.rawtext[0].text.startsWith("§r§4[§6Paradox§4]§r")){
-        // this will crash when it trys to run the regex.
+    
+    if (obj.rawtext[0].text.startsWith("§r§4[§6Paradox§4]§r") || obj.rawtext[0].text.includes("UAC")){
+        // this will prevent it crashing. or logging to the wrong channel.
         return;
     }
-    const pattern = /§7(.+?): (.+)/;
-    var matches = pattern.exec(obj.rawtext[0].text);
-    const Playername = matches[1]
-    const PlayersMessage = matches[2].replace("§r","");
+   
+    correctedText = autoCorrect(obj.rawtext[0].text, correction);
     if(config.useEmbed === true){
         const msgEmbed = new EmbedBuilder()
         .setColor(config.setColor)
         .setTitle(config.setTitle)
-        .setDescription('[In Game] '+ Playername +': ' + PlayersMessage)
+        .setDescription('[In Game] '+ correctedText)
         channel.send({ embeds: [msgEmbed] });
-        break;
+        return;
+
     }else{
-        channel.send(`[In Game] **${Playername}**: ${PlayersMessage}`)
-        break;
+        channel.send(`[In Game] ${paradoxMsg}`);
+        return;
     }
+
+
     // Normal chat messsage 
     case "chat":
         if(config.useEmbed === true){
@@ -210,15 +216,16 @@ bot.on('add_player', (packet) => {
 })
 //Paradox Messages 
 bot.on('text', (packet) => { 
-   if(packet.message.includes("§r§4[§6Paradox§4]§r")){
-    console.log(packet)
+   if(packet.message.includes("§r§4[§6Paradox§4]§r")||packet.message.includes("§¶§cUAC STAFF §b► §d")){
     const msg = packet.message;
     var obj = JSON.parse(msg)
+    var paradoxMsg
+    var correctedText
 //Is a seprate logging channel enabled to send logs to that channel?
 if(paradoxLogs === true){
-    if (obj.rawtext[0].text.startsWith("§r§4[§6Paradox§4]§r")){
-        var paradoxMsg = obj.rawtext[0].text
-        const correctedText = autoCorrect(paradoxMsg, correction);
+       if(obj.rawtext[0].text.startsWith("§r§4[§6Paradox§4]§r")){
+         paradoxMsg = obj.rawtext[0].text
+         correctedText = autoCorrect(paradoxMsg, correction);
         if(config.useEmbed === true){
             const msgEmbed = new EmbedBuilder()
             .setColor(config.setColor)
@@ -226,13 +233,31 @@ if(paradoxLogs === true){
             .setDescription('[In Game] '+ correctedText)
             paradoxChannel.send({ embeds: [msgEmbed] });
             return;
+
         }else{
             paradoxChannel.send(`[In Game] Paradox: ${paradoxMsg}`);
             return;
         }
+    }
         
-    } 
-}
+        if(obj.rawtext[0].text.startsWith("§¶§cUAC STAFF §b► §d")){
+            paradoxMsg = obj.rawtext[0].text + obj.rawtext[1].text + obj.rawtext[2].text
+            correctedText = autoCorrect(paradoxMsg, correction);
+            if(config.useEmbed === true){
+                const msgEmbed = new EmbedBuilder()
+                .setColor(config.setColor)
+                .setTitle(config.setTitle)
+                .setDescription('[In Game] '+ correctedText)
+                paradoxChannel.send({ embeds: [msgEmbed] });
+                return;
+            }else{
+                paradoxChannel.send(`[In Game] Paradox: ${paradoxMsg}`);
+                return;
+            }
+        }
+          
+    }
+
 //if not then just send it to the normal channel
 if (obj.rawtext[0].text.startsWith("§r§4[§6Paradox§4]§r")){
     var paradoxMsg = obj.rawtext[0].text.replace("§r§4[§6Paradox§4]§r","");
@@ -247,8 +272,25 @@ if (obj.rawtext[0].text.startsWith("§r§4[§6Paradox§4]§r")){
         channel.send(`[In Game] Paradox: ${paradoxMsg}`);
         return;
     }
-    
-} 
+}
+if(obj.rawtext[0].text.startsWith("§¶§cUAC STAFF §b► §d")){
+    paradoxMsg = obj.rawtext[0].text + obj.rawtext[1].text + obj.rawtext[2].text
+    correctedText = autoCorrect(paradoxMsg, correction);
+    if(config.useEmbed === true){
+        const msgEmbed = new EmbedBuilder()
+        .setColor(config.setColor)
+        .setTitle(config.setTitle)
+        .setDescription('[In Game] '+ correctedText)
+        channel.send({ embeds: [msgEmbed] });
+        return;
+    }else{
+        channel.send(`[In Game] Paradox: ${paradoxMsg}`);
+        return;
+    }
+
+}
+
+
 }
 })
 // Player leave messages.
