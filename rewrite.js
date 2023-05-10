@@ -132,7 +132,6 @@ client.on('messageCreate', (message) => {
 
 //Send connecting players device os to discord.
 bot.on('add_player', (packet) => {
-    console.log(packet) 
     switch(packet.device_os){
         case "Win10":
             DeviceOS = "Windows PC";
@@ -178,7 +177,7 @@ bot.on('add_player', (packet) => {
         }
         //continue to send the message to discord
     
-    if (obj.rawtext[0].text.startsWith("§r§4[§6Paradox§4]§r") || obj.rawtext[0].text.includes("UAC")){
+    if (obj.rawtext[0].text.includes("§r§4[§6Paradox§4]§r") || obj.rawtext[0].text.includes("UAC")|| obj.rawtext[0].includes("§r§6[§aScythe§6]§r")){
         // this will prevent it crashing. or logging to the wrong channel.
         return;
     }
@@ -223,7 +222,7 @@ bot.on('text', (packet) => {
     var correctedText
 //Is a seprate logging channel enabled to send logs to that channel?
 if(paradoxLogs === true){
-       if(obj.rawtext[0].text.startsWith("§r§4[§6Paradox§4]§r")){
+       if(obj.rawtext[0].text.includes("§r§4[§6Paradox§4]§r")){
          paradoxMsg = obj.rawtext[0].text
          correctedText = autoCorrect(paradoxMsg, correction);
         if(config.useEmbed === true){
@@ -242,6 +241,21 @@ if(paradoxLogs === true){
         
         if(obj.rawtext[0].text.startsWith("§¶§cUAC STAFF §b► §d")){
             paradoxMsg = obj.rawtext[0].text + obj.rawtext[1].text + obj.rawtext[2].text
+            correctedText = autoCorrect(paradoxMsg, correction);
+            if(config.useEmbed === true){
+                const msgEmbed = new EmbedBuilder()
+                .setColor(config.setColor)
+                .setTitle(config.setTitle)
+                .setDescription('[In Game] '+ correctedText)
+                paradoxChannel.send({ embeds: [msgEmbed] });
+                return;
+            }else{
+                paradoxChannel.send(`[In Game] Paradox: ${paradoxMsg}`);
+                return;
+            }
+        }
+        if(obj.rawtext[0].text.startsWith("§r§6[§aScythe§6]§r")){
+            paradoxMsg = obj.rawtext[0].text
             correctedText = autoCorrect(paradoxMsg, correction);
             if(config.useEmbed === true){
                 const msgEmbed = new EmbedBuilder()
@@ -288,6 +302,21 @@ if(obj.rawtext[0].text.startsWith("§¶§cUAC STAFF §b► §d")){
         return;
     }
 
+}
+if(obj.rawtext[0].text.startsWith("§r§6[§aScythe§6]§r")){
+    paradoxMsg = obj.rawtext[0].text
+    correctedText = autoCorrect(paradoxMsg, correction);
+    if(config.useEmbed === true){
+        const msgEmbed = new EmbedBuilder()
+        .setColor(config.setColor)
+        .setTitle(config.setTitle)
+        .setDescription('[In Game] '+ correctedText)
+        channel.send({ embeds: [msgEmbed] });
+        return;
+    }else{
+        channel.send(`[In Game] Paradox: ${paradoxMsg}`);
+        return;
+    }
 }
 
 
