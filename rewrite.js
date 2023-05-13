@@ -12,6 +12,9 @@ const cmdPrefix = config.cmdPrefix
 const correction = {
     "§r§4[§6Paradox§4]§r": "Paradox",
     "§4[§6Paradox§4]": "Paradox",
+    "§l§6[§4Paradox§6]§r": "Paradox",
+    "§4P": "P",
+    "§l": "",
     "§r": "",
     "§a": "",
     "§b": "",
@@ -29,7 +32,6 @@ const correction = {
     "§1": "",
     "§0": "",
     "§o": "",
-    "§l": "",
     "§k": "",
     "§¶":"",
     "§3[§bUAC§3]§": "[UAC]",
@@ -177,7 +179,7 @@ bot.on('add_player', (packet) => {
         }
         //continue to send the message to discord
     
-    if (obj.rawtext[0].text.includes("§r§4[§6Paradox§4]§r") || obj.rawtext[0].text.includes("UAC")|| obj.rawtext[0].includes("§r§6[§aScythe§6]§r")){
+    if (obj.rawtext[0].text.includes("§r§4[§6Paradox§4]§r") || obj.rawtext[0].text.includes("UAC")|| obj.rawtext[0].text.includes("§r§6[§aScythe§6]§r")||obj.rawtext[0].text.includes("§l§6[§4Paradox§6]§r")){
         // this will prevent it crashing. or logging to the wrong channel.
         return;
     }
@@ -215,14 +217,14 @@ bot.on('add_player', (packet) => {
 })
 //Paradox Messages 
 bot.on('text', (packet) => { 
-   if(packet.message.includes("§r§4[§6Paradox§4]§r")||packet.message.includes("§¶§cUAC STAFF §b► §d")){
+   if(packet.message.includes("§r§4[§6Paradox§4]§r")||packet.message.includes("§¶§cUAC STAFF §b► §d")||packet.message.includes("§r§6[§aScythe§6]§r")|| packet.message.includes("§l§6[§4Paradox§6]§r")){
     const msg = packet.message;
     var obj = JSON.parse(msg)
     var paradoxMsg
     var correctedText
 //Is a seprate logging channel enabled to send logs to that channel?
 if(paradoxLogs === true){
-       if(obj.rawtext[0].text.includes("§r§4[§6Paradox§4]§r")){
+       if(obj.rawtext[0].text.includes("§r§4[§6Paradox§4]§r")||obj.rawtext[0].text.includes("§l§6[§4Paradox§6]§r")){
          paradoxMsg = obj.rawtext[0].text
          correctedText = autoCorrect(paradoxMsg, correction);
         if(config.useEmbed === true){
