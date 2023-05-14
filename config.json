@@ -11,6 +11,8 @@
     "paradoxLogsChannel": "",
     "cmdPrefix": "!",
     "useSystemPlayerJoinMessage": false,
+    "logSystemCommands": false,
+    "systemCommandsChannel": "",
     
 	"useEmbed": true,
   "setColor": [0,153,255],

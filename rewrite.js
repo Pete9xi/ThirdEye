@@ -7,8 +7,10 @@ const { MessageContent, GuildMessages, Guilds, } = GatewayIntentBits
 let channel = config.channel
 const token = config.token
 let paradoxChannel = config.paradoxLogsChannel
+let systemCommandsChannel = config.systemCommandsChannel
 var paradoxLogs = config.ParadoxEnabled
 const cmdPrefix = config.cmdPrefix
+const logSystemCommands = config.logSystemCommands
 const correction = {
     "§r§4[§6Paradox§4]§r": "Paradox",
     "§4[§6Paradox§4]": "Paradox",
@@ -50,6 +52,7 @@ client.login(token)
 
 // load Bedrock-Protocol
 const bedrock = require('bedrock-protocol');
+const { subscribe } = require('diagnostics_channel');
 let options
 console.log("ThirdEye v1.0.0");
 // bot options
@@ -84,6 +87,9 @@ client.once('ready', (c) => {
   channel = client.channels.cache.get(channel)
   if(paradoxLogs === true){
     paradoxChannel = client.channels.cache.get(paradoxChannel)
+  }
+  if(logSystemCommands === true){
+    systemCommandsChannel = client.channels.cache.get(systemCommandsChannel)
   }
   
   if (!channel) {
@@ -523,17 +529,35 @@ bot.on('text', (packet) => {
    
 })
 // Logging system commands
-bot.on('text', (packet) => { 
-    console.log(packet)
+bot.on('text', (packet) => {
+    if(logSystemCommands === false){
+        //check to see if logging we need to log system commands to discord.
+    }
+    else{
+
     var systemMessage;
     var playerName;
     var successMessage;
     var dontSendMessage = false;
     if (packet.type === "json") {
-      var obj = JSON.parse(packet.message);
-      playerName = obj.rawtext[1].translate;
+        var obj = JSON.parse(packet.message);
+       if(packet.message.includes("tp.success")){
+        return;
+        // this packet causes issues and needs to be addressed.
+       }
+        
+        playerName = obj.rawtext[1].translate;
+  
+    // loop through the array to get the the values.
       if (obj.rawtext[3] && obj.rawtext[3].with && obj.rawtext[3].with.rawtext && obj.rawtext[3].with.rawtext[0]) {
-        systemMessage = obj.rawtext[3].with.rawtext[0].text;
+        var rawtextArray = obj.rawtext[3].with.rawtext;
+        var results = [];
+         for (var i = 0; i < rawtextArray.length; i++) {
+            if (rawtextArray[i].text) {
+                results.push(rawtextArray[i].text); 
+    }
+  } 
+        systemMessage = results
       } else {
         systemMessage = "";
       }
@@ -548,8 +572,8 @@ bot.on('text', (packet) => {
             successMessage = "set time";
             break;
         case "commands.gamemode.success.self":
-        successMessage = "Set their gamemode"
-        switch(systemMessage){
+        successMessage = "Set their gamemode "
+        switch(results[0]){
             case "%createWorldScreen.gameMode.creative":
             systemMessage = "to Creative"
             break;
@@ -562,9 +586,9 @@ bot.on('text', (packet) => {
             case "%createWorldScreen.gameMode.spectator":
                 systemMessage = "to Spectator"
                 break;
-
-            default:
         }
+        break;
+
         case "commands.weather.clear":
             systemMessage = "Clear"
             successMessage = "Set the weather to "
@@ -594,9 +618,26 @@ bot.on('text', (packet) => {
                 break;
             }
             break;
-
-
-
+        case "commands.setworldspawn.success":
+            successMessage = "Set world spawn to: "
+            systemMessage = "X: " + results[0] +" Y: " + results[1] + " Z: " + results [2]
+            break;
+        case "commands.tp.success":
+            successMessage = "has ran a tp command and "
+            systemMessage = " has teleported: " + results[0] + " to: " +results[1]
+            break;
+        case "commands.give.success":
+            successMessage = "Has given: "
+            systemMessage = results[2] + " item: " + results[0] + " amount: " + results[1]
+            break; 
+        case "commands.enchant.success":
+            successMessage =" Has enchanted an item for: "
+            systemMessage = results[0]
+            break;
+        case "commands.clear.success":
+            successMessage = "Has cleared: " + results[0] + " inventory removing a total of: "
+            systemMessage = results[1] + " items"
+            break;
             
         default:
 
@@ -608,14 +649,16 @@ bot.on('text', (packet) => {
             .setColor(config.setColor)
             .setTitle(config.setTitle)
             .setDescription('[System Message] ' + 'playerName = '+ playerName +  ' successMessage = ' + successMessage + ' systemMessage = ' + systemMessage )
-            channel.send({ embeds: [msgEmbed] });
+            //.setDescription('[System Message] '+ playerName + " "+ successMessage + systemMessage )
+            systemCommandsChannel.send({ embeds: [msgEmbed] });
             return;
     }else{
-       channel.send(`[System Message] **${systemMessage}`)
+       systemCommandsChannel.send(`[System Message] **${systemMessage}`)
        return;
     }
     }
     
+}
 
 })
 
@@ -625,4 +668,5 @@ bot.on('text', (packet) => {
     const reg = new RegExp(Object.keys(correction).join("|"), "g");
     return text.replace(reg, (matched) => correction[matched]);
   }
+
 
