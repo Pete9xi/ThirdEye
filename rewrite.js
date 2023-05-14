@@ -541,11 +541,10 @@ bot.on('text', (packet) => {
     var dontSendMessage = false;
     if (packet.type === "json") {
         var obj = JSON.parse(packet.message);
-       if(packet.message.includes("tp.success")){
+       if(packet.message.includes("commands.tp.successVictim")){
         return;
-        // this packet causes issues and needs to be addressed.
+        // we want to exclude this packet
        }
-        
         playerName = obj.rawtext[1].translate;
   
     // loop through the array to get the the values.
