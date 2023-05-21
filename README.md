@@ -36,7 +36,7 @@ to the discord server. This is located at the bottom of the page</p>
   <img src="https://i.imgur.com/uwu9rLh.png"style="width:900px;height:100px;">
   <p>At this point you should have the bot as member in your discord server. Once this has been completed proceed to the next step.</p>
   <p>7. The next step is to configure the script to talk to your bot in discord for this we need to head over to the bot 
-page in the discord developer portal click on your application and then click on Bot from the menue on the left hand side.<p/>
+page in the discord developer portal click on your application and then click on Bot from the menu on the left hand side.<p/>
     <img src="https://i.imgur.com/qeBb5nY.png"style="width:900px;height:300px;">
   <p>Click on the button called Reset Token this should present you the new token this now needs to be entered in the config.json file within the ThirdEye folder.</p>
   <img src="https://i.imgur.com/54jAjMQ.png"style="width:400px;height:100px;">
