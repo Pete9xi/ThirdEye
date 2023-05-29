@@ -1,5 +1,5 @@
 # ThirdEye
-ThirdEye, two way chat between discord and minecraft along with logs for anticheats. intergration for paradox anticheat but is also compatible with other anticheats as well as not having one install at all.
+ThirdEye, two way chat between discord and minecraft along with logs for anticheats. integration for paradox anticheat but is also compatible with other anticheats as well as not having one install at all.
 Support for BDS as well as Realms all this is configured in the config.json file. This does require nodejs to be installed on the host machine.
 
 ThirdEye requires NodeJS, Most devices support NodeJS for example you can run this on a raspberry pi, old windows pc or mac device, old pc running a linux distro such as ubuntu.
