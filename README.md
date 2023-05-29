@@ -107,7 +107,7 @@ page in the discord developer portal click on your application and then click on
 <hr>
 <div align="center">
   <h2>Get Support</h2>
-  Head over the <a href="https://discord.gg/WY34YxmQ">discord server</a> for support or post an issue on github.
+  Head over to the <a href="https://discord.gg/WY34YxmQ">discord server</a> for support or post an issue on github.
   
   <p></p>
   
