@@ -42,6 +42,13 @@ const correction = {
     "§r§6[§aScythe§6]§r":""
   };
 
+  const excludedPackets =[
+    "commands.tp.successVictim",
+    "gameMode.changed",
+    "commands.give.successRecipient"
+
+  ];
+
 
 //Device OS ids to be converted to more friendly names
 var DeviceOS;
@@ -110,9 +117,8 @@ client.on('messageCreate', (message) => {
     }else{
         //get the list if admins
         var admins = config.admins
-        //!!!!!!!!!!!!Must remove this before release!!!!!!!!!!!!!!!!!!!
-        if(message.content.startsWith(cmdPrefix) && message.author.id.includes(admins) && message.channel.id === paradoxChannel.id){
-			console.log("command received: " + message.content + " From: " + message.id)
+        if(message.content.startsWith(cmdPrefix) && admins.includes(message.author.id) && message.channel.id === paradoxChannel.id){
+			console.log("command received: " + message.content + " From: " + message.author.id)
             bot.queue('text', {
                 type: 'chat', needs_translation: false, source_name: bot.username, xuid: '', platform_chat_id: '',
                 message: `${message.content}`
@@ -185,7 +191,7 @@ bot.on('add_player', (packet) => {
         }
         //continue to send the message to discord
     
-    if (obj.rawtext[0].text.includes("§r§4[§6Paradox§4]§r") || obj.rawtext[0].text.includes("UAC")|| obj.rawtext[0].text.includes("§r§6[§aScythe§6]§r")||obj.rawtext[0].text.includes("§l§6[§4Paradox§6]§r")){
+    if (obj.rawtext[0].text.includes("§r§4[§6Paradox§4]§r") || obj.rawtext[0].text.includes("UAC")|| obj.rawtext[0].text.includes("§r§6[§aScythe§6]§r")||obj.rawtext[0].text.includes("§l§6[§4Paradox§6]§r")||obj.rawtext[0].text.includes("§l§6[§4Paradox AntiCheat Command Help§6]")){
         // this will prevent it crashing. or logging to the wrong channel.
         return;
     }
@@ -223,17 +229,54 @@ bot.on('add_player', (packet) => {
 })
 //Paradox Messages 
 bot.on('text', (packet) => { 
-   if(packet.message.includes("§r§4[§6Paradox§4]§r")||packet.message.includes("§¶§cUAC STAFF §b► §d")||packet.message.includes("§r§6[§aScythe§6]§r")|| packet.message.includes("§l§6[§4Paradox§6]§r")){
+
+    if(packet.message.includes("§r§4[§6Paradox§4]§r")||packet.message.includes("§¶§cUAC STAFF §b► §d")||packet.message.includes("§r§6[§aScythe§6]§r")|| packet.message.includes("§l§6[§4Paradox§6]§r")||packet.message.includes("§l§6[§4Paradox AntiCheat Command Help§6]")){
     const msg = packet.message;
     var obj = JSON.parse(msg)
     var paradoxMsg
     var correctedText
 //Is a seprate logging channel enabled to send logs to that channel?
 if(paradoxLogs === true){
-       if(obj.rawtext[0].text.includes("§r§4[§6Paradox§4]§r")||obj.rawtext[0].text.includes("§l§6[§4Paradox§6]§r")){
+       if(obj.rawtext[0].text.includes("§r§4[§6Paradox§4]§r")||obj.rawtext[0].text.includes("§l§6[§4Paradox§6]§r")||obj.rawtext[0].text.includes("§l§6[§4Paradox AntiCheat Command Help§6]")){
          paradoxMsg = obj.rawtext[0].text
          correctedText = autoCorrect(paradoxMsg, correction);
         if(config.useEmbed === true){
+            if(correctedText.length >=2000){
+                console.log(correctedText.length)
+                // Extract the messages for each category
+                const moderationStartIndex = correctedText.indexOf("[Moderation Commands]");
+                const optionalFeaturesStartIndex = correctedText.indexOf("[Optional Features]");
+                const toolsUtilitiesStartIndex = correctedText.indexOf("[Tools and Utilites]");
+                
+                const moderationEndIndex = optionalFeaturesStartIndex !== -1 ? optionalFeaturesStartIndex : toolsUtilitiesStartIndex;
+                const optionalFeaturesEndIndex = toolsUtilitiesStartIndex !== -1 ? toolsUtilitiesStartIndex : correctedText.length;
+                
+                const moderationMessage = correctedText.substring(moderationStartIndex, moderationEndIndex).trim();
+                const optionalFeaturesMessage = correctedText.substring(optionalFeaturesStartIndex, optionalFeaturesEndIndex).trim();
+                const toolsUtilitiesMessage = correctedText.substring(toolsUtilitiesStartIndex).trim();
+
+            // Send Part 1    
+                let msgEmbed = new EmbedBuilder()
+                .setColor(config.setColor)
+                .setTitle(config.setTitle)
+                .setDescription('[In Game] '+ moderationMessage)
+                paradoxChannel.send({ embeds: [msgEmbed] });
+               
+            // Send Part 2    
+                let msgEmbed1 = new EmbedBuilder()
+                .setColor(config.setColor)
+                .setDescription('[In Game] '+ optionalFeaturesMessage)
+                paradoxChannel.send({ embeds: [msgEmbed1] });
+            // Send Part 3 
+                let msgEmbed2 = new EmbedBuilder()
+                .setColor(config.setColor)
+                .setDescription('[In Game] '+ toolsUtilitiesMessage)
+                paradoxChannel.send({ embeds: [msgEmbed2] });   
+
+                return;   
+            }
+        
+          
             const msgEmbed = new EmbedBuilder()
             .setColor(config.setColor)
             .setTitle(config.setTitle)
@@ -543,10 +586,10 @@ bot.on('text', (packet) => {
     var dontSendMessage = false;
     if (packet.type === "json") {
         var obj = JSON.parse(packet.message);
-       if(packet.message.includes("commands.tp.successVictim")){
-        return;
-        // we want to exclude this packet
-       }
+        if (excludedPackets.some(excludedPacket => packet.message.includes(excludedPacket))) {
+            return;
+            // we want to exclude this packet
+          }
         playerName = obj.rawtext[1].translate;
   
     // loop through the array to get the the values.
@@ -555,7 +598,7 @@ bot.on('text', (packet) => {
         var results = [];
          for (var i = 0; i < rawtextArray.length; i++) {
             if (rawtextArray[i].text) {
-                results.push(rawtextArray[i].text); 
+                results.push(rawtextArray[i].text);
     }
   } 
         systemMessage = results
@@ -589,6 +632,24 @@ bot.on('text', (packet) => {
                 break;
         }
         break;
+
+        case "commands.gamemode.success.other":
+            successMessage = "Has Set " + results[1] + " gamemode "
+            switch(results[0]){
+                case "%createWorldScreen.gameMode.creative":
+                systemMessage = "to Creative"
+                break;
+                case "%createWorldScreen.gameMode.survival":
+                    systemMessage = "to Survival"
+                    break;
+                case "%createWorldScreen.gameMode.adventure":
+                    systemMessage = "to Adventure"
+                    break;
+                case "%createWorldScreen.gameMode.spectator":
+                    systemMessage = "to Spectator"
+                    break;
+            }
+            break;
 
         case "commands.weather.clear":
             systemMessage = "Clear"
@@ -624,12 +685,12 @@ bot.on('text', (packet) => {
             systemMessage = "X: " + results[0] +" Y: " + results[1] + " Z: " + results [2]
             break;
         case "commands.tp.success":
-            successMessage = "has ran a tp command and "
-            systemMessage = " has teleported: " + results[0] + " to: " +results[1]
+            successMessage = " has teleported: "
+            systemMessage = results[0] + " to: " +results[1]
             break;
         case "commands.give.success":
             successMessage = "Has given: "
-            systemMessage = results[2] + " item: " + results[0] + " amount: " + results[1]
+            systemMessage = results[2] + " item: " + results[0] + ", amount: " + results[1]
             break; 
         case "commands.enchant.success":
             successMessage =" Has enchanted an item for: "
@@ -639,7 +700,12 @@ bot.on('text', (packet) => {
             successMessage = "Has cleared: " + results[0] + " inventory removing a total of: "
             systemMessage = results[1] + " items"
             break;
-            
+        case "commands.effect.success":
+           successMessage = "has given an effect to " + results[2]
+           let potionResult = results[0];
+           potionResult = potionResult.replace(/%potion|\./g, '');
+            systemMessage = "effect type: " + potionResult + " duration: " + results[3] + " multiplier: " + results[1]    
+            break;
         default:
 
     }
@@ -649,8 +715,8 @@ bot.on('text', (packet) => {
             const msgEmbed = new EmbedBuilder()
             .setColor(config.setColor)
             .setTitle(config.setTitle)
-            .setDescription('[System Message] ' + 'playerName = '+ playerName +  ' successMessage = ' + successMessage + ' systemMessage = ' + systemMessage )
-            //.setDescription('[System Message] '+ playerName + " "+ successMessage + systemMessage )
+            //.setDescription('[System Message] ' + 'playerName = '+ playerName +  ' successMessage = ' + successMessage + ' systemMessage = ' + systemMessage )
+            .setDescription('[System Message] '+ playerName + " "+ successMessage + " " + systemMessage )
             systemCommandsChannel.send({ embeds: [msgEmbed] });
             return;
     }else{
