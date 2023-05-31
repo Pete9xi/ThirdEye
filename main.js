@@ -1,9 +1,9 @@
 const fs = require('fs')
 const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'))
+let WhitelistRead = JSON.parse(fs.readFileSync('whitelist.json', 'utf-8'))
 const uuid = require('uuid');
 const { Client, GatewayIntentBits, EmbedBuilder, messageLink} = require('discord.js')
 const { MessageContent, GuildMessages, Guilds, } = GatewayIntentBits
-
 let channel = config.channel
 const token = config.token
 let paradoxChannel = config.paradoxLogsChannel
@@ -125,6 +125,30 @@ client.on('messageCreate', (message) => {
               })
               return;
         }
+        if(message.content.startsWith("$") && admins.includes(message.author.id)&& message.channel.id === paradoxChannel.id && !message.content.endsWith("-r"))
+        {
+            //add the user to the whitelist.
+            var msg = message.content.replace("$","");
+            WhitelistRead.whitelist.push(msg);
+            fs.writeFileSync('whitelist.json', JSON.stringify(WhitelistRead, null, 2), 'utf-8');
+            console.log('Data has been written to the file successfully.');
+            WhitelistRead = JSON.parse(fs.readFileSync('whitelist.json', 'utf-8'));
+            console.log('Reloaded contents:', WhitelistRead.whitelist);
+            return;
+        }
+        if(message.content.startsWith("$") && admins.includes(message.author.id)&& message.channel.id === paradoxChannel.id && message.content.endsWith("-r")){
+            // remove the user from the whitelist.
+            var msg = message.content.replace("$","");
+            var msgdel = msg.replace("-r","");
+            console.log("Removing: "+ msgdel + "from the whitelist.");
+            WhitelistRead.whitelist = WhitelistRead.whitelist.filter(name => name !== msgdel); 
+            fs.writeFileSync('whitelist.json', JSON.stringify(WhitelistRead, null, 2), 'utf-8');
+            console.log('Data has been written to the file successfully.');
+            WhitelistRead = JSON.parse(fs.readFileSync('whitelist.json', 'utf-8'));
+            console.log('Reloaded contents:', WhitelistRead.whitelist);
+            return;
+
+        }
         if(message.channel.id === channel.id){
         //We will then send a command to the server to trigger the message sent in discord.
         const cmd = `/tellraw @a {"rawtext":[{"text":"§8[§9Discord§8] §7${message.author.username}: §f${message.content}"}]}`
@@ -146,6 +170,33 @@ client.on('messageCreate', (message) => {
 
 //Send connecting players device os to discord.
 bot.on('add_player', (packet) => {
+    var Whitelist = WhitelistRead.whitelist
+    if(config.blacklistedDeviceTypes.includes(packet.device_os) && (!Whitelist.includes(packet.username))){
+        //Kick the client connecting bye bye
+        const cmd = `/kick ${packet.username} device is blacklisted.`
+        bot.queue('command_request', {
+           command: cmd,
+           origin: {
+           type: 'player',
+           uuid: '',
+           request_id: '',
+   },
+   internal: false,
+         version: 52,
+ })
+ if(config.useEmbed === true){
+    const msgEmbed = new EmbedBuilder()
+    .setColor(config.setColor)
+    .setTitle(config.setTitle)
+    .setDescription('[Server] '+ packet.username +': Has been kicked as the device has been blacklisted:  ' + packet.device_os)
+    channel.send({ embeds: [msgEmbed] });
+    return
+}else{
+channel.send(`[Server] **${packet.username}** Has been kicked as the device has been blacklisted: ${packet.device_os}`);
+return;
+}
+
+    }
     switch(packet.device_os){
         case "Win10":
             DeviceOS = "Windows PC";
@@ -163,7 +214,6 @@ bot.on('add_player', (packet) => {
         default: 
         DeviceOS = packet.device_os;
         console.log("DeviceOS defaulted to packet.device_os");
-
     }
      
     if(config.useEmbed === true){
@@ -175,6 +225,7 @@ bot.on('add_player', (packet) => {
 }else{
    channel.send(`[In Game] **${packet.username}** Has joined the server using ${DeviceOS}`);
 }
+
  })
 
  //Send ingame message to discord.
@@ -254,6 +305,11 @@ if(paradoxLogs === true){
                 const moderationMessage = correctedText.substring(moderationStartIndex, moderationEndIndex).trim();
                 const optionalFeaturesMessage = correctedText.substring(optionalFeaturesStartIndex, optionalFeaturesEndIndex).trim();
                 const toolsUtilitiesMessage = correctedText.substring(toolsUtilitiesStartIndex).trim();
+                
+                console.log("1: " + moderationMessage);
+                console.log("2: " + optionalFeaturesMessage);
+                console.log("3: " + toolsUtilitiesMessage);
+                
 
             // Send Part 1    
                 let msgEmbed = new EmbedBuilder()

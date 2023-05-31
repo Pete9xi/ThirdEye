@@ -20,5 +20,8 @@
   "AuthType": false,
     "admins": [
 		""
+    ],
+    "blacklistDeviceTypes": [
+      
     ]
 }
