@@ -10,18 +10,9 @@ ThirdEye requires NodeJS, Most devices support NodeJS for example you can run th
   <p>. Support for other anti cheats providing they use chat commands. </p>
   <p>. Player join messages including the device they are connecting with.</p>
   <p>. Player leave messages.</p>
+  <p> . Device blacklist/whitelist. </p> 
   <p>. Support for BDS as well as Realms
 </div>
-  <div align="center">
-  <h2>Features in devlopment</h2>
-  <p>. Device whitelist. </p>
-</div>
-
-
-
-
-
-
 
 <div align="center">
 <hr>
