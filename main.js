@@ -232,7 +232,7 @@ return;
  bot.on('disconnect', (packet) => {
        
     console.log('Client disconnected:', bot.uuid);
-      let remainingTime = 0.2 * 60; // 5 minutes in seconds
+      let remainingTime = 180 * 60; // 5 minutes in seconds
 
       console.log(`Waiting for ${remainingTime} seconds before reconnecting client: ${client.uuid}`);
     
