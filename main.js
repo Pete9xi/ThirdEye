@@ -84,6 +84,8 @@ else{
 }
 // join server
 const bot = bedrock.createClient(options)
+
+//const bot = bedrock.createClient(options)
 bot.on('spawn', () => {
   console.log(`Bedrock bot logged in as ${bot.username}`)
 })
@@ -125,7 +127,7 @@ client.on('messageCreate', (message) => {
               })
               return;
         }
-        if(message.content.startsWith("$") && admins.includes(message.author.id)&& message.channel.id === paradoxChannel.id && !message.content.endsWith("-r"))
+        if(message.content.startsWith("$") && admins.includes(message.author.id)&& message.channel.id === paradoxChannel.id && !message.content.endsWith("-r") && !message.content.includes("$reboot"))
         {
             //add the user to the whitelist.
             var msg = message.content.replace("$","");
@@ -136,7 +138,7 @@ client.on('messageCreate', (message) => {
             console.log('Reloaded contents:', WhitelistRead.whitelist);
             return;
         }
-        if(message.content.startsWith("$") && admins.includes(message.author.id)&& message.channel.id === paradoxChannel.id && message.content.endsWith("-r")){
+        if(message.content.startsWith("$") && admins.includes(message.author.id)&& message.channel.id === paradoxChannel.id && message.content.endsWith("-r")&& !message.content.includes("$reboot")){
             // remove the user from the whitelist.
             var msg = message.content.replace("$","");
             var msgdel = msg.replace("-r","");
@@ -227,6 +229,23 @@ return;
 }
 
  })
+ bot.on('disconnect', (packet) => {
+       
+    console.log('Client disconnected:', bot.uuid);
+      let remainingTime = 0.2 * 60; // 5 minutes in seconds
+
+      console.log(`Waiting for ${remainingTime} seconds before reconnecting client: ${client.uuid}`);
+    
+      const timer = setInterval(() => {
+        remainingTime--;
+        console.log(`Remaining time: ${remainingTime} seconds`);
+    
+        if (remainingTime <= 0) {
+          clearInterval(timer);
+          process.exit(); // Exit the script
+        }
+      }, 1000); // Delay of 1 second
+  });
 
  //Send ingame message to discord.
  bot.on('text', (packet) => { 
