@@ -87,7 +87,18 @@ const bot = bedrock.createClient(options)
 
 //const bot = bedrock.createClient(options)
 bot.on('spawn', () => {
-  console.log(`Bedrock bot logged in as ${bot.username}`)
+  console.log(`Bedrock bot logged in as ${bot.username}`);
+  if(config.useEmbed === true){
+    const msgEmbed = new EmbedBuilder()
+    .setColor(config.setColor)
+    .setTitle(config.setTitle)
+    .setDescription('[ThirdEye]:'+ ' Client is logged in.')
+    paradoxChannel.send({ embeds: [msgEmbed] });
+    
+}else{
+paradoxChannel.send(`[ThirdEye]: Client is logged in.`)
+
+}
 })
 
 // when discord client is ready, send login message
@@ -150,6 +161,10 @@ client.on('messageCreate', (message) => {
             console.log('Reloaded contents:', WhitelistRead.whitelist);
             return;
 
+        }
+        if(message.content === "$reboot" && admins.includes(message.author.id)&& message.channel.id === paradoxChannel.id){
+            console.log("Forcing a re connect.")
+            process.exit(); // Exit the script
         }
         if(message.channel.id === channel.id){
         //We will then send a command to the server to trigger the message sent in discord.
@@ -232,16 +247,43 @@ return;
  bot.on('disconnect', (packet) => {
        
     console.log('Client disconnected:', bot.uuid);
-      let remainingTime = 180 * 60; // 5 minutes in seconds
+      let remainingTime = 0.5 * 60; // 5 minutes in seconds
+      if(config.useEmbed === true){
+        const msgEmbed = new EmbedBuilder()
+        .setColor(config.setColor)
+        .setTitle(config.setTitle)
+        .setDescription('[ThirdEye]:'+ ' The client has lost connection to the server and will initiate a reboot in: ' +remainingTime + ' Seconds')
+        paradoxChannel.send({ embeds: [msgEmbed] });
+        
+}else{
+    paradoxChannel.send(`[ThirdEye]: The client has lost connection to the server and will initiate a reboot in: **${remainingTime} ** Seconds`)
+   
+}
 
       console.log(`Waiting for ${remainingTime} seconds before reconnecting client: ${client.uuid}`);
+
     
       const timer = setInterval(() => {
         remainingTime--;
         console.log(`Remaining time: ${remainingTime} seconds`);
+        if(remainingTime <=5){
+            if(config.useEmbed === true){
+                const msgEmbed = new EmbedBuilder()
+                .setColor(config.setColor)
+                .setTitle(config.setTitle)
+                .setDescription('[ThirdEye]:'+ ' Client is rebooting in: ' +remainingTime + ' Seconds')
+                paradoxChannel.send({ embeds: [msgEmbed] });
+                
+        }else{
+            paradoxChannel.send(`[ThirdEye]: Client is rebooting in: **${remainingTime} ** Seconds`)
+           
+        }
+
+        }
     
         if (remainingTime <= 0) {
           clearInterval(timer);
+          
           process.exit(); // Exit the script
         }
       }, 1000); // Delay of 1 second
