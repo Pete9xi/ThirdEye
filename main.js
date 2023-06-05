@@ -173,7 +173,7 @@ client.on('messageCreate', (message) => {
 //Send connecting players device os to discord.
 bot.on('add_player', (packet) => {
     var Whitelist = WhitelistRead.whitelist
-    if(config.blacklistedDeviceTypes.includes(packet.device_os) && (!Whitelist.includes(packet.username))){
+    if(config.blacklistDeviceTypes.includes(packet.device_os) && (!Whitelist.includes(packet.username))){
         //Kick the client connecting bye bye
         const cmd = `/kick ${packet.username} device is blacklisted.`
         bot.queue('command_request', {
