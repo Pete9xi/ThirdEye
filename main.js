@@ -244,6 +244,18 @@ return;
 }
 
  })
+ bot.on('close',(packet) => {
+    console.log(" The server has closed the connection.")
+
+ })
+ bot.on('login',(packet) => {
+    console.log("client has been authenticated by the server.")
+
+ })
+ bot.on('join',(packet) => {
+    console.log("the client is ready to recieve game packets.")
+
+ })
  bot.on('disconnect', (packet) => {
        
     console.log('Client disconnected:', bot.uuid);
@@ -367,9 +379,6 @@ if(paradoxLogs === true){
                 const optionalFeaturesMessage = correctedText.substring(optionalFeaturesStartIndex, optionalFeaturesEndIndex).trim();
                 const toolsUtilitiesMessage = correctedText.substring(toolsUtilitiesStartIndex).trim();
                 
-                console.log("1: " + moderationMessage);
-                console.log("2: " + optionalFeaturesMessage);
-                console.log("3: " + toolsUtilitiesMessage);
                 
 
             // Send Part 1    
@@ -667,9 +676,7 @@ bot.on('text', (packet) => {
               case "death.fell.accident.generic":
                   reason = "Fell to their death." 
               case "death.attack.fall":
-                reason = "Fell to their death." 
-              case "death.attack.stalagmite" :
-                reason = "Landed on a sharp object and died."      						
+                reason = "Fell to their death."     						
               default:
                   reason = "General Death" +"  ---  "  + packet.message + " ----  " + packet.parameters;  
                   break;    
