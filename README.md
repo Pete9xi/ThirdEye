@@ -1,28 +1,34 @@
-# ThirdEye
-ThirdEye, two way chat between discord and minecraft along with logs for anticheats. integration for paradox anticheat but is also compatible with other anticheats as well as not having one install at all.
-Support for BDS as well as Realms all this is configured in the config.json file. This does require nodejs to be installed on the host machine.
-
-ThirdEye requires NodeJS, Most devices support NodeJS for example you can run this on a raspberry pi, old windows pc or mac device, old pc running a linux distro such as ubuntu.
 <div align="center">
-<h2>Main features</h2>
-  <p>. Two way chat between discord and minecraft </p>
-<p>. Full support for Paradox allowing you to run all commands via discord as you would in game. </p>
-  <p>. Support for other anti cheats providing they use chat commands. </p>
-  <p>. Player join messages including the device they are connecting with.</p>
-  <p>. Player leave messages.</p>
-  <p> . Device blacklist/whitelist. </p> 
-  <p>. Support for BDS as well as Realms
+  <h2>ThirdEye</h2>
+  <p>ThirdEye is a tool that enables two-way chat between Discord and Minecraft, along with logs for anticheats. It has integration with Paradox anticheat but is also compatible with other anticheats or no anticheat at all. It supports both BDS and Realms, and the configuration is done in the config.json file. To use ThirdEye, Node.js needs to be installed on the host machine.</p>
+  <p>ThirdEye requires Node.js. It can run on various devices, such as a Raspberry Pi, an old Windows PC or Mac, or an old PC running a Linux distro like Ubuntu.</p>
 </div>
 
 <div align="center">
-<hr>
+  <hr>
+  <div align="center">
+    <h2>Main features</h2>
+    <p>• Two-way chat between Discord and Minecraft</p>
+    <p>• Full support for Paradox, allowing you to run all commands via Discord as you would in the game</p>
+    <p>• Support for other anticheats that use chat commands</p>
+    <p>• Player join messages, including the device they are connecting with</p>
+    <p>• Player leave messages</p>
+    <p>• Device blacklist/whitelist</p>
+    <p>• Support for BDS and Realms</p>
+  </div>
+</div>
+
 <div align="center">
-  <h2>Installing ThirdEye</h2>
-  <p>This has been broken down in to three parts.<br>
-  1. Creating the bot application<br>
-  2. Configuring the client script<br>
-  3. Installing NodeJS 18.16.0 LTS<br>
-  </p>
+  <hr>
+  <div align="center">
+    <h2>Installing ThirdEye</h2>
+    <p>This has been broken down into three parts:</p>
+    <p>1. Creating the bot application</p>
+    <p>2. Configuring the client script</p>
+    <p>3. Installing Node.js 18.16.0 LTS</p>
+  </div>
+</div>
+
   <h2>Creating the bot application</h2>
   <p>1. Head over to the discord developer portal. https://discord.com/developers/applications</p>
   <p>2. Click on create a new application</p>
@@ -64,7 +70,7 @@ page in the discord developer portal click on your application and then click on
     <img src="https://i.imgur.com/tD7lMZk.png"style="width:200px;height:200px;">
     <p>6. The channel is the main channel you to be used with the chat relay between Discord and Minecraft, simply grab the ID by right clicking on the channel in discord and click on copy ID paste this into the file under channel as you have done before</p>
     <img src="https://i.imgur.com/Ozvja0y.png"style="width:500px;height:100px;">
-    <p>7.	Next is getting a second channel setup for logging the anticheat while this is focused on Paradox it will have basic support for others as the project is open source you can fork the repository and add anything that is required, to log to a different channel enabled paradoxLogs</p>
+    <p>7.	Next is getting a second channel setup for logging the anticheat while this is focused on Paradox it will have basic support for others as the project is open source you can fork the repository and add anything that is required. To log the anticheat to a seprate channel set ParadoxEnabled to true </p>
     <img src="https://i.imgur.com/1GHzZuM.png"style="width:500px;height:100px;">
     <p>8.	CmdPrefix this is designed for paradox as you can change the command prefix in game, the default is set this will allow you to run commands like `!ban Pete9xi was spamming chat`, This can be changed to use with other anti cheats that support chat commands in game.</p>
     <p>9.	The on join player message is handled via a packet that will grab the relevant information this will include the players name as well as the device they are connecting with, in the event that a server fails to broadcast this as a backup you can enabled useSystemPlayerJoinMessage this will use the yellow message in game when a player joins and will send this back to discord</p>
