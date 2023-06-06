@@ -86,7 +86,7 @@
     <br>
     <p>1. Head over to the Node.js website and download the latest LTS release. Once this has downloaded, run the installer and follow the instructions.</p>
    <p>2. If you are running this on Windows, included in the release folder is a batch file to install the required Node.js modules. Just run the file, and the modules will be installed. If you are running this on another OS, the npm commands are `npm i bedrock-protocol` and `npm i discord.js`.</p>
-   <p>3. For Windows, there is an included batch file to start the script. If you are using another OS, you will need to launch the script. For example, `node stater.js`.</p>
+   <p>3. For Windows, there is an included batch file to start the script. If you are using another OS, you will need to launch the script. For example, `node start.js`.</p>
   <img src="https://i.imgur.com/gKMX8wR.png" style="width:700px;height:100px;">
   <p><strong>Note: You will need to grant the client account server OP status, as well as Paradox OP. This is so messages from Discord can be broadcasted to chat and the Paradox logs can be sent back. Also, make sure cheat notifications are enabled by running `!notify`.</strong></p>
   <img src="https://i.imgur.com/bgzeDra.png" style="width:700px;height:300px;">
