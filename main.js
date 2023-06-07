@@ -548,8 +548,13 @@ bot.on('text', (packet) => {
 bot.on('text', (packet) => { 
     if(packet.message.includes("death")){
         let playername;
+         playername = packet.parameters[0];	
         let reason;
         playername = packet.parameters[0];
+        //tamed 
+        if(playername.includes("%entity")){
+            playername = "A tamed Animal "
+        }
         reason = packet.parameters[1];
       // General death messages
       console.log(packet)
@@ -669,7 +674,7 @@ bot.on('text', (packet) => {
                   break; 
               case "death.attack.outOfWorld":
                   reason ="Fell into the void."
-                  beeak;
+                  break;
               case "death.attack.sonicBoom.player":
                   reason = "Was blasted by the wardens sonic boom." 
                   break;
