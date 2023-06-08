@@ -549,8 +549,6 @@ bot.on('text', (packet) => {
     if(packet.message.includes("death")){
         let playername;
          playername = packet.parameters[0];	
-        let reason;
-        playername = packet.parameters[0];
         //tamed 
         if(playername.includes("%entity")){
             playername = "A tamed Animal "
