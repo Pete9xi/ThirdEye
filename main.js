@@ -259,7 +259,7 @@ return;
  bot.on('disconnect', (packet) => {
        
     console.log('Client disconnected:', bot.uuid);
-      let remainingTime = 2 * 60; // 5 minutes in seconds
+      let remainingTime = 2 * 60; // 2 minutes in seconds, allowing for slower servers to reboot in time ready for a new connection
       if(config.useEmbed === true){
         const msgEmbed = new EmbedBuilder()
         .setColor(config.setColor)
