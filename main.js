@@ -110,13 +110,14 @@ client.once('ready', (c) => {
   }
   if(logSystemCommands === true){
     systemCommandsChannel = client.channels.cache.get(systemCommandsChannel)
+    console.log(`I could not find the channel the systemCommandsChannel Channel in discord.`)
   }
   
   if (!channel) {
-    console.log(`I could not find the channel (${config.channel})!`)
+    console.log(`I could not find the in game channel in Discord.`)
   }
   if(!paradoxChannel){
-  console.log(`I could not find the channel (${config.paradoxLogsChannel})!`)
+  console.log(`I could not find the channel the paradoxLogs Channel in Discord`)
   }
 })
 
