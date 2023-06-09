@@ -114,11 +114,9 @@ client.once('ready', (c) => {
   
   if (!channel) {
     console.log(`I could not find the channel (${config.channel})!`)
-    process.exit(1)
   }
   if(!paradoxChannel){
   console.log(`I could not find the channel (${config.paradoxLogsChannel})!`)
-  process.exit(1)
   }
 })
 
