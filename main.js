@@ -679,10 +679,16 @@ bot.on('text', (packet) => {
                   break;
               case "death.fell.accident.generic":
                   reason = "Fell to their death." 
+                  break;
               case "death.attack.fall":
                 reason = "Fell to their death.";
+                  break;
               case "death.attack.player.item":
-                reason = "Was killed by " + packet.parameters[1];    						
+                reason = "Was killed by " + packet.parameters[1]; 
+                break; 
+              case "death.attack.lava":
+                reason = "Was playing with lava and died.";  
+                break;
               default:
                   reason = "General Death" +"  ---  "  + packet.message + " ----  " + packet.parameters;  
                   break;    
