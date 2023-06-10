@@ -226,6 +226,8 @@ return;
         case "Android":
         DeviceOS = "Android"; 
         break;
+        case "Orbis":
+            DeviceOS = "PS4";
         // just send default
         default: 
         DeviceOS = packet.device_os;
