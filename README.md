@@ -106,7 +106,3 @@
   <h2>Credits</h2>
   <p> Graphics created by Kvr#7119</p>
 </div>
-
-
-
-

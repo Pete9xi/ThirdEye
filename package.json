@@ -1,0 +1,33 @@
+{
+  "name": "thirdeye",
+  "version": "1.0.0",
+  "productName": "ThirdEye",
+  "description": "Two way chat between Discord and Minecraft Bedrock along with logs for Anticheats.",
+  "private": true,
+  "devDependencies": {
+      "prettier": "2.8.8",
+      "typescript": "5.0.4",
+      "bedrock-protocol": "^3.29.0",
+      "discord.js": "^14.11.0"
+  },
+  "prettier": {
+      "trailingComma": "es5",
+      "tabWidth": 4,
+      "useTabs": false,
+      "semi": true,
+      "printWidth": 250
+  },
+  "scripts": {
+    "format": "npx prettier --write --ignore-path .prettierignore ./",
+    "linux//": " --- BUILD (Linux) --- ",
+    "clean": "rm -rf build/",
+    "mkDirs": "mkdir -p build",
+    "copy:assets": "cp -R src/config.json src/Install_NodeJS_Modules.bat src/Run.bat src/whitelist.json LICENSE README.md build",
+    "build": "npm run clean; ./node_modules/typescript/bin/tsc -p tsconfig.json; npm run copy:assets",
+    "windows//": " --- BUILD (Windows) --- ",
+    "clean_win": "rd /s /q build>nul 2>&1|echo.>nul",
+    "mkdir_win": "@if exist build (rd /s /q build && mkdir build) else (mkdir build)",
+    "copy_assets_win": "@powershell Copy-Item -Path ^(\\\"src\\config.json\\\",\\\"src\\Install_NodeJS_Modules.bat\\\",\\\"src\\Run.bat\\\",\\\"src\\whitelist.json\\\",\\\"LICENSE\\\",\\\"README.md\\\"^) -Destination \"build\" -Recurse",
+    "build_win": "npm run clean_win && npm run mkdir_win 1>nul && node node_modules\\typescript\\bin\\tsc -p tsconfig.json && npm run copy_assets_win 1>nul"
+  }
+}
