@@ -1,4 +1,4 @@
-{
+export default {
     "token": "",
     "username": "",
     "isRealm": false,

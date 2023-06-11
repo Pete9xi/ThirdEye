@@ -1,13 +1,14 @@
-const fs = require("fs");
-const config = JSON.parse(fs.readFileSync("config.json", "utf-8"));
-let WhitelistRead = JSON.parse(fs.readFileSync("whitelist.json", "utf-8"));
-const uuid = require("uuid");
-const { Client, GatewayIntentBits, EmbedBuilder, messageLink } = require("discord.js");
+import { readFileSync, writeFileSync } from "fs";
+import { Client, GatewayIntentBits, EmbedBuilder, ColorResolvable, TextBasedChannel } from "discord.js";
+import { createClient, ClientOptions } from "bedrock-protocol";
+import config from "./config.js";
+
+let WhitelistRead = JSON.parse(readFileSync("whitelist.json", "utf-8"));
 const { MessageContent, GuildMessages, Guilds } = GatewayIntentBits;
-let channel = config.channel;
+let channel: string | TextBasedChannel = config.channel;
 const token = config.token;
-let paradoxChannel = config.paradoxLogsChannel;
-let systemCommandsChannel = config.systemCommandsChannel;
+let paradoxChannel: string | TextBasedChannel = config.paradoxLogsChannel;
+let systemCommandsChannel: string | TextBasedChannel = config.systemCommandsChannel;
 var paradoxLogs = config.ParadoxEnabled;
 const cmdPrefix = config.cmdPrefix;
 const logSystemCommands = config.logSystemCommands;
@@ -51,9 +52,6 @@ var DeviceOS;
 const client = new Client({ intents: [Guilds, GuildMessages, MessageContent] });
 client.login(token);
 
-// load Bedrock-Protocol
-const bedrock = require("bedrock-protocol");
-const { subscribe } = require("diagnostics_channel");
 let options;
 console.log("ThirdEye v1.0.0");
 // bot options
@@ -64,43 +62,58 @@ if (config.isRealm) {
         realms: {
             realmInvite: config.realmInviteCode,
         },
-    };
+    } as ClientOptions;
 } else {
     console.log("Connecting to a server");
     options = {
         host: config.ip,
         port: config.port,
         username: config.username,
-        offline: config.AuthType,
-    };
+        offline: config.AuthType
+    } as ClientOptions;
 }
 // join server
-const bot = bedrock.createClient(options);
+const bot = createClient(options);
 
 //const bot = bedrock.createClient(options)
 bot.on("spawn", () => {
-    console.log(`Bedrock bot logged in as ${bot.username}`);
+    console.log(`Bedrock bot logged in as ${config.username}`);
     if (config.useEmbed === true) {
         const msgEmbed = new EmbedBuilder()
-            .setColor(config.setColor)
+            .setColor(config.setColor as unknown as ColorResolvable)
             .setTitle(config.setTitle)
             .setDescription("[ThirdEye]:" + " Client is logged in.");
-        paradoxChannel.send({ embeds: [msgEmbed] });
+        if (typeof paradoxChannel === "string") {
+            console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 1`);
+        } else {
+            paradoxChannel.send({ embeds: [msgEmbed] });
+        }
     } else {
-        paradoxChannel.send(`[ThirdEye]: Client is logged in.`);
+        if (typeof paradoxChannel === "string") {
+            console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 2`);
+        } else {
+            paradoxChannel.send("[ThirdEye]: Client is logged in.");
+        }
     }
 });
 
 // when discord client is ready, send login message
 client.once("ready", (c) => {
     console.log(`Discord bot logged in as ${c.user.tag}`);
-    channel = client.channels.cache.get(channel);
-    if (paradoxLogs === true) {
-        paradoxChannel = client.channels.cache.get(paradoxChannel);
+    const channelObj = client.channels.cache.get(channel as unknown as string);
+    if (channelObj) {
+        channel = channelObj.id;
+    } else {
+        console.log(`I could not find the in-game channel in Discord. 1`);
     }
-    if (logSystemCommands === true) {
-        systemCommandsChannel = client.channels.cache.get(systemCommandsChannel);
-        console.log(`I could not find the channel the systemCommandsChannel Channel in discord.`);
+
+    if (paradoxLogs === true) {
+        const paradoxChannelObj = client.channels.cache.get(paradoxChannel as unknown as string);
+        if (paradoxChannelObj) {
+            paradoxChannel = paradoxChannelObj.id;
+        } else {
+            console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 3`);
+        }
     }
 
     if (!channel) {
@@ -119,45 +132,46 @@ client.on("messageCreate", (message) => {
     } else {
         //get the list if admins
         var admins = config.admins;
-        if (message.content.startsWith(cmdPrefix) && admins.includes(message.author.id) && message.channel.id === paradoxChannel.id) {
+        if (message.content.startsWith(cmdPrefix) && admins.includes(message.author.id) && typeof paradoxChannel !== "string" && message.channel.id === paradoxChannel.id) {
             console.log("command received: " + message.content + " From: " + message.author.id);
             bot.queue("text", {
                 type: "chat",
                 needs_translation: false,
-                source_name: bot.username,
+                source_name: config.username,
                 xuid: "",
                 platform_chat_id: "",
                 message: `${message.content}`,
             });
             return;
         }
-        if (message.content.startsWith("$") && admins.includes(message.author.id) && message.channel.id === paradoxChannel.id && !message.content.endsWith("-r") && !message.content.includes("$reboot")) {
+
+        if (message.content.startsWith("$") && admins.includes(message.author.id) && typeof paradoxChannel !== "string" && message.channel.id === paradoxChannel.id && !message.content.endsWith("-r") && !message.content.includes("$reboot")) {
             //add the user to the whitelist.
             var msg = message.content.replace("$", "");
             WhitelistRead.whitelist.push(msg);
-            fs.writeFileSync("whitelist.json", JSON.stringify(WhitelistRead, null, 2), "utf-8");
+            writeFileSync("whitelist.json", JSON.stringify(WhitelistRead, null, 2), "utf-8");
             console.log("Data has been written to the file successfully.");
-            WhitelistRead = JSON.parse(fs.readFileSync("whitelist.json", "utf-8"));
+            WhitelistRead = JSON.parse(readFileSync("whitelist.json", "utf-8"));
             console.log("Reloaded contents:", WhitelistRead.whitelist);
             return;
         }
-        if (message.content.startsWith("$") && admins.includes(message.author.id) && message.channel.id === paradoxChannel.id && message.content.endsWith("-r") && !message.content.includes("$reboot")) {
+        if (message.content.startsWith("$") && admins.includes(message.author.id) && typeof paradoxChannel !== "string" && message.channel.id === paradoxChannel.id && message.content.endsWith("-r") && !message.content.includes("$reboot")) {
             // remove the user from the whitelist.
             var msg = message.content.replace("$", "");
             var msgdel = msg.replace("-r", "");
             console.log("Removing: " + msgdel + "from the whitelist.");
-            WhitelistRead.whitelist = WhitelistRead.whitelist.filter((name) => name !== msgdel);
-            fs.writeFileSync("whitelist.json", JSON.stringify(WhitelistRead, null, 2), "utf-8");
+            WhitelistRead.whitelist = WhitelistRead.whitelist.filter((name: string) => name !== msgdel);
+            writeFileSync("whitelist.json", JSON.stringify(WhitelistRead, null, 2), "utf-8");
             console.log("Data has been written to the file successfully.");
-            WhitelistRead = JSON.parse(fs.readFileSync("whitelist.json", "utf-8"));
+            WhitelistRead = JSON.parse(readFileSync("whitelist.json", "utf-8"));
             console.log("Reloaded contents:", WhitelistRead.whitelist);
             return;
         }
-        if (message.content === "$reboot" && admins.includes(message.author.id) && message.channel.id === paradoxChannel.id) {
+        if (message.content === "$reboot" && admins.includes(message.author.id) && typeof paradoxChannel !== "string" && message.channel.id === paradoxChannel.id) {
             console.log("Forcing a re connect.");
             process.exit(); // Exit the script
         }
-        if (message.channel.id === channel.id) {
+        if (typeof channel !== "string" && message.channel.id === channel.id) {
             //We will then send a command to the server to trigger the message sent in discord.
             const cmd = `/tellraw @a {"rawtext":[{"text":"§8[§9Discord§8] §7${message.author.username}: §f${message.content}"}]}`;
             bot.queue("command_request", {
@@ -192,13 +206,21 @@ bot.on("add_player", (packet) => {
         });
         if (config.useEmbed === true) {
             const msgEmbed = new EmbedBuilder()
-                .setColor(config.setColor)
+                .setColor(config.setColor as unknown as ColorResolvable)
                 .setTitle(config.setTitle)
                 .setDescription("[Server] " + packet.username + ": Has been kicked as the device has been blacklisted:  " + packet.device_os);
-            channel.send({ embeds: [msgEmbed] });
+            if (typeof channel === "string") {
+                console.log(`I could not find the in-game channel in Discord. 2`);
+            } else {
+                channel.send({ embeds: [msgEmbed] });
+            }
             return;
         } else {
-            channel.send(`[Server] **${packet.username}** Has been kicked as the device has been blacklisted: ${packet.device_os}`);
+            if (typeof channel === "string") {
+                console.log(`I could not find the in-game channel in Discord. 3`);
+            } else {
+                channel.send(`[Server] **${packet.username}** Has been kicked as the device has been blacklisted: ${packet.device_os}`);
+            }
             return;
         }
     }
@@ -225,12 +247,21 @@ bot.on("add_player", (packet) => {
 
     if (config.useEmbed === true) {
         const msgEmbed = new EmbedBuilder()
-            .setColor(config.setColor)
+            .setColor(config.setColor as unknown as ColorResolvable)
             .setTitle(config.setTitle)
             .setDescription("[In Game] " + packet.username + ": Has joined the server using " + DeviceOS);
-        channel.send({ embeds: [msgEmbed] });
+        if (typeof channel === "string") {
+            console.log(`I could not find the in-game channel in Discord. 4`);
+        } else {
+            channel.send({ embeds: [msgEmbed] });
+        }
+        return;
     } else {
-        channel.send(`[In Game] **${packet.username}** Has joined the server using ${DeviceOS}`);
+        if (typeof channel === "string") {
+            console.log(`I could not find the in-game channel in Discord. 5`);
+        } else {
+            channel.send(`[In Game] **${packet.username}** Has joined the server using ${DeviceOS}`);
+        }
     }
 });
 bot.on("close", (packet) => {
@@ -243,19 +274,27 @@ bot.on("join", (packet) => {
     console.log("the client is ready to recieve game packets.");
 });
 bot.on("disconnect", (packet) => {
-    console.log("Client disconnected:", bot.uuid);
+    console.log("Client disconnected:", bot.entityId);
     let remainingTime = 2 * 60; // 2 minutes in seconds, allowing for slower servers to reboot in time ready for a new connection
     if (config.useEmbed === true) {
         const msgEmbed = new EmbedBuilder()
-            .setColor(config.setColor)
+            .setColor(config.setColor as unknown as ColorResolvable)
             .setTitle(config.setTitle)
             .setDescription("[ThirdEye]:" + " The client has lost connection to the server and will initiate a reboot in: " + remainingTime + " Seconds");
-        paradoxChannel.send({ embeds: [msgEmbed] });
+        if (typeof paradoxChannel === "string") {
+            console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 4`);
+        } else {
+            paradoxChannel.send({ embeds: [msgEmbed] });
+        }
     } else {
-        paradoxChannel.send(`[ThirdEye]: The client has lost connection to the server and will initiate a reboot in: **${remainingTime} ** Seconds`);
+        if (typeof paradoxChannel === "string") {
+            console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 5`);
+        } else {
+            paradoxChannel.send(`[ThirdEye]: The client has lost connection to the server and will initiate a reboot in: **${remainingTime} ** Seconds`);
+        }
     }
 
-    console.log(`Waiting for ${remainingTime} seconds before reconnecting client: ${client.uuid}`);
+    console.log(`Waiting for ${remainingTime} seconds before reconnecting client: ${client.application.name}`);
 
     const timer = setInterval(() => {
         remainingTime--;
@@ -263,12 +302,20 @@ bot.on("disconnect", (packet) => {
         if (remainingTime <= 5) {
             if (config.useEmbed === true) {
                 const msgEmbed = new EmbedBuilder()
-                    .setColor(config.setColor)
+                    .setColor(config.setColor as unknown as ColorResolvable)
                     .setTitle(config.setTitle)
                     .setDescription("[ThirdEye]:" + " Client is rebooting in: " + remainingTime + " Seconds");
-                paradoxChannel.send({ embeds: [msgEmbed] });
+                if (typeof paradoxChannel === "string") {
+                    console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 6`);
+                } else {
+                    paradoxChannel.send({ embeds: [msgEmbed] });
+                }
             } else {
-                paradoxChannel.send(`[ThirdEye]: Client is rebooting in: **${remainingTime} ** Seconds`);
+                if (typeof paradoxChannel === "string") {
+                    console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 7`);
+                } else {
+                    paradoxChannel.send(`[ThirdEye]: Client is rebooting in: **${remainingTime} ** Seconds`);
+                }
             }
         }
 
@@ -308,13 +355,21 @@ bot.on("text", (packet) => {
             correctedText = autoCorrect(obj.rawtext[0].text, correction);
             if (config.useEmbed === true) {
                 const msgEmbed = new EmbedBuilder()
-                    .setColor(config.setColor)
+                    .setColor(config.setColor as unknown as ColorResolvable)
                     .setTitle(config.setTitle)
                     .setDescription("[In Game] " + correctedText);
-                channel.send({ embeds: [msgEmbed] });
+                if (typeof channel === "string") {
+                    console.log(`I could not find the in-game channel in Discord. 6`);
+                } else {
+                    channel.send({ embeds: [msgEmbed] });
+                }
                 return;
             } else {
-                channel.send(`[In Game] ${paradoxMsg}`);
+                if (typeof channel === "string") {
+                    console.log(`I could not find the in-game channel in Discord. 7`);
+                } else {
+                    channel.send(`[In Game] ${correctedText}`);
+                }
                 return;
             }
 
@@ -322,13 +377,21 @@ bot.on("text", (packet) => {
         case "chat":
             if (config.useEmbed === true) {
                 const msgEmbed = new EmbedBuilder()
-                    .setColor(config.setColor)
+                    .setColor(config.setColor as unknown as ColorResolvable)
                     .setTitle(config.setTitle)
                     .setDescription("[In Game] " + packet.source_name + ": " + packet.message);
-                channel.send({ embeds: [msgEmbed] });
+                if (typeof channel === "string") {
+                    console.log(`I could not find the in-game channel in Discord. 8`);
+                } else {
+                    channel.send({ embeds: [msgEmbed] });
+                }
                 return;
             } else {
-                channel.send(`[In Game] **${packet.source_name}**: ${packet.message}`);
+                if (typeof channel === "string") {
+                    console.log(`I could not find the in-game channel in Discord. 9`);
+                } else {
+                    channel.send(`[In Game] **${packet.source_name}**: ${packet.message}`);
+                }
                 return;
             }
     }
@@ -368,29 +431,48 @@ bot.on("text", (packet) => {
 
                         // Send Part 1
                         let msgEmbed = new EmbedBuilder()
-                            .setColor(config.setColor)
+                            .setColor(config.setColor as unknown as ColorResolvable)
                             .setTitle(config.setTitle)
                             .setDescription("[In Game] " + moderationMessage);
-                        paradoxChannel.send({ embeds: [msgEmbed] });
+                        if (typeof paradoxChannel === "string") {
+                            console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 8`);
+                        } else {
+                            paradoxChannel.send({ embeds: [msgEmbed] });
+                        }
 
                         // Send Part 2
-                        let msgEmbed1 = new EmbedBuilder().setColor(config.setColor).setDescription("[In Game] " + optionalFeaturesMessage);
-                        paradoxChannel.send({ embeds: [msgEmbed1] });
+                        let msgEmbed1 = new EmbedBuilder().setColor(config.setColor as unknown as ColorResolvable).setDescription("[In Game] " + optionalFeaturesMessage);
+                        if (typeof paradoxChannel === "string") {
+                            console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 9`);
+                        } else {
+                            paradoxChannel.send({ embeds: [msgEmbed1] });
+                        }
                         // Send Part 3
-                        let msgEmbed2 = new EmbedBuilder().setColor(config.setColor).setDescription("[In Game] " + toolsUtilitiesMessage);
-                        paradoxChannel.send({ embeds: [msgEmbed2] });
+                        let msgEmbed2 = new EmbedBuilder().setColor(config.setColor as unknown as ColorResolvable).setDescription("[In Game] " + toolsUtilitiesMessage);
+                        if (typeof paradoxChannel === "string") {
+                            console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 10`);
+                        } else {
+                            paradoxChannel.send({ embeds: [msgEmbed2] });
+                        }
 
                         return;
                     }
 
                     const msgEmbed = new EmbedBuilder()
-                        .setColor(config.setColor)
+                        .setColor(config.setColor as unknown as ColorResolvable)
                         .setTitle(config.setTitle)
                         .setDescription("[In Game] " + correctedText);
-                    paradoxChannel.send({ embeds: [msgEmbed] });
-                    return;
+                    if (typeof paradoxChannel === "string") {
+                        console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 11`);
+                    } else {
+                        paradoxChannel.send({ embeds: [msgEmbed] });
+                    }
                 } else {
-                    paradoxChannel.send(`[In Game] Paradox: ${paradoxMsg}`);
+                    if (typeof paradoxChannel === "string") {
+                        console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 12`);
+                    } else {
+                        paradoxChannel.send(`[In Game] Paradox: ${paradoxMsg}`);
+                    }
                     return;
                 }
             }
@@ -400,13 +482,20 @@ bot.on("text", (packet) => {
                 correctedText = autoCorrect(paradoxMsg, correction);
                 if (config.useEmbed === true) {
                     const msgEmbed = new EmbedBuilder()
-                        .setColor(config.setColor)
+                        .setColor(config.setColor as unknown as ColorResolvable)
                         .setTitle(config.setTitle)
                         .setDescription("[In Game] " + correctedText);
-                    paradoxChannel.send({ embeds: [msgEmbed] });
-                    return;
+                    if (typeof paradoxChannel === "string") {
+                        console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 13`);
+                    } else {
+                        paradoxChannel.send({ embeds: [msgEmbed] });
+                    }
                 } else {
-                    paradoxChannel.send(`[In Game] Paradox: ${paradoxMsg}`);
+                    if (typeof paradoxChannel === "string") {
+                        console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 14`);
+                    } else {
+                        paradoxChannel.send(`[In Game] Paradox: ${paradoxMsg}`);
+                    }
                     return;
                 }
             }
@@ -415,13 +504,20 @@ bot.on("text", (packet) => {
                 correctedText = autoCorrect(paradoxMsg, correction);
                 if (config.useEmbed === true) {
                     const msgEmbed = new EmbedBuilder()
-                        .setColor(config.setColor)
+                        .setColor(config.setColor as unknown as ColorResolvable)
                         .setTitle(config.setTitle)
                         .setDescription("[In Game] " + correctedText);
-                    paradoxChannel.send({ embeds: [msgEmbed] });
-                    return;
+                    if (typeof paradoxChannel === "string") {
+                        console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 15`);
+                    } else {
+                        paradoxChannel.send({ embeds: [msgEmbed] });
+                    }
                 } else {
-                    paradoxChannel.send(`[In Game] Paradox: ${paradoxMsg}`);
+                    if (typeof paradoxChannel === "string") {
+                        console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 16`);
+                    } else {
+                        paradoxChannel.send(`[In Game] Paradox: ${paradoxMsg}`);
+                    }
                     return;
                 }
             }
@@ -432,13 +528,20 @@ bot.on("text", (packet) => {
             var paradoxMsg = obj.rawtext[0].text.replace("§r§4[§6Paradox§4]§r", "");
             if (config.useEmbed === true) {
                 const msgEmbed = new EmbedBuilder()
-                    .setColor(config.setColor)
+                    .setColor(config.setColor as unknown as ColorResolvable)
                     .setTitle(config.setTitle)
                     .setDescription("[In Game] " + "Paradox" + ": " + paradoxMsg);
-                channel.send({ embeds: [msgEmbed] });
-                return;
+                if (typeof channel === "string") {
+                    console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 17`);
+                } else {
+                    channel.send({ embeds: [msgEmbed] });
+                }
             } else {
-                channel.send(`[In Game] Paradox: ${paradoxMsg}`);
+                if (typeof channel === "string") {
+                    console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 18`);
+                } else {
+                    channel.send(`[In Game] Paradox: ${paradoxMsg}`);
+                }
                 return;
             }
         }
@@ -447,13 +550,20 @@ bot.on("text", (packet) => {
             correctedText = autoCorrect(paradoxMsg, correction);
             if (config.useEmbed === true) {
                 const msgEmbed = new EmbedBuilder()
-                    .setColor(config.setColor)
+                    .setColor(config.setColor as unknown as ColorResolvable)
                     .setTitle(config.setTitle)
                     .setDescription("[In Game] " + correctedText);
-                channel.send({ embeds: [msgEmbed] });
-                return;
+                if (typeof channel === "string") {
+                    console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 19`);
+                } else {
+                    channel.send({ embeds: [msgEmbed] });
+                }
             } else {
-                channel.send(`[In Game] Paradox: ${paradoxMsg}`);
+                if (typeof channel === "string") {
+                    console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 20`);
+                } else {
+                    channel.send(`[In Game] Paradox: ${paradoxMsg}`);
+                }
                 return;
             }
         }
@@ -462,13 +572,20 @@ bot.on("text", (packet) => {
             correctedText = autoCorrect(paradoxMsg, correction);
             if (config.useEmbed === true) {
                 const msgEmbed = new EmbedBuilder()
-                    .setColor(config.setColor)
+                    .setColor(config.setColor as unknown as ColorResolvable)
                     .setTitle(config.setTitle)
                     .setDescription("[In Game] " + correctedText);
-                channel.send({ embeds: [msgEmbed] });
-                return;
+                if (typeof channel === "string") {
+                    console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 21`);
+                } else {
+                    channel.send({ embeds: [msgEmbed] });
+                }
             } else {
-                channel.send(`[In Game] Paradox: ${paradoxMsg}`);
+                if (typeof channel === "string") {
+                    console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 22`);
+                } else {
+                    channel.send(`[In Game] Paradox: ${paradoxMsg}`);
+                }
                 return;
             }
         }
@@ -482,13 +599,20 @@ bot.on("text", (packet) => {
             var msg = packet.parameters + ": Has left the server.";
             var username = "Server";
             const msgEmbed = new EmbedBuilder()
-                .setColor(config.setColor)
+                .setColor(config.setColor as unknown as ColorResolvable)
                 .setTitle(config.setTitle)
                 .setDescription("[In Game] " + username + ": " + msg);
-            channel.send({ embeds: [msgEmbed] });
-            return;
+            if (typeof channel === "string") {
+                console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 23`);
+            } else {
+                channel.send({ embeds: [msgEmbed] });
+            }
         } else {
-            channel.send(`[In Game] **${username}**: ${msg}`);
+            if (typeof channel === "string") {
+                console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 24`);
+            } else {
+                channel.send(`[In Game] **${username}**: ${msg}`);
+            }
             return;
         }
     }
@@ -504,13 +628,20 @@ bot.on("text", (packet) => {
                 var msg = packet.parameters + ": Has joined the server.";
                 var username = "Server";
                 const msgEmbed = new EmbedBuilder()
-                    .setColor(config.setColor)
+                    .setColor(config.setColor as unknown as ColorResolvable)
                     .setTitle(config.setTitle)
                     .setDescription("[In Game] " + username + ": " + msg);
-                channel.send({ embeds: [msgEmbed] });
-                return;
+                if (typeof channel === "string") {
+                    console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 25`);
+                } else {
+                    channel.send({ embeds: [msgEmbed] });
+                }
             } else {
-                channel.send(`[In Game] **${username}**: ${msg}`);
+                if (typeof channel === "string") {
+                    console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 26`);
+                } else {
+                    channel.send(`[In Game] **${username}**: ${msg}`);
+                }
                 return;
             }
         }
@@ -527,7 +658,7 @@ bot.on("text", (packet) => {
         if (playername.includes("%entity")) {
             playername = "A tamed Animal ";
         }
-        reason = packet.parameters[1];
+        let reason = packet.parameters[1];
         // General death messages
         console.log(packet);
 
@@ -668,13 +799,20 @@ bot.on("text", (packet) => {
 
         if (config.useEmbed === true) {
             const msgEmbed = new EmbedBuilder()
-                .setColor(config.setColor)
+                .setColor(config.setColor as unknown as ColorResolvable)
                 .setTitle(config.setTitle)
                 .setDescription("[In Game] " + playername + ": " + reason);
-            channel.send({ embeds: [msgEmbed] });
-            return;
+            if (typeof channel === "string") {
+                console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 27`);
+            } else {
+                channel.send({ embeds: [msgEmbed] });
+            }
         } else {
-            channel.send(`[In Game] **${playername}**: ${reason}`);
+            if (typeof channel === "string") {
+                console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 28`);
+            } else {
+                channel.send(`[In Game] **${playername}**: ${reason}`);
+            }
             return;
         }
     }
@@ -815,21 +953,28 @@ bot.on("text", (packet) => {
         if (dontSendMessage === false) {
             if (config.useEmbed === true) {
                 const msgEmbed = new EmbedBuilder()
-                    .setColor(config.setColor)
+                    .setColor(config.setColor as unknown as ColorResolvable)
                     .setTitle(config.setTitle)
                     //.setDescription('[System Message] ' + 'playerName = '+ playerName +  ' successMessage = ' + successMessage + ' systemMessage = ' + systemMessage )
                     .setDescription("[System Message] " + playerName + " " + successMessage + " " + systemMessage);
-                systemCommandsChannel.send({ embeds: [msgEmbed] });
-                return;
+                if (typeof systemCommandsChannel === "string") {
+                    console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 29`);
+                } else {
+                    systemCommandsChannel.send({ embeds: [msgEmbed] });
+                }
             } else {
-                systemCommandsChannel.send(`[System Message] **${systemMessage}`);
+                if (typeof systemCommandsChannel === "string") {
+                    console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 30`);
+                } else {
+                    systemCommandsChannel.send(`[System Message] **${systemMessage}`);
+                }
                 return;
             }
         }
     }
 });
 
-function autoCorrect(text, correction) {
+function autoCorrect(text: string, correction: { [key: string]: string }): string {
     const reg = new RegExp(Object.keys(correction).join("|"), "g");
-    return text.replace(reg, (matched) => correction[matched]);
+    return text.replace(reg, (matched) => correction[matched as keyof typeof correction]);
 }

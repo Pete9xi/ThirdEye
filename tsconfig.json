@@ -14,7 +14,9 @@
         "useDefineForClassFields": true,
         "noImplicitReturns": true,
         "noUnusedLocals": true,
-        "noImplicitAny": true
+        "noImplicitAny": true,
+        "resolveJsonModule": true,
+        "allowSyntheticDefaultImports": true
     },
     "include": ["src"],
     "exclude": ["node_modules"]

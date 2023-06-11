@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "productName": "ThirdEye",
   "description": "Two way chat between Discord and Minecraft Bedrock along with logs for Anticheats.",
+  "type": "module",
   "private": true,
   "devDependencies": {
       "prettier": "2.8.8",
