@@ -343,10 +343,9 @@ bot.on("disconnect", (packet) => {
 bot.on("text", (packet) => {
     //Check the packet type.
     switch (packet.type) {
-        case "json_whisper":
+        case "json_whisper": {
             const msg = packet.message;
             const obj = JSON.parse(msg);
-            let correctedText;
             if (obj.rawtext[0].text.includes("Discord")) {
                 //dont send the message otherwise it will loop
                 break;
@@ -364,7 +363,7 @@ bot.on("text", (packet) => {
                 return;
             }
 
-            correctedText = autoCorrect(obj.rawtext[0].text, correction);
+            const correctedText = autoCorrect(obj.rawtext[0].text, correction);
             if (config.useEmbed === true) {
                 const msgEmbed = new EmbedBuilder()
                     .setColor(config.setColor)
@@ -383,9 +382,10 @@ bot.on("text", (packet) => {
                     return console.log("I could not find the in-game channel in Discord. 7");
                 }
             }
+        }
 
         // Normal chat messsage
-        case "chat":
+        case "chat": {
             if (config.useEmbed === true) {
                 const msgEmbed = new EmbedBuilder()
                     .setColor(config.setColor)
@@ -403,6 +403,7 @@ bot.on("text", (packet) => {
                     return console.log("I could not find the in-game channel in Discord. 9");
                 }
             }
+        }
     }
 });
 //Paradox Messages
@@ -828,7 +829,7 @@ bot.on("text", (packet) => {
         let systemMessage;
         let playerName;
         let successMessage;
-        let results = [];
+        const results = [];
         let dontSendMessage = false;
         if (packet.type === "json") {
             const obj = JSON.parse(packet.message);
