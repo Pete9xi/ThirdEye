@@ -248,7 +248,7 @@ bot.on("add_player", (packet) => {
             DeviceOS = "Android";
             break;
         case "Orbis":
-            DeviceOS = "PS4";
+            DeviceOS = "PlayStation";
         // just send default
         default:
             DeviceOS = packet.device_os;
