@@ -12,7 +12,7 @@ const paradoxChannel: string = config.paradoxLogsChannel;
 let paradoxChannelId: TextBasedChannel;
 const systemCommandsChannel: string = config.systemCommandsChannel;
 let systemCommandsChannelId: TextBasedChannel;
-var paradoxLogs = config.ParadoxEnabled;
+const paradoxLogs = config.ParadoxEnabled;
 const cmdPrefix = config.cmdPrefix;
 const logSystemCommands = config.logSystemCommands;
 const correction = {
@@ -49,7 +49,7 @@ const correction = {
 const excludedPackets = ["commands.tp.successVictim", "gameMode.changed", "commands.give.successRecipient"];
 
 //Device OS ids to be converted to more friendly names
-var DeviceOS;
+let DeviceOS;
 
 // create new discord client that can see what servers the bot is in, as well as the messages in those servers
 const client = new Client({ intents: [Guilds, GuildMessages, MessageContent] });
@@ -143,7 +143,7 @@ client.on("messageCreate", (message) => {
          */
     } else {
         //get the list if admins
-        var admins = config.admins;
+        const admins = config.admins;
         if (message.content.startsWith(cmdPrefix) && admins.includes(message.author.id) && paradoxChannel && message.channel.id === paradoxChannelId.id) {
             console.log("command received: " + message.content + " From: " + message.author.id);
             bot.queue("text", {
@@ -159,7 +159,7 @@ client.on("messageCreate", (message) => {
 
         if (message.content.startsWith("$") && admins.includes(message.author.id) && paradoxChannel && message.channel.id === paradoxChannelId.id && !message.content.endsWith("-r") && !message.content.includes("$reboot")) {
             //add the user to the whitelist.
-            var msg = message.content.replace("$", "");
+            const msg = message.content.replace("$", "");
             WhitelistRead.whitelist.push(msg);
             writeFileSync("whitelist.json", JSON.stringify(WhitelistRead, null, 2), "utf-8");
             console.log("Data has been written to the file successfully.");
@@ -169,8 +169,8 @@ client.on("messageCreate", (message) => {
         }
         if (message.content.startsWith("$") && admins.includes(message.author.id) && paradoxChannel && message.channel.id === paradoxChannelId.id && message.content.endsWith("-r") && !message.content.includes("$reboot")) {
             // remove the user from the whitelist.
-            var msg = message.content.replace("$", "");
-            var msgdel = msg.replace("-r", "");
+            const msg = message.content.replace("$", "");
+            const msgdel = msg.replace("-r", "");
             console.log("Removing: " + msgdel + "from the whitelist.");
             WhitelistRead.whitelist = WhitelistRead.whitelist.filter((name: string) => name !== msgdel);
             writeFileSync("whitelist.json", JSON.stringify(WhitelistRead, null, 2), "utf-8");
@@ -202,7 +202,7 @@ client.on("messageCreate", (message) => {
 
 //Send connecting players device os to discord.
 bot.on("add_player", (packet) => {
-    var Whitelist = WhitelistRead.whitelist;
+    const Whitelist = WhitelistRead.whitelist;
     if (config.blacklistDeviceTypes.includes(packet.device_os) && !Whitelist.includes(packet.username)) {
         //Kick the client connecting bye bye
         const cmd = `/kick ${packet.username} device is blacklisted.`;
@@ -345,8 +345,8 @@ bot.on("text", (packet) => {
     switch (packet.type) {
         case "json_whisper":
             const msg = packet.message;
-            var obj = JSON.parse(msg);
-            var correctedText;
+            const obj = JSON.parse(msg);
+            let correctedText;
             if (obj.rawtext[0].text.includes("Discord")) {
                 //dont send the message otherwise it will loop
                 break;
@@ -415,9 +415,9 @@ bot.on("text", (packet) => {
         packet.message.includes("§l§6[§4Paradox AntiCheat Command Help§6]")
     ) {
         const msg = packet.message;
-        var obj = JSON.parse(msg);
-        var paradoxMsg;
-        var correctedText;
+        const obj = JSON.parse(msg);
+        let paradoxMsg;
+        let correctedText;
         //Is a seprate logging channel enabled to send logs to that channel?
         if (paradoxLogs === true) {
             if (obj.rawtext[0].text.includes("§r§4[§6Paradox§4]§r") || obj.rawtext[0].text.includes("§l§6[§4Paradox§6]§r") || obj.rawtext[0].text.includes("§l§6[§4Paradox AntiCheat Command Help§6]")) {
@@ -533,7 +533,7 @@ bot.on("text", (packet) => {
 
         //if not then just send it to the normal channel
         if (obj.rawtext[0].text.startsWith("§r§4[§6Paradox§4]§r")) {
-            var paradoxMsg = obj.rawtext[0].text.replace("§r§4[§6Paradox§4]§r", "");
+            const paradoxMsg = obj.rawtext[0].text.replace("§r§4[§6Paradox§4]§r", "");
             if (config.useEmbed === true) {
                 const msgEmbed = new EmbedBuilder()
                     .setColor(config.setColor)
@@ -600,9 +600,9 @@ bot.on("text", (packet) => {
 bot.on("text", (packet) => {
     //Check for player leaving and report thi back to discord.
     if (packet.message.includes("§e%multiplayer.player.left")) {
+        const msg = packet.parameters + ": Has left the server.";
+        const username = "Server";
         if (config.useEmbed === true) {
-            var msg = packet.parameters + ": Has left the server.";
-            var username = "Server";
             const msgEmbed = new EmbedBuilder()
                 .setColor(config.setColor)
                 .setTitle(config.setTitle)
@@ -628,9 +628,9 @@ bot.on("text", (packet) => {
         in the event that the packet is not sent by the server allow the user to enable this message.
         */
         if (config.useSystemPlayerJoinMessage === true) {
+            const msg = packet.parameters + ": Has joined the server.";
+            const username = "Server";
             if (config.useEmbed === true) {
-                var msg = packet.parameters + ": Has joined the server.";
-                var username = "Server";
                 const msgEmbed = new EmbedBuilder()
                     .setColor(config.setColor)
                     .setTitle(config.setTitle)
@@ -825,12 +825,13 @@ bot.on("text", (packet) => {
     if (logSystemCommands === false) {
         //check to see if logging we need to log system commands to discord.
     } else {
-        var systemMessage;
-        var playerName;
-        var successMessage;
-        var dontSendMessage = false;
+        let systemMessage;
+        let playerName;
+        let successMessage;
+        let results = [];
+        let dontSendMessage = false;
         if (packet.type === "json") {
-            var obj = JSON.parse(packet.message);
+            const obj = JSON.parse(packet.message);
             if (excludedPackets.some((excludedPacket) => packet.message.includes(excludedPacket))) {
                 return;
                 // we want to exclude this packet
@@ -839,9 +840,8 @@ bot.on("text", (packet) => {
 
             // loop through the array to get the the values.
             if (obj.rawtext[3] && obj.rawtext[3].with && obj.rawtext[3].with.rawtext && obj.rawtext[3].with.rawtext[0]) {
-                var rawtextArray = obj.rawtext[3].with.rawtext;
-                var results = [];
-                for (var i = 0; i < rawtextArray.length; i++) {
+                const rawtextArray = obj.rawtext[3].with.rawtext;
+                for (let i = 0; i < rawtextArray.length; i++) {
                     if (rawtextArray[i].text) {
                         results.push(rawtextArray[i].text);
                     }
