@@ -299,9 +299,9 @@ bot.on("disconnect", (packet) => {
         }
     } else {
         if (typeof paradoxChannelId === "object") {
-            return paradoxChannelId.send(`[ThirdEye]: The client has lost connection to the server and will initiate a reboot in: **${remainingTime} ** Seconds`);
+            paradoxChannelId.send(`[ThirdEye]: The client has lost connection to the server and will initiate a reboot in: **${remainingTime} ** Seconds`);
         } else {
-            return console.log("I could not find the paradoxLogs channel in Discord. 5");
+            console.log("I could not find the paradoxLogs channel in Discord. 5");
         }
     }
 
