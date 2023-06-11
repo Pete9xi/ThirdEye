@@ -274,13 +274,13 @@ bot.on("add_player", (packet) => {
         }
     }
 });
-bot.on("close", (packet) => {
+bot.on("close", () => {
     console.log(" The server has closed the connection.");
 });
-bot.on("login", (packet) => {
+bot.on("login", () => {
     console.log("client has been authenticated by the server.");
 });
-bot.on("join", (packet) => {
+bot.on("join", () => {
     console.log("the client is ready to recieve game packets.");
 });
 bot.on("disconnect", (packet) => {
