@@ -22,6 +22,15 @@
         "**/node_modules": true
     },
     "cSpell.words": [
-        "setworldspawn"
+        "dont",
+        "gamemode",
+        "ingame",
+        "msgdel",
+        "opped",
+        "Orbis",
+        "rawtext",
+        "setworldspawn",
+        "tellraw",
+        "xuid"
     ]
 }
