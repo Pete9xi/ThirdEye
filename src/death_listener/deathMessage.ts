@@ -11,7 +11,7 @@ export function setupDeathListener(bot: Client, channelId: TextBasedChannel) {
                 playername = "A tamed Animal";
             }
 
-            let reason = getDeathReason(packet.message, packet.parameters[1]);
+            const reason = getDeathReason(packet.message, packet.parameters[1]);
 
             sendDeathMessage(channelId, playername, reason);
         }
