@@ -676,140 +676,150 @@ bot.on("text", (packet) => {
                 return;
                 // we want to exclude this packet
             }
-            playerName = obj.rawtext[1].translate;
+            //check to make sure the packet contains the players name if not we set it as server.
+            if (obj.rawtext && obj.rawtext[1] && obj.rawtext[1].translate) {
+                playerName = obj.rawtext[1].translate;
+            } else {
+                playerName = "Server";
+            }
 
             // loop through the array to get the the values.
             if (obj.rawtext[3] && obj.rawtext[3].with && obj.rawtext[3].with.rawtext && obj.rawtext[3].with.rawtext[0]) {
                 const rawtextArray = obj.rawtext[3].with.rawtext;
+
                 for (let i = 0; i < rawtextArray.length; i++) {
                     if (rawtextArray[i].text) {
                         results.push(rawtextArray[i].text);
                     }
                 }
+
                 systemMessage = results;
             } else {
                 systemMessage = "";
             }
-            successMessage = obj.rawtext[3].translate;
-        } else {
-            dontSendMessage = true;
-        }
 
-        switch (successMessage) {
-            case "commands.time.set":
-                successMessage = "set time";
-                break;
-            case "commands.gamemode.success.self":
-                successMessage = "Set their gamemode ";
-                switch (results[0]) {
-                    case "%createWorldScreen.gameMode.creative":
-                        systemMessage = "to Creative";
-                        break;
-                    case "%createWorldScreen.gameMode.survival":
-                        systemMessage = "to Survival";
-                        break;
-                    case "%createWorldScreen.gameMode.adventure":
-                        systemMessage = "to Adventure";
-                        break;
-                    case "%createWorldScreen.gameMode.spectator":
-                        systemMessage = "to Spectator";
-                        break;
-                }
-                break;
-
-            case "commands.gamemode.success.other":
-                successMessage = "Has Set " + results[1] + " gamemode ";
-                switch (results[0]) {
-                    case "%createWorldScreen.gameMode.creative":
-                        systemMessage = "to Creative";
-                        break;
-                    case "%createWorldScreen.gameMode.survival":
-                        systemMessage = "to Survival";
-                        break;
-                    case "%createWorldScreen.gameMode.adventure":
-                        systemMessage = "to Adventure";
-                        break;
-                    case "%createWorldScreen.gameMode.spectator":
-                        systemMessage = "to Spectator";
-                        break;
-                }
-                break;
-
-            case "commands.weather.clear":
-                systemMessage = "Clear";
-                successMessage = "Set the weather to ";
-                break;
-            case "commands.weather.rain":
-                systemMessage = "Rain";
-                successMessage = "Set the weather to ";
-                break;
-            case "commands.weather.thunder":
-                systemMessage = "Thunder";
-                successMessage = "Set the weather to ";
-                break;
-            case "commands.difficulty.success":
-                successMessage = "Set the worlds difficulty to ";
-                switch (systemMessage) {
-                    case "PEACEFUL":
-                        systemMessage = "Peaceful";
-                        break;
-                    case "EASY":
-                        systemMessage = "Easy";
-                        break;
-                    case "NORMAL":
-                        systemMessage = "Normal";
-                        break;
-                    case "HARD":
-                        systemMessage = "Hard";
-                        break;
-                }
-                break;
-            case "commands.setworldspawn.success":
-                successMessage = "Set world spawn to: ";
-                systemMessage = "X: " + results[0] + " Y: " + results[1] + " Z: " + results[2];
-                break;
-            case "commands.tp.success":
-                successMessage = " has teleported: ";
-                systemMessage = results[0] + " to: " + results[1];
-                break;
-            case "commands.give.success":
-                successMessage = "Has given: ";
-                systemMessage = results[2] + " item: " + results[0] + ", amount: " + results[1];
-                break;
-            case "commands.enchant.success":
-                successMessage = " Has enchanted an item for: ";
-                systemMessage = results[0];
-                break;
-            case "commands.clear.success":
-                successMessage = "Has cleared: " + results[0] + " inventory removing a total of: ";
-                systemMessage = results[1] + " items";
-                break;
-            case "commands.effect.success":
-                successMessage = "has given an effect to " + results[2];
-                let potionResult = results[0];
-                potionResult = potionResult.replace(/%potion|\./g, "");
-                systemMessage = "effect type: " + potionResult + " duration: " + results[3] + " multiplier: " + results[1];
-                break;
-            default:
-        }
-        //Send packet to the discord channel.
-        if (dontSendMessage === false) {
-            if (config.useEmbed === true) {
-                const msgEmbed = new EmbedBuilder()
-                    .setColor(config.setColor)
-                    .setTitle(config.setTitle)
-                    //.setDescription('[System Message] ' + 'playerName = '+ playerName +  ' successMessage = ' + successMessage + ' systemMessage = ' + systemMessage )
-                    .setDescription("[System Message] " + playerName + " " + successMessage + " " + systemMessage);
-                if (typeof systemCommandsChannelId === "object") {
-                    systemCommandsChannelId.send({ embeds: [msgEmbed] });
-                } else {
-                    console.log("I could not find the systemCommands channel in Discord. 1");
-                }
+            if (obj.rawtext[3] && obj.rawtext[3].translate) {
+                successMessage = obj.rawtext[3].translate;
             } else {
-                if (typeof systemCommandsChannelId === "object") {
-                    systemCommandsChannelId.send(`[System Message] **${systemMessage}`);
+                dontSendMessage = true;
+            }
+
+            switch (successMessage) {
+                case "commands.time.set":
+                    successMessage = "set time";
+                    break;
+                case "commands.gamemode.success.self":
+                    successMessage = "Set their gamemode ";
+                    switch (results[0]) {
+                        case "%createWorldScreen.gameMode.creative":
+                            systemMessage = "to Creative";
+                            break;
+                        case "%createWorldScreen.gameMode.survival":
+                            systemMessage = "to Survival";
+                            break;
+                        case "%createWorldScreen.gameMode.adventure":
+                            systemMessage = "to Adventure";
+                            break;
+                        case "%createWorldScreen.gameMode.spectator":
+                            systemMessage = "to Spectator";
+                            break;
+                    }
+                    break;
+
+                case "commands.gamemode.success.other":
+                    successMessage = "Has Set " + results[1] + " gamemode ";
+                    switch (results[0]) {
+                        case "%createWorldScreen.gameMode.creative":
+                            systemMessage = "to Creative";
+                            break;
+                        case "%createWorldScreen.gameMode.survival":
+                            systemMessage = "to Survival";
+                            break;
+                        case "%createWorldScreen.gameMode.adventure":
+                            systemMessage = "to Adventure";
+                            break;
+                        case "%createWorldScreen.gameMode.spectator":
+                            systemMessage = "to Spectator";
+                            break;
+                    }
+                    break;
+
+                case "commands.weather.clear":
+                    systemMessage = "Clear";
+                    successMessage = "Set the weather to ";
+                    break;
+                case "commands.weather.rain":
+                    systemMessage = "Rain";
+                    successMessage = "Set the weather to ";
+                    break;
+                case "commands.weather.thunder":
+                    systemMessage = "Thunder";
+                    successMessage = "Set the weather to ";
+                    break;
+                case "commands.difficulty.success":
+                    successMessage = "Set the worlds difficulty to ";
+                    switch (systemMessage) {
+                        case "PEACEFUL":
+                            systemMessage = "Peaceful";
+                            break;
+                        case "EASY":
+                            systemMessage = "Easy";
+                            break;
+                        case "NORMAL":
+                            systemMessage = "Normal";
+                            break;
+                        case "HARD":
+                            systemMessage = "Hard";
+                            break;
+                    }
+                    break;
+                case "commands.setworldspawn.success":
+                    successMessage = "Set world spawn to: ";
+                    systemMessage = "X: " + results[0] + " Y: " + results[1] + " Z: " + results[2];
+                    break;
+                case "commands.tp.success":
+                    successMessage = " has teleported: ";
+                    systemMessage = results[0] + " to: " + results[1];
+                    break;
+                case "commands.give.success":
+                    successMessage = "Has given: ";
+                    systemMessage = results[2] + " item: " + results[0] + ", amount: " + results[1];
+                    break;
+                case "commands.enchant.success":
+                    successMessage = " Has enchanted an item for: ";
+                    systemMessage = results[0];
+                    break;
+                case "commands.clear.success":
+                    successMessage = "Has cleared: " + results[0] + " inventory removing a total of: ";
+                    systemMessage = results[1] + " items";
+                    break;
+                case "commands.effect.success":
+                    successMessage = "has given an effect to " + results[2];
+                    let potionResult = results[0];
+                    potionResult = potionResult.replace(/%potion|\./g, "");
+                    systemMessage = "effect type: " + potionResult + " duration: " + results[3] + " multiplier: " + results[1];
+                    break;
+                default:
+            }
+            //Send packet to the discord channel.
+            if (dontSendMessage === false) {
+                if (config.useEmbed === true) {
+                    const msgEmbed = new EmbedBuilder()
+                        .setColor(config.setColor)
+                        .setTitle(config.setTitle)
+                        //.setDescription('[System Message] ' + 'playerName = '+ playerName +  ' successMessage = ' + successMessage + ' systemMessage = ' + systemMessage )
+                        .setDescription("[System Message] " + playerName + " " + successMessage + " " + systemMessage);
+                    if (typeof systemCommandsChannelId === "object") {
+                        systemCommandsChannelId.send({ embeds: [msgEmbed] });
+                    } else {
+                        console.log("I could not find the systemCommands channel in Discord. 1");
+                    }
                 } else {
-                    console.log("I could not find the systemCommands channel in Discord. 2");
+                    if (typeof systemCommandsChannelId === "object") {
+                        systemCommandsChannelId.send(`[System Message] **${systemMessage}`);
+                    } else {
+                        console.log("I could not find the systemCommands channel in Discord. 2");
+                    }
                 }
             }
         }
