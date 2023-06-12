@@ -825,7 +825,7 @@ bot.on("update_abilities", (packet) => {
     clientPermissionLevel = permissionLevel;
     //if it has op put it into creative.
     if (permissionLevel === "operator") {
-        const cmd = `/gamemode @s creaive`;
+        const cmd = `/gamemode @s creative`;
         bot.queue("command_request", {
             command: cmd,
             origin: {
