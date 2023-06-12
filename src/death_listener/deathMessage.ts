@@ -84,13 +84,13 @@ function sendDeathMessage(channelId: TextBasedChannel, playername: string, reaso
             .setColor(config.setColor)
             .setTitle(config.setTitle)
             .setDescription("[In Game] " + playername + ": " + reason);
-        if (typeof channelId === "object" && typeof channelId.send === "function") {
+        if (typeof channelId === "object") {
             channelId.send({ embeds: [msgEmbed] });
         } else {
             console.log("I could not find the in-game channel in Discord.");
         }
     } else {
-        if (typeof channelId === "object" && typeof channelId.send === "function") {
+        if (typeof channelId === "object") {
             channelId.send(`[In Game] **${playername}**: ${reason}`);
         } else {
             console.log("I could not find the in-game channel in Discord.");
