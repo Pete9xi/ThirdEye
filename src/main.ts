@@ -143,8 +143,8 @@ client.once("ready", (c) => {
 
 client.on("messageCreate", (message) => {
     if (message.author.bot === true) {
-        /**This check will prevent a loop back mesasge.
-         * If the incoming message is from a bot it will ingore it.
+        /**This check will prevent a loop back message.
+         * If the incoming message is from a bot it will ignore it.
          */
     } else {
         //get the list if admins
@@ -286,7 +286,7 @@ bot.on("login", () => {
     console.log("client has been authenticated by the server.");
 });
 bot.on("join", () => {
-    console.log("the client is ready to recieve game packets.");
+    console.log("the client is ready to receive game packets.");
 });
 bot.on("disconnect", (packet) => {
     console.log("Client disconnected:", bot.entityId);
@@ -352,7 +352,7 @@ bot.on("text", (packet) => {
             const msg = packet.message;
             const obj = JSON.parse(msg);
             if (obj.rawtext[0].text.includes("Discord")) {
-                //dont send the message otherwise it will loop
+                //don't send the message otherwise it will loop
                 break;
             }
             //continue to send the message to discord
@@ -389,7 +389,7 @@ bot.on("text", (packet) => {
             }
         }
 
-        // Normal chat messsage
+        // Normal chat message
         case "chat": {
             if (config.useEmbed === true) {
                 const msgEmbed = new EmbedBuilder()
@@ -424,7 +424,7 @@ bot.on("text", (packet) => {
         const obj = JSON.parse(msg);
         let paradoxMsg;
         let correctedText;
-        //Is a seprate logging channel enabled to send logs to that channel?
+        //Is a separate logging channel enabled to send logs to that channel?
         if (paradoxLogs === true) {
             if (obj.rawtext[0].text.includes("§r§4[§6Paradox§4]§r") || obj.rawtext[0].text.includes("§l§6[§4Paradox§6]§r") || obj.rawtext[0].text.includes("§l§6[§4Paradox AntiCheat Command Help§6]")) {
                 paradoxMsg = obj.rawtext[0].text;
@@ -435,7 +435,7 @@ bot.on("text", (packet) => {
                         // Extract the messages for each category
                         const moderationStartIndex = correctedText.indexOf("[Moderation Commands]");
                         const optionalFeaturesStartIndex = correctedText.indexOf("[Optional Features]");
-                        const toolsUtilitiesStartIndex = correctedText.indexOf("[Tools and Utilites]");
+                        const toolsUtilitiesStartIndex = correctedText.indexOf("[Tools and Utilities]");
 
                         const moderationEndIndex = optionalFeaturesStartIndex !== -1 ? optionalFeaturesStartIndex : toolsUtilitiesStartIndex;
                         const optionalFeaturesEndIndex = toolsUtilitiesStartIndex !== -1 ? toolsUtilitiesStartIndex : correctedText.length;
@@ -630,7 +630,7 @@ bot.on("text", (packet) => {
 // Handling the multiplayer.player.joined system message
 bot.on("text", (packet) => {
     if (packet.message.includes("§e%multiplayer.player.joined")) {
-        /* we dont want to duplicate the join message as this is handled in the add_player packet.
+        /* we don't want to duplicate the join message as this is handled in the add_player packet.
         in the event that the packet is not sent by the server allow the user to enable this message.
         */
         if (config.useSystemPlayerJoinMessage === true) {
