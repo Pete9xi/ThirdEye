@@ -36,6 +36,7 @@ function getDeathReason(message: string, parameter: string): string {
         "death.attack.fall": "Fell to their death.",
         "death.attack.player.item": "Was killed by " + parameter,
         "death.attack.lava": "Was playing with lava and died.",
+        "death.attack.generic": "was killed by:" + parameter,
         default: "General Death - " + message + " - " + parameter,
     };
 
