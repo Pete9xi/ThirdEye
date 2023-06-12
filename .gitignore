@@ -1,2 +1,3 @@
 # Ignore the main node_modules directory
 node_modules/
+build/

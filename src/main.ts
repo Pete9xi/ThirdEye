@@ -16,6 +16,8 @@ let systemCommandsChannelId: TextBasedChannel;
 const paradoxLogs = config.ParadoxEnabled;
 const cmdPrefix = config.cmdPrefix;
 const logSystemCommands = config.logSystemCommands;
+var clientPermissionLevel;
+var notifyDiscordPermissionLevel: boolean;
 const correction = {
     "§r§4[§6Paradox§4]§r": "Paradox",
     "§4[§6Paradox§4]": "Paradox",
@@ -813,6 +815,53 @@ bot.on("text", (packet) => {
         }
     }
 });
+bot.on("update_abilities", (packet) => {
+    const entityUniqueId = packet.entity_unique_id;
+    const permissionLevel = packet.permission_level;
+    console.log("Received Update Abilities Packet:");
+    console.log("Entity Unique ID:", entityUniqueId);
+    console.log("Permission Level:", permissionLevel);
+    //update the var clientPermissionLevel.
+    clientPermissionLevel = permissionLevel;
+    //if it has op put it into creative.
+    if (permissionLevel === "operator") {
+        const cmd = `/gamemode @s creaive`;
+        bot.queue("command_request", {
+            command: cmd,
+            origin: {
+                type: "player",
+                uuid: "",
+                request_id: "",
+            },
+            internal: false,
+            version: 52,
+        });
+        console.log("The bot has tried to put its self into creative.");
+    }
+});
+if (clientPermissionLevel === "member") {
+    /* the client needs to be opped in this case will notify the user
+     * the user that they need to op the client via the server console.
+     */
+    notifyDiscordPermissionLevel = true;
+}
+if (clientPermissionLevel === "operator") {
+    notifyDiscordPermissionLevel = false;
+}
+//Send message to discord.
+function sendMessageToDiscord() {
+    if (notifyDiscordPermissionLevel === true) {
+        if (typeof systemCommandsChannelId === "object") {
+            const msgEmbedOp = new EmbedBuilder().setColor(0xffff00).setTitle(config.setTitle).setDescription("[ThirdEye]: You need to op the bot via the server console.");
+            console.log("sending message to discord to op the bot.");
+            channelId.send({ embeds: [msgEmbedOp] });
+        } else {
+            console.log("I could not find the channel in Discord. in sendMessageToDiscord()");
+        }
+    }
+}
+//send the message every 60 seconds
+setInterval(sendMessageToDiscord, 60000);
 
 function autoCorrect(text: string, correction: { [key: string]: string }): string {
     const reg = new RegExp(Object.keys(correction).join("|"), "g");
