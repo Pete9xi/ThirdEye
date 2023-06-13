@@ -109,6 +109,8 @@ client.once("ready", (c) => {
     const channelObj = client.channels.cache.get(channel);
     if (channelObj) {
         channelId = channelObj as TextBasedChannel;
+        // Call function if channel exists
+        setupDeathListener(bot, channelId);
     } else {
         console.log(`I could not find the in-game channel in Discord. 1`);
     }
@@ -137,8 +139,6 @@ client.once("ready", (c) => {
     if (!paradoxChannel) {
         console.log(`I could not find the paradoxLogs Channel in Discord. Not Ready?`);
     }
-
-    setupDeathListener(bot, channelId);
 });
 
 client.on("messageCreate", (message) => {
