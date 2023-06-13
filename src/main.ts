@@ -3,8 +3,8 @@ import { Client, GatewayIntentBits, EmbedBuilder, TextBasedChannel } from "disco
 import { createClient, ClientOptions } from "bedrock-protocol";
 import config from "./config.js";
 import { setupDeathListener } from "./death_listener/deathMessage.js";
+import { addPlayerListener } from "./player_device_listener/playerDeviceLogging.js";
 
-let WhitelistRead = JSON.parse(readFileSync("whitelist.json", "utf-8"));
 const { MessageContent, GuildMessages, Guilds } = GatewayIntentBits;
 const channel: string = config.channel;
 let channelId: TextBasedChannel;
@@ -51,8 +51,7 @@ const correction = {
 
 const excludedPackets = ["commands.tp.successVictim", "gameMode.changed", "commands.give.successRecipient"];
 
-//Device OS ids to be converted to more friendly names
-let DeviceOS;
+let WhitelistRead = JSON.parse(readFileSync("whitelist.json", "utf-8"));
 
 // create new discord client that can see what servers the bot is in, as well as the messages in those servers
 const client = new Client({ intents: [Guilds, GuildMessages, MessageContent] });
@@ -111,6 +110,7 @@ client.once("ready", (c) => {
         channelId = channelObj as TextBasedChannel;
         // Call function if channel exists
         setupDeathListener(bot, channelId);
+        addPlayerListener(bot, channelId, WhitelistRead);
     } else {
         console.log(`I could not find the in-game channel in Discord. 1`);
     }
@@ -205,80 +205,6 @@ client.on("messageCreate", (message) => {
     }
 });
 
-//Send connecting players device os to discord.
-bot.on("add_player", (packet) => {
-    const Whitelist = WhitelistRead.whitelist;
-    if (config.blacklistDeviceTypes.includes(packet.device_os) && !Whitelist.includes(packet.username)) {
-        //Kick the client connecting bye bye
-        const cmd = `/kick ${packet.username} device is blacklisted.`;
-        bot.queue("command_request", {
-            command: cmd,
-            origin: {
-                type: "player",
-                uuid: "",
-                request_id: "",
-            },
-            internal: false,
-            version: 52,
-        });
-        if (config.useEmbed === true) {
-            const msgEmbed = new EmbedBuilder()
-                .setColor(config.setColor)
-                .setTitle(config.setTitle)
-                .setDescription("[Server] " + packet.username + ": Has been kicked as the device has been blacklisted:  " + packet.device_os);
-            if (typeof channelId === "object") {
-                return channelId.send({ embeds: [msgEmbed] });
-            } else {
-                return console.log("I could not find the in-game channel in Discord. 2");
-            }
-        } else {
-            if (typeof channelId === "object") {
-                return channelId.send(`[Server] **${packet.username}** Has been kicked as the device has been blacklisted: ${packet.device_os}`);
-            } else {
-                return console.log("I could not find the in-game channel in Discord. 3");
-            }
-        }
-    }
-    switch (packet.device_os) {
-        case "Win10":
-            DeviceOS = "Windows PC";
-            break;
-        case "IOS":
-            DeviceOS = "Apple Device";
-            break;
-        case "Nintendo":
-            DeviceOS = "Nintendo Switch";
-            break;
-        case "Android":
-            DeviceOS = "Android";
-            break;
-        case "Orbis":
-            DeviceOS = "PlayStation";
-        // just send default
-        default:
-            DeviceOS = packet.device_os;
-            console.log("DeviceOS defaulted to packet.device_os");
-    }
-
-    if (config.useEmbed === true) {
-        const msgEmbed = new EmbedBuilder()
-            .setColor(config.setColor)
-            .setTitle(config.setTitle)
-            .setDescription("[In Game] " + packet.username + ": Has joined the server using " + DeviceOS);
-
-        if (typeof channelId === "object") {
-            return channelId.send({ embeds: [msgEmbed] });
-        } else {
-            return console.log("I could not find the in-game channel in Discord. 2");
-        }
-    } else {
-        if (typeof channelId === "object") {
-            return channelId.send(`[In Game] **${packet.username}** Has joined the server using ${DeviceOS}`);
-        } else {
-            return console.log("I could not find the in-game channel in Discord. 3");
-        }
-    }
-});
 bot.on("close", () => {
     console.log(" The server has closed the connection.");
 });
