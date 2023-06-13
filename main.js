@@ -1,11 +1,11 @@
 const fs = require('fs')
-const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'))
 const uuid = require('uuid');
 const { Client, GatewayIntentBits, EmbedBuilder, messageLink } = require('discord.js')
 const { MessageContent, GuildMessages, Guilds, } = GatewayIntentBits
 let WhitelistRead = JSON.parse(fs.readFileSync('whitelist.json', 'utf-8'))
 
-// defined config settings
+// define config settings here, looks better
+const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'))
 let channel = config.channel
 const token = config.token
 let paradoxChannel = config.paradoxLogsChannel
@@ -51,7 +51,7 @@ const excludedPackets = [
 	"commands.give.successRecipient"
 ];
 
-//Device OS ids to be converted to more friendly names
+// Device OS ids to be converted to more friendly names
 var DeviceOS;
 
 // create new discord client that can see what servers the bot is in, as well as the messages in those servers
@@ -65,7 +65,7 @@ let options
 console.log("ThirdEye v1.0.0");
 // bot options
 if (config.isRealm) {
-	//Handel the realm config here!
+	// Handle the realm config here
 	console.log("Connecting to a realm");
 	options = {
 		realms: {
@@ -86,7 +86,7 @@ else {
 // join server
 const bot = bedrock.createClient(options)
 
-//const bot = bedrock.createClient(options)
+// const bot = bedrock.createClient(options)
 bot.on('spawn', () => {
 	console.log(`Bedrock bot logged in as ${bot.username}`);
 	if (config.useEmbed === true) {
