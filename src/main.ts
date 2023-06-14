@@ -88,7 +88,8 @@ bot.on("spawn", () => {
         const msgEmbed = new EmbedBuilder()
             .setColor(config.setColor)
             .setTitle(config.setTitle)
-            .setDescription("[ThirdEye]:" + " Client is logged in.");
+            .setDescription("[ThirdEye]:" + " Client is logged in.")
+            .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
 
         if (typeof paradoxChannelId === "object") {
             return paradoxChannelId.send({ embeds: [msgEmbed] });
@@ -138,7 +139,7 @@ client.once("ready", (c) => {
         if (systemChannelObj) {
             systemCommandsChannelId = systemChannelObj as TextBasedChannel;
         } else {
-            console.log(`I could not find the paradoxLogs Channel in Discord. 3`);
+            console.log(`I could not find the systemLogs Channel in Discord. 3`);
         }
     }
 
@@ -230,8 +231,8 @@ bot.on("disconnect", (packet) => {
         const msgEmbed = new EmbedBuilder()
             .setColor(config.setColor)
             .setTitle(config.setTitle)
-            .setDescription("[ThirdEye]:" + " The client has lost connection to the server and will initiate a reboot in: " + remainingTime + " Seconds");
-
+            .setDescription("[ThirdEye]:" + " The client has lost connection to the server and will initiate a reboot in: " + remainingTime + " Seconds")
+            .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
         if (typeof paradoxChannelId === "object") {
             paradoxChannelId.send({ embeds: [msgEmbed] });
         } else {
@@ -255,7 +256,8 @@ bot.on("disconnect", (packet) => {
                 const msgEmbed = new EmbedBuilder()
                     .setColor(config.setColor)
                     .setTitle(config.setTitle)
-                    .setDescription("[ThirdEye]:" + " Client is rebooting in: " + remainingTime + " Seconds");
+                    .setDescription("[ThirdEye]:" + " Client is rebooting in: " + remainingTime + " Seconds")
+                    .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
 
                 if (typeof paradoxChannelId === "object") {
                     paradoxChannelId.send({ embeds: [msgEmbed] });
@@ -308,7 +310,8 @@ bot.on("text", (packet) => {
                 const msgEmbed = new EmbedBuilder()
                     .setColor(config.setColor)
                     .setTitle(config.setTitle)
-                    .setDescription("[In Game] " + correctedText);
+                    .setDescription("[In Game] " + correctedText)
+                    .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
 
                 if (typeof channelId === "object") {
                     return channelId.send({ embeds: [msgEmbed] });
@@ -330,7 +333,8 @@ bot.on("text", (packet) => {
                 const msgEmbed = new EmbedBuilder()
                     .setColor(config.setColor)
                     .setTitle(config.setTitle)
-                    .setDescription("[In Game] " + packet.source_name + ": " + packet.message);
+                    .setDescription("[In Game] " + packet.source_name + ": " + packet.message)
+                    .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
                 if (typeof channelId === "object") {
                     return channelId.send({ embeds: [msgEmbed] });
                 } else {
@@ -383,7 +387,8 @@ bot.on("text", (packet) => {
                         let msgEmbed = new EmbedBuilder()
                             .setColor(config.setColor)
                             .setTitle(config.setTitle)
-                            .setDescription("[In Game] " + moderationMessage);
+                            .setDescription("[In Game] " + moderationMessage)
+                            .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
 
                         if (typeof paradoxChannelId === "object") {
                             paradoxChannelId.send({ embeds: [msgEmbed] });
@@ -392,14 +397,20 @@ bot.on("text", (packet) => {
                         }
 
                         // Send Part 2
-                        let msgEmbed1 = new EmbedBuilder().setColor(config.setColor).setDescription("[In Game] " + optionalFeaturesMessage);
+                        let msgEmbed1 = new EmbedBuilder()
+                            .setColor(config.setColor)
+                            .setDescription("[In Game] " + optionalFeaturesMessage)
+                            .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
                         if (typeof paradoxChannelId === "object") {
                             paradoxChannelId.send({ embeds: [msgEmbed1] });
                         } else {
                             console.log(`I could not find the channel for the paradoxLogs Channel in Discord. 9`);
                         }
                         // Send Part 3
-                        let msgEmbed2 = new EmbedBuilder().setColor(config.setColor).setDescription("[In Game] " + toolsUtilitiesMessage);
+                        let msgEmbed2 = new EmbedBuilder()
+                            .setColor(config.setColor)
+                            .setDescription("[In Game] " + toolsUtilitiesMessage)
+                            .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
                         if (typeof paradoxChannelId === "object") {
                             paradoxChannelId.send({ embeds: [msgEmbed2] });
                         } else {
@@ -412,7 +423,8 @@ bot.on("text", (packet) => {
                     const msgEmbed = new EmbedBuilder()
                         .setColor(config.setColor)
                         .setTitle(config.setTitle)
-                        .setDescription("[In Game] " + correctedText);
+                        .setDescription("[In Game] " + correctedText)
+                        .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
 
                     if (typeof paradoxChannelId === "object") {
                         return paradoxChannelId.send({ embeds: [msgEmbed] });
@@ -435,7 +447,8 @@ bot.on("text", (packet) => {
                     const msgEmbed = new EmbedBuilder()
                         .setColor(config.setColor)
                         .setTitle(config.setTitle)
-                        .setDescription("[In Game] " + correctedText);
+                        .setDescription("[In Game] " + correctedText)
+                        .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
                     if (typeof paradoxChannelId === "object") {
                         return paradoxChannelId.send({ embeds: [msgEmbed] });
                     } else {
@@ -456,7 +469,8 @@ bot.on("text", (packet) => {
                     const msgEmbed = new EmbedBuilder()
                         .setColor(config.setColor)
                         .setTitle(config.setTitle)
-                        .setDescription("[In Game] " + correctedText);
+                        .setDescription("[In Game] " + correctedText)
+                        .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
                     if (typeof paradoxChannelId === "object") {
                         return paradoxChannelId.send({ embeds: [msgEmbed] });
                     } else {
@@ -479,7 +493,8 @@ bot.on("text", (packet) => {
                 const msgEmbed = new EmbedBuilder()
                     .setColor(config.setColor)
                     .setTitle(config.setTitle)
-                    .setDescription("[In Game] " + "Paradox" + ": " + paradoxMsg);
+                    .setDescription("[In Game] " + "Paradox" + ": " + paradoxMsg)
+                    .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
                 if (typeof channelId === "object") {
                     return channelId.send({ embeds: [msgEmbed] });
                 } else {
@@ -500,7 +515,8 @@ bot.on("text", (packet) => {
                 const msgEmbed = new EmbedBuilder()
                     .setColor(config.setColor)
                     .setTitle(config.setTitle)
-                    .setDescription("[In Game] " + correctedText);
+                    .setDescription("[In Game] " + correctedText)
+                    .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
                 if (typeof channelId === "object") {
                     return channelId.send({ embeds: [msgEmbed] });
                 } else {
@@ -521,7 +537,8 @@ bot.on("text", (packet) => {
                 const msgEmbed = new EmbedBuilder()
                     .setColor(config.setColor)
                     .setTitle(config.setTitle)
-                    .setDescription("[In Game] " + correctedText);
+                    .setDescription("[In Game] " + correctedText)
+                    .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
                 if (typeof channelId === "object") {
                     return channelId.send({ embeds: [msgEmbed] });
                 } else {
@@ -547,7 +564,8 @@ bot.on("text", (packet) => {
             const msgEmbed = new EmbedBuilder()
                 .setColor(config.setColor)
                 .setTitle(config.setTitle)
-                .setDescription("[In Game] " + username + ": " + msg);
+                .setDescription("[In Game] " + username + ": " + msg)
+                .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
             if (typeof paradoxChannelId === "object") {
                 return paradoxChannelId.send({ embeds: [msgEmbed] });
             } else {
@@ -575,7 +593,8 @@ bot.on("text", (packet) => {
                 const msgEmbed = new EmbedBuilder()
                     .setColor(config.setColor)
                     .setTitle(config.setTitle)
-                    .setDescription("[In Game] " + username + ": " + msg);
+                    .setDescription("[In Game] " + username + ": " + msg)
+                    .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
 
                 if (typeof channelId === "object") {
                     return channelId.send({ embeds: [msgEmbed] });
@@ -743,7 +762,9 @@ bot.on("text", (packet) => {
                         .setColor(config.setColor)
                         .setTitle(config.setTitle)
                         //.setDescription('[System Message] ' + 'playerName = '+ playerName +  ' successMessage = ' + successMessage + ' systemMessage = ' + systemMessage )
-                        .setDescription("[System Message] " + playerName + " " + successMessage + " " + systemMessage);
+                        .setDescription("[System Message] " + playerName + " " + successMessage + " " + systemMessage)
+                        .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
+
                     if (typeof systemCommandsChannelId === "object") {
                         systemCommandsChannelId.send({ embeds: [msgEmbed] });
                     } else {
@@ -786,7 +807,12 @@ bot.on("update_abilities", (packet) => {
         //update the var clientPermissionLevel.
         clientPermissionLevel = permissionLevel;
         if (typeof systemCommandsChannelId === "object") {
-            const msgEmbedOp = new EmbedBuilder().setColor(0x2ffc01).setTitle(config.setTitle).setDescription("[ThirdEye]: The bot is a operator.");
+            const msgEmbedOp = new EmbedBuilder()
+                .setColor(0x2ffc01)
+                .setTitle(config.setTitle)
+                .setDescription("[ThirdEye]: The bot is a operator.")
+                .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" })
+                .setThumbnail("https://i.imgur.com/bEgXSej.png");
             channelId.send({ embeds: [msgEmbedOp] });
         } else {
             console.log("I could not find the channel in Discord. in sendMessageToDiscord()");
@@ -816,7 +842,7 @@ bot.on("update_player_game_type", (packet) => {
         clientGamemode = packet.gamemode;
         console.log("bot Is now in creative.");
         if (typeof systemCommandsChannelId === "object") {
-            const msgEmbedOp = new EmbedBuilder().setColor(0x2ffc01).setTitle(config.setTitle).setDescription("[ThirdEye]: The bot is now in creative mode.");
+            const msgEmbedOp = new EmbedBuilder().setColor(0x2ffc01).setTitle(config.setTitle).setDescription("[ThirdEye]: The bot is now in creative mode.").setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
             channelId.send({ embeds: [msgEmbedOp] });
         } else {
             console.log("I could not find the channel in Discord. in sendMessageToDiscord()");
@@ -840,7 +866,12 @@ function sendMessageToDiscord() {
     }
     if (notifyDiscordPermissionLevel === true) {
         if (typeof systemCommandsChannelId === "object") {
-            const msgEmbedOp = new EmbedBuilder().setColor(0xffff00).setTitle(config.setTitle).setDescription("[ThirdEye]: You need to op the bot via the server console.");
+            const msgEmbedOp = new EmbedBuilder()
+                .setColor(0xffff00)
+                .setTitle(config.setTitle)
+                .setDescription("[ThirdEye]: You need to op the bot via the server console.")
+                .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" })
+                .setThumbnail("https://i.imgur.com/SO1qc2B.png");
             console.log("sending message to discord to op the bot.");
             channelId.send({ embeds: [msgEmbedOp] });
         } else {
