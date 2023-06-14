@@ -233,7 +233,7 @@ bot.on("disconnect", (packet) => {
             .setDescription("[ThirdEye]:" + " The client has lost connection to the server and will initiate a reboot in: " + remainingTime + " Seconds");
 
         if (typeof paradoxChannelId === "object") {
-            return paradoxChannelId.send({ embeds: [msgEmbed] });
+            paradoxChannelId.send({ embeds: [msgEmbed] });
         } else {
             return console.log("I could not find the paradoxLogs channel in Discord. 4");
         }
@@ -258,13 +258,13 @@ bot.on("disconnect", (packet) => {
                     .setDescription("[ThirdEye]:" + " Client is rebooting in: " + remainingTime + " Seconds");
 
                 if (typeof paradoxChannelId === "object") {
-                    return paradoxChannelId.send({ embeds: [msgEmbed] });
+                    paradoxChannelId.send({ embeds: [msgEmbed] });
                 } else {
                     return console.log("I could not find the paradoxLogs channel in Discord. 6");
                 }
             } else {
                 if (typeof paradoxChannelId === "object") {
-                    return paradoxChannelId.send(`[ThirdEye]: Client is rebooting in: **${remainingTime} ** Seconds`);
+                    paradoxChannelId.send(`[ThirdEye]: Client is rebooting in: **${remainingTime} ** Seconds`);
                 } else {
                     return console.log("I could not find the paradoxLogs channel in Discord. 7");
                 }
