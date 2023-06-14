@@ -16,8 +16,10 @@ let systemCommandsChannelId: TextBasedChannel;
 const paradoxLogs = config.ParadoxEnabled;
 const cmdPrefix = config.cmdPrefix;
 const logSystemCommands = config.logSystemCommands;
-var clientPermissionLevel;
+var clientPermissionLevel: string = "";
+var clientGamemode: string = "";
 var notifyDiscordPermissionLevel: boolean;
+var clientEntityID: BigInt;
 const correction = {
     "§r§4[§6Paradox§4]§r": "Paradox",
     "§4[§6Paradox§4]": "Paradox",
@@ -101,7 +103,14 @@ bot.on("spawn", () => {
         }
     }
 });
-
+/**when this packet is sent it contains the clients entityID which will be used to verify if the bot has op status
+ *and has been able to enter into creative mode
+ */
+bot.on("start_game", (packet) => {
+    clientPermissionLevel = packet.permission_level.toString();
+    clientGamemode = packet.player_gamemode.toString();
+});
+//bot
 // when discord client is ready, send login message
 client.once("ready", (c) => {
     console.log(`Discord bot logged in as ${c.user.tag}`);
@@ -751,41 +760,84 @@ bot.on("text", (packet) => {
         }
     }
 });
+//grab the records of players online till we find the bot and then set the clientEntityID.
+bot.on("player_list", (packet) => {
+    if (packet.records && packet.records.records && packet.records.records.length > 0) {
+        const playerRecord = packet.records.records[0];
+        const entityUniqueId = playerRecord.entity_unique_id.toString();
+        const username = playerRecord.username;
+        console.log("Entity Unique ID:", entityUniqueId);
+        console.log("Username:", username);
+        // @ts-ignore
+        if (username === bot.username) {
+            clientEntityID = entityUniqueId;
+            console.log("Found the bots ID. this has been saved");
+        }
+    }
+});
 bot.on("update_abilities", (packet) => {
     const entityUniqueId = packet.entity_unique_id;
     const permissionLevel = packet.permission_level;
+    clientPermissionLevel = permissionLevel;
     console.log("Received Update Abilities Packet:");
     console.log("Entity Unique ID:", entityUniqueId);
     console.log("Permission Level:", permissionLevel);
-    //update the var clientPermissionLevel.
-    clientPermissionLevel = permissionLevel;
-    //if it has op put it into creative.
-    if (permissionLevel === "operator") {
-        const cmd = `/gamemode @s creative`;
-        bot.queue("command_request", {
-            command: cmd,
-            origin: {
-                type: "player",
-                uuid: "",
-                request_id: "",
-            },
-            internal: false,
-            version: 52,
-        });
-        console.log("The bot has tried to put its self into creative.");
+    if (entityUniqueId.toString() === clientEntityID.toString() && permissionLevel === "operator") {
+        //update the var clientPermissionLevel.
+        clientPermissionLevel = permissionLevel;
+        if (typeof systemCommandsChannelId === "object") {
+            const msgEmbedOp = new EmbedBuilder().setColor(0x2ffc01).setTitle(config.setTitle).setDescription("[ThirdEye]: The bot is a operator.");
+            channelId.send({ embeds: [msgEmbedOp] });
+        } else {
+            console.log("I could not find the channel in Discord. in sendMessageToDiscord()");
+        }
+        //if it has op put it into creative.
+        if (permissionLevel === "operator") {
+            const cmd = `/gamemode creative @s`;
+            bot.queue("command_request", {
+                command: cmd,
+                origin: {
+                    type: "player",
+                    uuid: "",
+                    request_id: "",
+                },
+                internal: false,
+                version: 52,
+            });
+            console.log("The bot has tried to put its self into creative.");
+        }
+    } else {
+        console.log("IDs dont match bot has not be targeted");
     }
 });
-if (clientPermissionLevel === "member") {
-    /* the client needs to be opped in this case will notify the user
-     * the user that they need to op the client via the server console.
-     */
-    notifyDiscordPermissionLevel = true;
-}
-if (clientPermissionLevel === "operator") {
-    notifyDiscordPermissionLevel = false;
-}
-//Send message to discord.
+bot.on("update_player_game_type", (packet) => {
+    let PlayerUniqueId = packet.player_unique_id;
+    if (PlayerUniqueId.toString() === clientEntityID.toString() && packet.gamemode === "creative") {
+        clientGamemode = packet.gamemode;
+        console.log("bot Is now in creative.");
+        if (typeof systemCommandsChannelId === "object") {
+            const msgEmbedOp = new EmbedBuilder().setColor(0x2ffc01).setTitle(config.setTitle).setDescription("[ThirdEye]: The bot is now in creative mode.");
+            channelId.send({ embeds: [msgEmbedOp] });
+        } else {
+            console.log("I could not find the channel in Discord. in sendMessageToDiscord()");
+        }
+    } else {
+        console.log("Error in update_player_game_type");
+        console.log("PlayerUniqueId: " + PlayerUniqueId);
+        console.log("clientEntityID: " + clientEntityID);
+        console.log("clientGamemode:" + clientGamemode);
+        console.log("packet.gamemode: " + packet.gamemode);
+    }
+});
+
+//Check to see what the current permission level is alert the user via discord if the client needs to be opped.
 function sendMessageToDiscord() {
+    if (clientPermissionLevel === "member") {
+        notifyDiscordPermissionLevel = true;
+    }
+    if (clientPermissionLevel === "operator") {
+        notifyDiscordPermissionLevel = false;
+    }
     if (notifyDiscordPermissionLevel === true) {
         if (typeof systemCommandsChannelId === "object") {
             const msgEmbedOp = new EmbedBuilder().setColor(0xffff00).setTitle(config.setTitle).setDescription("[ThirdEye]: You need to op the bot via the server console.");
@@ -796,8 +848,8 @@ function sendMessageToDiscord() {
         }
     }
 }
-//send the message every 60 seconds
-setInterval(sendMessageToDiscord, 60000);
+//send the message every 10 seconds
+setInterval(sendMessageToDiscord, 10000);
 
 function autoCorrect(text: string, correction: { [key: string]: string }): string {
     const reg = new RegExp(Object.keys(correction).join("|"), "g");
