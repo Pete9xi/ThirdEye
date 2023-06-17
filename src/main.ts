@@ -19,7 +19,6 @@ const cmdPrefix = config.cmdPrefix;
 const logSystemCommands = config.logSystemCommands;
 let clientPermissionLevel: string = "";
 let clientGamemode: string = "";
-let notifyDiscordPermissionLevel: boolean;
 let clientEntityID: BigInt;
 const correction = {
     "§r§4[§6Paradox§4]§r": "Paradox",
