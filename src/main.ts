@@ -401,11 +401,15 @@ bot.on("text", (packet: WhisperPacket | ChatPacket) => {
                     const messages = [moderationMessage, optionalFeaturesMessage, toolsUtilitiesMessage];
 
                     messages.forEach((msg) => {
+                        if (msg.includes("has banned")) {
+                            var thumbUrl: string = "https://i.imgur.com/F18zcLY.png";
+                        }
                         const embed = new EmbedBuilder()
                             .setColor(config.setColor)
                             .setTitle(config.setTitle)
                             .setDescription("[In Game] " + msg)
-                            .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
+                            .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" })
+                            .setThumbnail(thumbUrl);
 
                         if (typeof paradoxChannelId === "object") {
                             paradoxChannelId.send({ embeds: [embed] });
@@ -582,8 +586,8 @@ bot.on("text", (packet: WhisperPacket | ChatPacket) => {
 bot.on("player_list", (packet) => {
     if (packet.records && packet.records.records && packet.records.records.length > 0) {
         const playerRecord = packet.records.records[0];
-        const entityUniqueId = playerRecord.entity_unique_id.toString();
-        const username = playerRecord.username;
+        const entityUniqueId = playerRecord.entity_unique_id?.toString() || "N/A";
+        const username = playerRecord.username || "N/A";
         console.log("Entity Unique ID:", entityUniqueId);
         console.log("Username:", username);
         // @ts-ignore
