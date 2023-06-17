@@ -597,7 +597,7 @@ bot.on("player_list", (packet) => {
         }
     }
 });
-bot.on("update_abilities", (packet) => {
+bot.on("update_abilities", (packet: UpdateAbilities) => {
     const entityUniqueId = packet.entity_unique_id;
     const permissionLevel = packet.permission_level;
     clientPermissionLevel = permissionLevel;
