@@ -4,19 +4,26 @@ import { Client } from "bedrock-protocol";
 
 const excludedPackets: string[] = ["commands.tp.successVictim", "gameMode.changed", "commands.give.successRecipient"];
 
-function handleTextEvent(packet: any, systemCommandsChannelId: TextBasedChannel) {
-    const { rawtext } = JSON.parse(packet.message);
+function handleTextEvent(packet: WhisperPacket | ChatPacket, systemCommandsChannelId: TextBasedChannel) {
+    let rawtext: RawText[] = []; // Declare rawtext outside the if block
+
+    if (packet.type === "json_whisper") {
+        const { rawtext: whisperRawText } = JSON.parse(packet.message);
+        rawtext = whisperRawText;
+    } else if (packet.type === "chat") {
+        rawtext = [{ text: packet.message }];
+    }
 
     if (excludedPackets.some((excludedPacket) => packet.message.includes(excludedPacket))) {
         return; // Exclude this packet
     }
 
-    const playerName = rawtext?.[1]?.translate || "Server";
-    const rawtextArray: { text: string }[] = rawtext?.[3]?.with?.rawtext || [];
+    const playerName = rawtext?.[1]?.text || "Server";
+    const rawtextArray: { text: string }[] = Array.isArray(rawtext?.[3]?.text) ? rawtext?.[3]?.text.map((text) => ({ text })) : [];
     const results = rawtextArray.map((item) => item.text).filter(Boolean);
     let systemMessage = results.join(" ");
 
-    let successMessage = rawtext?.[3]?.translate || "";
+    let successMessage = rawtext?.[3]?.text || "";
     let dontSendMessage = false;
 
     switch (successMessage) {
@@ -130,5 +137,5 @@ function getPotionResult(result: string): string {
 }
 
 export function setupSystemCommandsListener(bot: Client, systemCommandsChannelId: TextBasedChannel) {
-    bot.on("text", (packet) => handleTextEvent(packet, systemCommandsChannelId));
+    bot.on("text", (packet: WhisperPacket | ChatPacket) => handleTextEvent(packet, systemCommandsChannelId));
 }
