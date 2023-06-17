@@ -4,10 +4,10 @@ import { Client } from "bedrock-protocol";
 
 const excludedPackets: string[] = ["commands.tp.successVictim", "gameMode.changed", "commands.give.successRecipient"];
 
-function handleTextEvent(packet: WhisperPacket | ChatPacket, systemCommandsChannelId: TextBasedChannel) {
+function handleTextEvent(packet: WhisperPacket | ChatPacket | JsonPacket, systemCommandsChannelId: TextBasedChannel) {
     let rawtext: RawText[] = []; // Declare rawtext outside the if block
 
-    if (packet.type === "json_whisper") {
+    if (packet.type === "json_whisper" || packet.type === "json") {
         const { rawtext: whisperRawText } = JSON.parse(packet.message);
         rawtext = whisperRawText;
     } else if (packet.type === "chat") {
@@ -18,17 +18,22 @@ function handleTextEvent(packet: WhisperPacket | ChatPacket, systemCommandsChann
         return; // Exclude this packet
     }
 
-    const playerName = rawtext?.[1]?.text || "Server";
-    const rawtextArray: { text: string }[] = Array.isArray(rawtext?.[3]?.text) ? rawtext?.[3]?.text.map((text) => ({ text })) : [];
-    const results = rawtextArray.map((item) => item.text).filter(Boolean);
-    let systemMessage = results.join(" ");
+    let systemMessage: string;
+    let successMessage: string;
+    let results: string[];
+    const playerName = rawtext?.[1]?.translate || "Server";
 
-    let successMessage = rawtext?.[3]?.text || "";
+    if (packet.type === "json") {
+        const rawtextArray = rawtext[3]?.with?.rawtext?.map((item) => item.text) || [];
+        results = rawtextArray.filter(Boolean);
+        systemMessage = results.join(" ");
+        successMessage = rawtext?.[3]?.translate;
+    }
+
     let dontSendMessage = false;
-
     switch (successMessage) {
         case "commands.time.set":
-            successMessage = "set time";
+            successMessage = "Set time to";
             break;
         case "commands.gamemode.success.self":
             successMessage = "Set their gamemode ";
@@ -59,7 +64,7 @@ function handleTextEvent(packet: WhisperPacket | ChatPacket, systemCommandsChann
             systemMessage = `X: ${results[0]} Y: ${results[1]} Z: ${results[2]}`;
             break;
         case "commands.tp.success":
-            successMessage = " has teleported: ";
+            successMessage = "Has teleported: ";
             systemMessage = `${results[0]} to: ${results[1]}`;
             break;
         case "commands.give.success":
@@ -67,7 +72,7 @@ function handleTextEvent(packet: WhisperPacket | ChatPacket, systemCommandsChann
             systemMessage = `${results[2]} item: ${results[0]}, amount: ${results[1]}`;
             break;
         case "commands.enchant.success":
-            successMessage = " Has enchanted an item for: ";
+            successMessage = "Has enchanted an item for: ";
             systemMessage = results[0];
             break;
         case "commands.clear.success":
@@ -75,7 +80,7 @@ function handleTextEvent(packet: WhisperPacket | ChatPacket, systemCommandsChann
             systemMessage = `${results[1]} items`;
             break;
         case "commands.effect.success":
-            successMessage = `has given an effect to ${results[2]}`;
+            successMessage = `Has given an effect to ${results[2]}`;
             systemMessage = `effect type: ${getPotionResult(results[0])} duration: ${results[3]} multiplier: ${results[1]}`;
             break;
         default:
@@ -83,7 +88,7 @@ function handleTextEvent(packet: WhisperPacket | ChatPacket, systemCommandsChann
     }
 
     if (!dontSendMessage) {
-        const message = `[System Message] ${playerName} ${successMessage} ${systemMessage}`;
+        const message = `[System Message] ${playerName}: ${successMessage} ${systemMessage}`;
         if (config.useEmbed) {
             const msgEmbed = new EmbedBuilder().setColor(config.setColor).setTitle(config.setTitle).setDescription(message).setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
 
@@ -137,5 +142,5 @@ function getPotionResult(result: string): string {
 }
 
 export function setupSystemCommandsListener(bot: Client, systemCommandsChannelId: TextBasedChannel) {
-    bot.on("text", (packet: WhisperPacket | ChatPacket) => handleTextEvent(packet, systemCommandsChannelId));
+    bot.on("text", (packet: WhisperPacket | ChatPacket | JsonPacket) => handleTextEvent(packet, systemCommandsChannelId));
 }
