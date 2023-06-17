@@ -17,10 +17,10 @@ let systemCommandsChannelId: TextBasedChannel;
 const paradoxLogs = config.ParadoxEnabled;
 const cmdPrefix = config.cmdPrefix;
 const logSystemCommands = config.logSystemCommands;
-var clientPermissionLevel: string = "";
-var clientGamemode: string = "";
-var notifyDiscordPermissionLevel: boolean;
-var clientEntityID: BigInt;
+let clientPermissionLevel: string = "";
+let clientGamemode: string = "";
+let notifyDiscordPermissionLevel: boolean;
+let clientEntityID: BigInt;
 const correction = {
     "§r§4[§6Paradox§4]§r": "Paradox",
     "§4[§6Paradox§4]": "Paradox",
@@ -690,14 +690,10 @@ bot.on("update_player_game_type", (packet) => {
 });
 
 //Check to see what the current permission level is alert the user via discord if the client needs to be opped.
+let intervalId: NodeJS.Timer;
+
 function sendMessageToDiscord() {
     if (clientPermissionLevel === "member") {
-        notifyDiscordPermissionLevel = true;
-    }
-    if (clientPermissionLevel === "operator") {
-        notifyDiscordPermissionLevel = false;
-    }
-    if (notifyDiscordPermissionLevel === true) {
         if (typeof systemCommandsChannelId === "object") {
             const msgEmbedOp = new EmbedBuilder()
                 .setColor(0xffff00)
@@ -705,15 +701,19 @@ function sendMessageToDiscord() {
                 .setDescription("[ThirdEye]: You need to op the bot via the server console.")
                 .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" })
                 .setThumbnail("https://i.imgur.com/SO1qc2B.png");
-            console.log("sending message to discord to op the bot.");
-            channelId.send({ embeds: [msgEmbedOp] });
+            console.log("Sending warning message to discord to op the bot.");
+            systemCommandsChannelId.send({ embeds: [msgEmbedOp] });
         } else {
-            console.log("I could not find the channel in Discord. in sendMessageToDiscord()");
+            console.log("I could not find the channel in Discord. Function sendMessageToDiscord()");
         }
+    } else if (clientPermissionLevel === "operator") {
+        clearInterval(intervalId);
     }
 }
-//send the message every 10 seconds
-setInterval(sendMessageToDiscord, 10000);
+
+if (clientPermissionLevel !== "operator") {
+    intervalId = setInterval(sendMessageToDiscord, 10000);
+}
 
 function autoCorrect(text: string, correction: { [key: string]: string }): string {
     const reg = new RegExp(Object.keys(correction).join("|"), "g");
