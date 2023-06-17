@@ -1,53 +1,28 @@
-type Gamemode = "fallback" | "survival";
-
-type Coordinate = {
-    x: number;
-    y: number;
-    z: number;
-};
-
-type Rotation = {
-    x: number;
-    z: number;
-};
-
-type Gamerule = {
-    name: string;
-    editable: boolean;
-    type: "bool" | "int";
-    value: boolean | number;
-};
-
-type ItemState = {
-    name: string;
-    runtime_id: number;
-    component_based: boolean;
-};
-
-type Experiment = {
-    name: string;
-    enabled: boolean;
-};
-
-type EduResourceUri = {
-    button_name: string;
-    link_uri: string;
-};
-
-type Packet = {
+type StartGame = {
     entity_id: bigint;
     runtime_entity_id: bigint;
-    player_gamemode: Gamemode;
-    player_position: Coordinate;
-    rotation: Rotation;
-    seed: bigint;
+    player_gamemode: string;
+    player_position: {
+        x: number;
+        y: number;
+        z: number;
+    };
+    rotation: {
+        x: number;
+        z: number;
+    };
+    seed: number[];
     biome_type: number;
     biome_name: string;
     dimension: string;
     generator: number;
-    world_gamemode: Gamemode;
+    world_gamemode: string;
     difficulty: number;
-    spawn_position: Coordinate;
+    spawn_position: {
+        x: number;
+        y: number;
+        z: number;
+    };
     achievements_disabled: boolean;
     editor_world: boolean;
     created_in_editor: boolean;
@@ -65,8 +40,16 @@ type Packet = {
     platform_broadcast_mode: number;
     enable_commands: boolean;
     is_texturepacks_required: boolean;
-    gamerules: Gamerule[];
-    experiments: Experiment[];
+    gamerules: {
+        name: string;
+        editable: boolean;
+        type: string;
+        value: boolean;
+    }[];
+    experiments: {
+        name: string;
+        enabled: boolean;
+    }[];
     experiments_previously_used: boolean;
     bonus_chest: boolean;
     map_enabled: boolean;
@@ -86,7 +69,10 @@ type Packet = {
     limited_world_width: number;
     limited_world_length: number;
     is_new_nether: boolean;
-    edu_resource_uri: EduResourceUri;
+    edu_resource_uri: {
+        button_name: string;
+        link_uri: string;
+    };
     experimental_gameplay_override: boolean;
     chat_restriction_level: string;
     disable_player_interactions: boolean;
@@ -97,8 +83,25 @@ type Packet = {
     movement_authority: string;
     rewind_history_size: number;
     server_authoritative_block_breaking: boolean;
-    current_tick: bigint;
+    current_tick: number[];
     enchantment_seed: number;
-    block_properties: any[]; // You can replace `any` with the appropriate type
-    itemstates: ItemState[];
+    block_properties: [];
+    itemstates: {
+        name: string;
+        runtime_id: number;
+        component_based: boolean;
+    }[];
+    multiplayer_correlation_id: string;
+    server_authoritative_inventory: boolean;
+    engine: string;
+    property_data: {
+        type: string;
+        name: string;
+        value: {};
+    };
+    block_pallette_checksum: number[];
+    world_template_id: string;
+    client_side_generation: boolean;
+    block_network_ids_are_hashes: boolean;
+    server_controlled_sound: boolean;
 };
