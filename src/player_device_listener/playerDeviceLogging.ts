@@ -6,7 +6,7 @@ import { Client } from "bedrock-protocol";
 export function addPlayerListener(bot: Client, channelId: TextBasedChannel, WhitelistRead: any) {
     const Whitelist = WhitelistRead.whitelist;
 
-    bot.on("add_player", (packet) => {
+    bot.on("add_player", (packet: PlayerData) => {
         const deviceOS = getDeviceName(packet.device_os);
         const gameDescription = `[In Game] ${packet.username}: Has joined the server using ${deviceOS}`;
         let description = gameDescription;
