@@ -105,7 +105,7 @@ bot.on("spawn", () => {
 /**when this packet is sent it contains the clients entityID which will be used to verify if the bot has op status
  *and has been able to enter into creative mode
  */
-bot.on("start_game", (packet: Packet) => {
+bot.on("start_game", (packet: StartGame) => {
     clientPermissionLevel = packet.permission_level.toString();
     clientGamemode = packet.player_gamemode.toString();
 });
