@@ -1,65 +1,167 @@
-type Position = {
-    x: number;
-    y: number;
-    z: number;
-};
-
-type Velocity = {
-    x: number;
-    y: number;
-    z: number;
-};
-
-type Extra = {
-    has_nbt: number;
-    nbt: undefined;
-    can_place_on: any[];
-    can_destroy: any[];
-};
-
-type HeldItem = {
-    network_id: number;
-    count: number;
-    metadata: number;
-    has_stack_id: number;
-    stack_id: undefined;
-    block_runtime_id: number;
-    extra: Extra;
-};
-
-type Metadata = {
-    key: string | number;
-    type: string;
-    value: any;
-};
-
-type Abilities = {
-    type: string;
-    allowed: any;
-    enabled: any;
-    fly_speed: number;
-    walk_speed: number;
-};
-
 type PlayerData = {
     uuid: string;
     username: string;
     runtime_id: bigint;
     platform_chat_id: string;
-    position: Position;
-    velocity: Velocity;
+    position: {
+        x: number;
+        y: number;
+        z: number;
+    };
+    velocity: {
+        x: number;
+        y: number;
+        z: number;
+    };
     pitch: number;
     yaw: number;
     head_yaw: number;
-    held_item: HeldItem;
+    held_item: {
+        network_id: number;
+        count: number;
+        metadata: number;
+        has_stack_id: number;
+        stack_id: undefined;
+        block_runtime_id: number;
+        extra: {
+            has_nbt: number;
+            nbt: undefined;
+            can_place_on: [];
+            can_destroy: [];
+        };
+    };
     gamemode: string;
-    metadata: Metadata[];
-    properties: { ints: number[]; floats: number[] };
-    unique_id: bigint;
+    metadata: {
+        key: string;
+        type: string;
+        value: {
+            _value: bigint;
+            onfire: boolean;
+            sneaking: boolean;
+            riding: boolean;
+            sprinting: boolean;
+            action: boolean;
+            invisible: boolean;
+            tempted: boolean;
+            inlove: boolean;
+            saddled: boolean;
+            powered: boolean;
+            ignited: boolean;
+            baby: boolean;
+            converting: boolean;
+            critical: boolean;
+            can_show_nametag: boolean;
+            always_show_nametag: boolean;
+            no_ai: boolean;
+            silent: boolean;
+            wallclimbing: boolean;
+            can_climb: boolean;
+            swimmer: boolean;
+            can_fly: boolean;
+            walker: boolean;
+            resting: boolean;
+            sitting: boolean;
+            angry: boolean;
+            interested: boolean;
+            charged: boolean;
+            tamed: boolean;
+            orphaned: boolean;
+            leashed: boolean;
+            sheared: boolean;
+            gliding: boolean;
+            elder: boolean;
+            moving: boolean;
+            breathing: boolean;
+            chested: boolean;
+            stackable: boolean;
+            showbase: boolean;
+            rearing: boolean;
+            vibrating: boolean;
+            idling: boolean;
+            evoker_spell: boolean;
+            charge_attack: boolean;
+            wasd_controlled: boolean;
+            can_power_jump: boolean;
+            can_dash: boolean;
+            linger: boolean;
+            has_collision: boolean;
+            affected_by_gravity: boolean;
+            fire_immune: boolean;
+            dancing: boolean;
+            enchanted: boolean;
+            show_trident_rope: boolean;
+            container_private: boolean;
+            transforming: boolean;
+            spin_attack: boolean;
+            swimming: boolean;
+            bribed: boolean;
+            pregnant: boolean;
+            laying_egg: boolean;
+            rider_can_pick: boolean;
+            transition_sitting: boolean;
+            eating: boolean;
+            laying_down: boolean;
+        };
+    }[];
+    properties: {
+        ints: [];
+        floats: [];
+    };
+    unique_id: number[];
     permission_level: string;
     command_permission: string;
-    abilities: Abilities[];
-    links: any[];
+    abilities: {
+        type: string;
+        allowed: {
+            _value: number;
+            build: boolean;
+            mine: boolean;
+            doors_and_switches: boolean;
+            open_containers: boolean;
+            attack_players: boolean;
+            attack_mobs: boolean;
+            operator_commands: boolean;
+            teleport: boolean;
+            invulnerable: boolean;
+            flying: boolean;
+            may_fly: boolean;
+            instant_build: boolean;
+            lightning: boolean;
+            fly_speed: boolean;
+            walk_speed: boolean;
+            muted: boolean;
+            world_builder: boolean;
+            no_clip: boolean;
+            privileged_builder: boolean;
+            count: boolean;
+        };
+        enabled: {
+            _value: number;
+            build: boolean;
+            mine: boolean;
+            doors_and_switches: boolean;
+            open_containers: boolean;
+            attack_players: boolean;
+            attack_mobs: boolean;
+            operator_commands: boolean;
+            teleport: boolean;
+            invulnerable: boolean;
+            flying: boolean;
+            may_fly: boolean;
+            instant_build: boolean;
+            lightning: boolean;
+            fly_speed: boolean;
+            walk_speed: boolean;
+            muted: boolean;
+            world_builder: boolean;
+            no_clip: boolean;
+            privileged_builder: boolean;
+            count: boolean;
+        };
+        fly_speed: number;
+        walk_speed: number;
+    }[];
+    links: [];
     device_id: string;
     device_os: string;
 };
