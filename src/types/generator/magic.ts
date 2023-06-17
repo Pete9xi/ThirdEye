@@ -1,5 +1,5 @@
 export function generateTypeDefinition(obj: any, indent = ""): string {
-    let typeDefinition = `${indent}\n`;
+    let typeDefinition = `${indent}{\n`;
 
     for (const key in obj) {
         if (typeof obj[key] === "object" && obj[key] !== null && !Array.isArray(obj[key])) {
