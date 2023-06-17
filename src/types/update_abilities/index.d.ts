@@ -1,0 +1,56 @@
+type UpdateAbilities = {
+    entity_unique_id: number[];
+    permission_level: string;
+    command_permission: string;
+    abilities: {
+        type: string;
+        allowed: {
+            _value: number;
+            build: boolean;
+            mine: boolean;
+            doors_and_switches: boolean;
+            open_containers: boolean;
+            attack_players: boolean;
+            attack_mobs: boolean;
+            operator_commands: boolean;
+            teleport: boolean;
+            invulnerable: boolean;
+            flying: boolean;
+            may_fly: boolean;
+            instant_build: boolean;
+            lightning: boolean;
+            fly_speed: boolean;
+            walk_speed: boolean;
+            muted: boolean;
+            world_builder: boolean;
+            no_clip: boolean;
+            privileged_builder: boolean;
+            count: boolean;
+        };
+        enabled: {
+            _value: number;
+            build: boolean;
+            mine: boolean;
+            doors_and_switches: boolean;
+            open_containers: boolean;
+            attack_players: boolean;
+            attack_mobs: boolean;
+            operator_commands: boolean;
+            teleport: boolean;
+            invulnerable: boolean;
+            flying: boolean;
+            may_fly: boolean;
+            instant_build: boolean;
+            lightning: boolean;
+            fly_speed: boolean;
+            walk_speed: boolean;
+            muted: boolean;
+            world_builder: boolean;
+            no_clip: boolean;
+            privileged_builder: boolean;
+            count: boolean;
+        };
+        fly_speed: number;
+        walk_speed: number;
+    }[];
+};
