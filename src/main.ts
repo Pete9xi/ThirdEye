@@ -215,13 +215,13 @@ client.on("messageCreate", (message) => {
 });
 
 bot.on("close", () => {
-    console.log(" The server has closed the connection.");
+    console.log("The server has closed the connection.");
 });
 bot.on("login", () => {
-    console.log("client has been authenticated by the server.");
+    console.log("Client has been authenticated by the server.");
 });
 bot.on("join", () => {
-    console.log("the client is ready to receive game packets.");
+    console.log("The client is ready to receive game packets.");
 });
 bot.on("disconnect", () => {
     console.log("Client disconnected:", bot.entityId);
@@ -593,7 +593,7 @@ bot.on("player_list", (packet) => {
         // @ts-ignore
         if (username === bot.username) {
             clientEntityID = entityUniqueId;
-            console.log("Found the bots ID. this has been saved");
+            console.log("Found the bots ID. This has been saved.");
         }
     }
 });
@@ -631,17 +631,17 @@ bot.on("update_abilities", (packet: UpdateAbilities) => {
                 internal: false,
                 version: 52,
             });
-            console.log("The bot has tried to put its self into creative.");
+            console.log("The bot has tried to put its self into creative mode.");
         }
     } else {
-        console.log("IDs dont match bot has not be targeted");
+        console.log("ID's dont match so bot has not be targeted.");
     }
 });
 bot.on("update_player_game_type", (packet: UpdatePlayerGameType) => {
     let PlayerUniqueId = packet.player_unique_id;
     if (PlayerUniqueId.toString() === clientEntityID.toString() && packet.gamemode === "creative") {
         clientGamemode = packet.gamemode;
-        console.log("bot Is now in creative.");
+        console.log("Bot is now in creative mode.");
         if (typeof systemCommandsChannelId === "object") {
             const msgEmbedOp = new EmbedBuilder().setColor(0x2ffc01).setTitle(config.setTitle).setDescription("[ThirdEye]: The bot is now in creative mode.").setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
             channelId.send({ embeds: [msgEmbedOp] });
@@ -672,7 +672,7 @@ function sendMessageToDiscord() {
             console.log("Sending warning message to discord to op the bot.");
             systemCommandsChannelId.send({ embeds: [msgEmbedOp] });
         } else {
-            console.log("I could not find the channel in Discord. Function sendMessageToDiscord()");
+            console.log("I could not find the channel in Discord. Function sendMessageToDiscord().");
         }
     } else if (clientPermissionLevel === "operator") {
         clearInterval(intervalId);
