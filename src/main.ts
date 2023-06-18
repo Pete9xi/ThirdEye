@@ -637,7 +637,7 @@ bot.on("update_abilities", (packet: UpdateAbilities) => {
         console.log("IDs dont match bot has not be targeted");
     }
 });
-bot.on("update_player_game_type", (packet) => {
+bot.on("update_player_game_type", (packet: UpdatePlayerGameType) => {
     let PlayerUniqueId = packet.player_unique_id;
     if (PlayerUniqueId.toString() === clientEntityID.toString() && packet.gamemode === "creative") {
         clientGamemode = packet.gamemode;
