@@ -614,7 +614,7 @@ bot.on("update_abilities", (packet: UpdateAbilities) => {
                 .setDescription("[ThirdEye]: The bot is a operator.")
                 .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" })
                 .setThumbnail("https://i.imgur.com/bEgXSej.png");
-            channelId.send({ embeds: [msgEmbedOp] });
+            systemCommandsChannelId.send({ embeds: [msgEmbedOp] });
         } else {
             console.log("I could not find the channel in Discord. in sendMessageToDiscord()");
         }
@@ -644,7 +644,7 @@ bot.on("update_player_game_type", (packet: UpdatePlayerGameType) => {
         console.log("Bot is now in creative mode.");
         if (typeof systemCommandsChannelId === "object") {
             const msgEmbedOp = new EmbedBuilder().setColor(0x2ffc01).setTitle(config.setTitle).setDescription("[ThirdEye]: The bot is now in creative mode.").setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
-            channelId.send({ embeds: [msgEmbedOp] });
+            systemCommandsChannelId.send({ embeds: [msgEmbedOp] });
         } else {
             console.log("I could not find the channel in Discord. in sendMessageToDiscord()");
         }
