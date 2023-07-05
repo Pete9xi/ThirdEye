@@ -223,7 +223,7 @@ bot.on("login", () => {
 bot.on("join", () => {
     console.log("The client is ready to receive game packets.");
 });
-bot.on("disconnect", () => {
+bot.on("close", () => {
     console.log("Client disconnected:", bot.entityId);
     let remainingTime = 2 * 60; // 2 minutes in seconds, allowing for slower servers to reboot in time ready for a new connection
     if (config.useEmbed === true) {
@@ -534,14 +534,14 @@ bot.on("text", (packet: WhisperPacket | ChatPacket) => {
                 .setTitle(config.setTitle)
                 .setDescription("[In Game] " + username + ": " + msg)
                 .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
-            if (typeof paradoxChannelId === "object") {
-                return paradoxChannelId.send({ embeds: [msgEmbed] });
+            if (typeof channelId === "object") {
+                return channelId.send({ embeds: [msgEmbed] });
             } else {
                 return console.log("I could not find the paradoxLogs channel in Discord. 14");
             }
         } else {
-            if (typeof paradoxChannelId === "object") {
-                return paradoxChannelId.send(`[In Game] **${username}**: ${msg}`);
+            if (typeof channelId === "object") {
+                return channelId.send(`[In Game] **${username}**: ${msg}`);
             } else {
                 return console.log("I could not find the paradoxLogs channel in Discord. 15");
             }
