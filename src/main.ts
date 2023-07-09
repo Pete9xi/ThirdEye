@@ -389,7 +389,7 @@ bot.on("text", (packet: WhisperPacket | ChatPacket) => {
                 if (correctedText.length >= 2000) {
                     const moderationStartIndex = correctedText.indexOf("[Moderation Commands]");
                     const optionalFeaturesStartIndex = correctedText.indexOf("[Optional Features]");
-                    const toolsUtilitiesStartIndex = correctedText.indexOf("[Tools and Utilities]");
+                    const toolsUtilitiesStartIndex = correctedText.indexOf("[Tools and Utilites]");
 
                     const moderationEndIndex = optionalFeaturesStartIndex !== -1 ? optionalFeaturesStartIndex : toolsUtilitiesStartIndex;
                     const optionalFeaturesEndIndex = toolsUtilitiesStartIndex !== -1 ? toolsUtilitiesStartIndex : correctedText.length;
