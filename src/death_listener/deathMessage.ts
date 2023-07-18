@@ -37,6 +37,8 @@ function getDeathReason(message: string, parameter: string): string {
         "death.attack.player.item": "Was killed by " + parameter,
         "death.attack.lava": "Was playing with lava and died.",
         "death.attack.generic": "was killed by:" + parameter,
+        "death.attack.flyIntoWall": "was killed by flying into the wall",
+        "death.attack.wither": "was killed by a wither",
         default: "General Death - " + message + " - " + parameter,
     };
 
