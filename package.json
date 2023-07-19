@@ -6,7 +6,7 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "bedrock-protocol": "^3.29.0",
+    "bedrock-protocol": "^3.30.0",
     "discord.js": "^14.11.0",
     "prettier": "2.8.8",
     "typescript": "5.0.4"

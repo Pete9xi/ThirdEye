@@ -13,6 +13,7 @@ export default {
     useSystemPlayerJoinMessage: false,
     logSystemCommands: false,
     systemCommandsChannel: "",
+    sendWhisperMessages: false,
 
     useEmbed: true,
     setColor: [0, 153, 255] as const,
