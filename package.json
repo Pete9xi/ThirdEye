@@ -23,12 +23,12 @@
     "linux//": " --- BUILD (Linux) --- ",
     "clean": "rm -rf build/",
     "mkDirs": "mkdir -p build",
-    "copy:assets": "cp -R src/Install_NodeJS_Modules.bat src/Run.bat src/whitelist.json LICENSE README.md build",
-    "build": "npm run clean; ./node_modules/typescript/bin/tsc -p tsconfig.json; npm run copy:assets",
+    "copy:assets": "cp -R src/Install_NodeJS_Modules.bat src/Run.bat src/whitelist.json package.json LICENSE README.md build",
+    "build": "npm run clean; ./node_modules/typescript/bin/tsc -p tsconfig.json; npm run copy:assets; node modify-package.js",
     "windows//": " --- BUILD (Windows) --- ",
     "clean_win": "rd /s /q build>nul 2>&1|echo.>nul",
     "mkdir_win": "@if exist build (rd /s /q build && mkdir build) else (mkdir build)",
-    "copy_assets_win": "@powershell Copy-Item -Path ^(\\\"src\\Install_NodeJS_Modules.bat\\\",\\\"src\\Run.bat\\\",\\\"src\\whitelist.json\\\",\\\"LICENSE\\\",\\\"README.md\\\"^) -Destination \"build\" -Recurse",
-    "build_win": "npm run clean_win && npm run mkdir_win 1>nul && node node_modules\\typescript\\bin\\tsc -p tsconfig.json && npm run copy_assets_win 1>nul"
+    "copy_assets_win": "@powershell Copy-Item -Path ^(\\\"src\\Install_NodeJS_Modules.bat\\\",\\\"src\\Run.bat\\\",\\\"src\\whitelist.json\\\",\\\"package.json\\\",\\\"LICENSE\\\",\\\"README.md\\\"^) -Destination \"build\" -Recurse",
+    "build_win": "npm run clean_win && npm run mkdir_win 1>nul && node node_modules\\typescript\\bin\\tsc -p tsconfig.json && npm run copy_assets_win 1>nul && node modify-package.js"
   }
 }
