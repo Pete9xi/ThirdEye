@@ -5,7 +5,6 @@ import config from "./config.js";
 import { setupDeathListener } from "./death_listener/deathMessage.js";
 import { addPlayerListener } from "./player_device_listener/playerDeviceLogging.js";
 import { setupSystemCommandsListener } from "./system_commands_listener/systemCommandsLogging.js";
-import { setupWhisperListener } from "./whisper_listener/whisperMessage.js";
 
 const { MessageContent, GuildMessages, Guilds } = GatewayIntentBits;
 const channel: string = config.channel;
@@ -120,7 +119,6 @@ client.once("ready", (c) => {
         // Call function if channel exists
         setupDeathListener(bot, channelId);
         addPlayerListener(bot, channelId, WhitelistRead);
-        setupWhisperListener(bot, channelId);
     } else {
         console.log(`I could not find the in-game channel in Discord. 1`);
     }
