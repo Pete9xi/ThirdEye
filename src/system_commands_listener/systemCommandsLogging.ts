@@ -83,6 +83,12 @@ function handleTextEvent(packet: WhisperPacket | ChatPacket | JsonPacket, system
             successMessage = `Has given an effect to ${results[2]}`;
             systemMessage = `effect type: ${getPotionResult(results[0])} duration: ${results[3]} multiplier: ${results[1]}`;
             break;
+        case "commands.message.display.outgoing":
+            if (config.sendWhisperMessages === true) {
+                successMessage = `Has sent a whisper to: ${results[0]}`;
+                systemMessage = `Message: ${results[1]}`;
+                break;
+            }
         default:
             dontSendMessage = true;
     }
