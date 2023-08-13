@@ -298,7 +298,8 @@ bot.on("text", (packet: WhisperPacket | ChatPacket) => {
                 obj.rawtext[0].text.includes("UAC") ||
                 obj.rawtext[0].text.includes("§r§6[§aScythe§6]§r") ||
                 obj.rawtext[0].text.includes("§l§6[§4Paradox§6]§r") ||
-                obj.rawtext[0].text.includes("§l§6[§4Paradox AntiCheat Command Help§6]")
+                obj.rawtext[0].text.includes("§l§6[§4Paradox AntiCheat Command Help§6]") ||
+                obj.rawtext[0].text.includes("§f§o§4[§6Paradox§4]§f§o")
             ) {
                 // this will prevent it crashing. or logging to the wrong channel.
                 return;
@@ -354,7 +355,12 @@ bot.on("text", (packet: WhisperPacket | ChatPacket) => {
     const message = packet.message;
 
     const isParadoxMessage =
-        message.includes("§r§4[§6Paradox§4]§r") || message.includes("§¶§cUAC STAFF §b► §d") || message.includes("§r§6[§aScythe§6]§r") || message.includes("§l§6[§4Paradox§6]§r") || message.includes("§l§6[§4Paradox AntiCheat Command Help§6]");
+        message.includes("§r§4[§6Paradox§4]§r") ||
+        message.includes("§¶§cUAC STAFF §b► §d") ||
+        message.includes("§r§6[§aScythe§6]§r") ||
+        message.includes("§l§6[§4Paradox§6]§r") ||
+        message.includes("§l§6[§4Paradox AntiCheat Command Help§6]") ||
+        message.includes("§f§o§4[§6Paradox§4]§f§o");
 
     if (!isParadoxMessage) {
         return;
@@ -368,7 +374,7 @@ bot.on("text", (packet: WhisperPacket | ChatPacket) => {
 
     // Is a separate logging channel enabled to send logs to that channel?
     if (paradoxLogs === true) {
-        if (rawText.includes("§r§4[§6Paradox§4]§r") || rawText.includes("§l§6[§4Paradox§6]§r") || rawText.includes("§l§6[§4Paradox AntiCheat Command Help§6]")) {
+        if (rawText.includes("§r§4[§6Paradox§4]§r") || rawText.includes("§l§6[§4Paradox§6]§r") || rawText.includes("§l§6[§4Paradox AntiCheat Command Help§6]") || rawText.includes("§f§o§4[§6Paradox§4]§f§o")) {
             paradoxMsg = rawText;
             correctedText = autoCorrect(paradoxMsg, correction);
         } else if (rawText.startsWith("§¶§cUAC STAFF §b► §d")) {
