@@ -49,6 +49,8 @@ const correction = {
     "§¶§cUAC ►": "UAC ►",
     "§¶§cUAC STAFF §b► §d": "UAC STAFF ►",
     "§r§6[§aScythe§6]§r": "",
+    "§f§4[§6Paradox§4]§f": "Paradox",
+    "\\n§l§o§6[§4Paradox AntiCheat Command Help§6]§r§o\\n": "Paradox AntiCheat Command Help",
 };
 
 let WhitelistRead = JSON.parse(readFileSync("whitelist.json", "utf-8"));
@@ -299,7 +301,9 @@ bot.on("text", (packet: WhisperPacket | ChatPacket) => {
                 obj.rawtext[0].text.includes("§r§6[§aScythe§6]§r") ||
                 obj.rawtext[0].text.includes("§l§6[§4Paradox§6]§r") ||
                 obj.rawtext[0].text.includes("§l§6[§4Paradox AntiCheat Command Help§6]") ||
-                obj.rawtext[0].text.includes("§f§o§4[§6Paradox§4]§f§o")
+                obj.rawtext[0].text.includes("§f§o§4[§6Paradox§4]§f§o") ||
+                obj.rawtext[0].text.includes("§f§4[§6Paradox§4]§f") ||
+                obj.rawtext[0].text.includes("§l§o§6[§4Paradox AntiCheat Command Help§6]§r§o")
             ) {
                 // this will prevent it crashing. or logging to the wrong channel.
                 return;
@@ -360,7 +364,9 @@ bot.on("text", (packet: WhisperPacket | ChatPacket) => {
         message.includes("§r§6[§aScythe§6]§r") ||
         message.includes("§l§6[§4Paradox§6]§r") ||
         message.includes("§l§6[§4Paradox AntiCheat Command Help§6]") ||
-        message.includes("§f§o§4[§6Paradox§4]§f§o");
+        message.includes("§f§o§4[§6Paradox§4]§f§o") ||
+        message.includes("§f§4[§6Paradox§4]§f") ||
+        message.includes("§l§o§6[§4Paradox AntiCheat Command Help§6]§r§o");
 
     if (!isParadoxMessage) {
         return;
@@ -374,7 +380,14 @@ bot.on("text", (packet: WhisperPacket | ChatPacket) => {
 
     // Is a separate logging channel enabled to send logs to that channel?
     if (paradoxLogs === true) {
-        if (rawText.includes("§r§4[§6Paradox§4]§r") || rawText.includes("§l§6[§4Paradox§6]§r") || rawText.includes("§l§6[§4Paradox AntiCheat Command Help§6]") || rawText.includes("§f§o§4[§6Paradox§4]§f§o")) {
+        if (
+            rawText.includes("§r§4[§6Paradox§4]§r") ||
+            rawText.includes("§l§6[§4Paradox§6]§r") ||
+            rawText.includes("§l§6[§4Paradox AntiCheat Command Help§6]") ||
+            rawText.includes("§f§o§4[§6Paradox§4]§f§o") ||
+            rawText.includes("§f§4[§6Paradox§4]§f") ||
+            rawText.includes("§l§o§6[§4Paradox AntiCheat Command Help§6]§r§o")
+        ) {
             paradoxMsg = rawText;
             correctedText = autoCorrect(paradoxMsg, correction);
         } else if (rawText.startsWith("§¶§cUAC STAFF §b► §d")) {
