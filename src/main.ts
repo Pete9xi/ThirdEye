@@ -60,7 +60,7 @@ const client = new Client({ intents: [Guilds, GuildMessages, MessageContent] });
 client.login(token);
 
 let options;
-console.log("ThirdEye v1.0.4");
+console.log("ThirdEye v1.0.5");
 // bot options
 if (config.isRealm) {
     //Handel the realm config here!
@@ -291,6 +291,10 @@ bot.on("text", (packet: WhisperPacket | ChatPacket) => {
             const obj = JSON.parse(msg);
             if (obj.rawtext[0].text.includes("Discord")) {
                 //don't send the message otherwise it will loop
+                break;
+            }
+            //Patch to prevent blank messages from paradox
+            if (obj.rawtext[0].text === "") {
                 break;
             }
             //continue to send the message to discord
@@ -705,4 +709,10 @@ if (clientPermissionLevel !== "operator") {
 function autoCorrect(text: string, correction: { [key: string]: string }): string {
     const reg = new RegExp(Object.keys(correction).join("|"), "g");
     return text.replace(reg, (matched) => correction[matched as keyof typeof correction]);
+}
+if (config.debug == true) {
+    bot.on("text", (packet) => {
+        const message = packet.message;
+        console.log(message);
+    });
 }

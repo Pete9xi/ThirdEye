@@ -1,4 +1,5 @@
 export default {
+    debug: false,
     token: "",
     username: "",
     isRealm: false,
