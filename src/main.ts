@@ -66,6 +66,7 @@ if (config.isRealm) {
     //Handel the realm config here!
     console.log("Connecting to a realm");
     options = {
+        profilesFolder: "authentication_tokens",
         realms: {
             realmInvite: config.realmInviteCode,
         },
@@ -77,6 +78,7 @@ if (config.isRealm) {
         port: config.port,
         username: config.username,
         offline: config.AuthType,
+        profilesFolder: "authentication_tokens",
     } as ClientOptions;
 }
 // join server
