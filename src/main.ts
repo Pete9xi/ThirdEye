@@ -555,7 +555,7 @@ bot.on("text", (packet: WhisperPacket | ChatPacket) => {
         const username = "Server";
         if (config.useEmbed === true) {
             const msgEmbed = new EmbedBuilder()
-                .setColor(config.setColor)
+                .setColor([255, 0, 0])
                 .setTitle(config.setTitle)
                 .setDescription("[In Game] " + username + ": " + msg)
                 .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
@@ -584,7 +584,7 @@ bot.on("text", (packet: WhisperPacket | ChatPacket) => {
             const username = "Server";
             if (config.useEmbed === true) {
                 const msgEmbed = new EmbedBuilder()
-                    .setColor(config.setColor)
+                    .setColor([0, 255, 0])
                     .setTitle(config.setTitle)
                     .setDescription("[In Game] " + username + ": " + msg)
                     .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });

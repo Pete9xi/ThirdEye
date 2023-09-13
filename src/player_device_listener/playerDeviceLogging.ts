@@ -28,7 +28,7 @@ export function addPlayerListener(bot: Client, channelId: TextBasedChannel, Whit
         }
 
         if (config.useEmbed === true) {
-            const msgEmbed = new EmbedBuilder().setColor(config.setColor).setTitle(config.setTitle).setDescription(description).setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
+            const msgEmbed = new EmbedBuilder().setColor([0, 255, 0]).setTitle(config.setTitle).setDescription(description).setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
             sendToChannel(channelId, { embeds: [msgEmbed] }, "I could not find the in-game channel in Discord. 2");
         } else {
             sendToChannel(channelId, description, "I could not find the in-game channel in Discord. 3");
