@@ -22,4 +22,11 @@ export default {
     AuthType: false,
     admins: [""],
     blacklistDeviceTypes: [],
+    // Prefix for the command default is $ ie $voiceChannelCreate
+    voiceChannelCommandPrefix: "$",
+    // Category to create voice channels under.
+    voiceChannelsCategory: "Voice Channels",
+    //Put Your RoleID for admins to keep an eye on voice channels that get created
+    voiceAdminRoleID: "",
+    //Note all channels are created with a "v" in front this is used when cleaning up unused channels
 };

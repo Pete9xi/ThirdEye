@@ -5,6 +5,8 @@ import config from "./config.js";
 import { setupDeathListener } from "./death_listener/deathMessage.js";
 import { addPlayerListener } from "./player_device_listener/playerDeviceLogging.js";
 import { setupSystemCommandsListener } from "./system_commands_listener/systemCommandsLogging.js";
+import { setupVoiceChatListener } from "./voiceChat_listener/voiceChat.js";
+import { checkAndDeleteEmptyChannels } from "./voiceChat_listener/voiceChatCleanUp.js";
 
 const { MessageContent, GuildMessages, Guilds } = GatewayIntentBits;
 const channel: string = config.channel;
@@ -56,7 +58,7 @@ const correction = {
 let WhitelistRead = JSON.parse(readFileSync("whitelist.json", "utf-8"));
 
 // create new discord client that can see what servers the bot is in, as well as the messages in those servers
-const client = new Client({ intents: [Guilds, GuildMessages, MessageContent] });
+const client = new Client({ intents: [Guilds, GuildMessages, MessageContent, "GuildVoiceStates"] });
 client.login(token);
 
 let options;
@@ -152,6 +154,15 @@ client.once("ready", (c) => {
     if (!paradoxChannel) {
         console.log(`I could not find the paradoxLogs Channel in Discord. Not Ready?`);
     }
+    //pass guild
+    const guild = client.guilds.cache.get(config.guild);
+    if (guild) {
+        console.log(`Found guild: ${guild.name}`);
+    } else {
+        console.error(`Guild with ID ${config.guild} not found.`);
+    }
+    //Voice command listener
+    setupVoiceChatListener(bot, guild);
 });
 
 client.on("messageCreate", (message) => {
@@ -216,6 +227,9 @@ client.on("messageCreate", (message) => {
             });
         }
     }
+});
+client.on("voiceStateUpdate", (newState) => {
+    checkAndDeleteEmptyChannels(newState.guild);
 });
 
 bot.on("close", () => {
