@@ -16,6 +16,7 @@
     <p>• Player leave messages</p>
     <p>• Device blacklist/whitelist</p>
     <p>• Support for BDS and Realms</p>
+<p>• Players can create in game private voice channels without leaving the game, this is a automated process invite commands and well as creation commands</p>
   </div>
 </div>
 
