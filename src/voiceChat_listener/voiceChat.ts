@@ -6,7 +6,6 @@ export function setupVoiceChatListener(bot: Client, targetGuild: Guild) {
     bot.on("text", (packet) => {
         switch (packet.type) {
             case "json_whisper": {
-                console.log(packet);
                 const msg = packet.message;
                 const obj = JSON.parse(msg);
                 let requester: string;

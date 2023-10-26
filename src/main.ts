@@ -7,22 +7,23 @@ import { addPlayerListener } from "./player_device_listener/playerDeviceLogging.
 import { setupSystemCommandsListener } from "./system_commands_listener/systemCommandsLogging.js";
 import { setupVoiceChatListener } from "./voiceChat_listener/voiceChat.js";
 import { checkAndDeleteEmptyChannels } from "./voiceChat_listener/voiceChatCleanUp.js";
+import { setupAntiCheatListener } from "./anticheat_listener/anticheat_logs.js";
 
 const { MessageContent, GuildMessages, Guilds } = GatewayIntentBits;
 const channel: string = config.channel;
 let channelId: TextBasedChannel;
 const token = config.token;
-const paradoxChannel: string = config.paradoxLogsChannel;
-let paradoxChannelId: TextBasedChannel;
+const anticheatChannel: string = config.antiCheatLogsChannel;
+let anticheatChannelId: TextBasedChannel;
 const systemCommandsChannel: string = config.systemCommandsChannel;
 let systemCommandsChannelId: TextBasedChannel;
-const paradoxLogs = config.ParadoxEnabled;
+const anticheatLogs = config.antiCheatEnabled;
 const cmdPrefix = config.cmdPrefix;
 const logSystemCommands = config.logSystemCommands;
 let clientPermissionLevel: string = "";
 let clientGamemode: string = "";
 let clientEntityID: BigInt;
-const correction = {
+export const correction = {
     "§r§4[§6Paradox§4]§r": "Paradox",
     "§4[§6Paradox§4]": "Paradox",
     "§l§6[§4Paradox§6]§r": "Paradox",
@@ -62,7 +63,7 @@ const client = new Client({ intents: [Guilds, GuildMessages, MessageContent, "Gu
 client.login(token);
 
 let options;
-console.log("ThirdEye v1.0.5");
+console.log("ThirdEye v1.0.6");
 // bot options
 if (config.isRealm) {
     //Handel the realm config here!
@@ -95,14 +96,14 @@ bot.on("spawn", () => {
             .setDescription("[ThirdEye]:" + " Client is logged in.")
             .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
 
-        if (typeof paradoxChannelId === "object") {
-            return paradoxChannelId.send({ embeds: [msgEmbed] });
+        if (typeof anticheatChannelId === "object") {
+            return anticheatChannelId.send({ embeds: [msgEmbed] });
         } else {
             return console.log("I could not find the paradoxLogs channel in Discord. 1");
         }
     } else {
-        if (typeof paradoxChannelId === "object") {
-            return paradoxChannelId.send("[ThirdEye]: Client is logged in.");
+        if (typeof anticheatChannelId === "object") {
+            return anticheatChannelId.send("[ThirdEye]: Client is logged in.");
         } else {
             return console.log("I could not find the paradoxLogs channel in Discord. 2");
         }
@@ -129,10 +130,11 @@ client.once("ready", (c) => {
         console.log(`I could not find the in-game channel in Discord. 1`);
     }
 
-    if (paradoxLogs === true) {
-        const paradoxChannelObj = client.channels.cache.get(paradoxChannel);
-        if (paradoxChannelObj) {
-            paradoxChannelId = paradoxChannelObj as TextBasedChannel;
+    if (anticheatLogs === true) {
+        const anticheatChannelObj = client.channels.cache.get(anticheatChannel);
+        if (anticheatChannelObj) {
+            anticheatChannelId = anticheatChannelObj as TextBasedChannel;
+            setupAntiCheatListener(bot, anticheatChannelId);
         } else {
             console.log(`I could not find the paradoxLogs Channel in Discord. 3`);
         }
@@ -151,7 +153,7 @@ client.once("ready", (c) => {
     if (!channel) {
         console.log(`I could not find the in game channel in Discord. Not Ready?`);
     }
-    if (!paradoxChannel) {
+    if (!anticheatChannel) {
         console.log(`I could not find the paradoxLogs Channel in Discord. Not Ready?`);
     }
     //pass guild
@@ -173,7 +175,7 @@ client.on("messageCreate", (message) => {
     } else {
         //get the list if admins
         const admins = config.admins;
-        if (message.content.startsWith(cmdPrefix) && admins.includes(message.author.id) && paradoxChannel && message.channel.id === paradoxChannelId.id) {
+        if (message.content.startsWith(cmdPrefix) && admins.includes(message.author.id) && anticheatChannel && message.channel.id === anticheatChannelId.id) {
             console.log("command received: " + message.content + " From: " + message.author.id);
             bot.queue("text", {
                 type: "chat",
@@ -186,7 +188,7 @@ client.on("messageCreate", (message) => {
             return;
         }
 
-        if (message.content.startsWith("$") && admins.includes(message.author.id) && paradoxChannel && message.channel.id === paradoxChannelId.id && !message.content.endsWith("-r") && !message.content.includes("$reboot")) {
+        if (message.content.startsWith("$") && admins.includes(message.author.id) && anticheatChannel && message.channel.id === anticheatChannelId.id && !message.content.endsWith("-r") && !message.content.includes("$reboot")) {
             //add the user to the whitelist.
             const msg = message.content.replace("$", "");
             WhitelistRead.whitelist.push(msg);
@@ -196,7 +198,7 @@ client.on("messageCreate", (message) => {
             console.log("Reloaded contents:", WhitelistRead.whitelist);
             return;
         }
-        if (message.content.startsWith("$") && admins.includes(message.author.id) && paradoxChannel && message.channel.id === paradoxChannelId.id && message.content.endsWith("-r") && !message.content.includes("$reboot")) {
+        if (message.content.startsWith("$") && admins.includes(message.author.id) && anticheatChannel && message.channel.id === anticheatChannelId.id && message.content.endsWith("-r") && !message.content.includes("$reboot")) {
             // remove the user from the whitelist.
             const msg = message.content.replace("$", "");
             const msgdel = msg.replace("-r", "");
@@ -208,7 +210,7 @@ client.on("messageCreate", (message) => {
             console.log("Reloaded contents:", WhitelistRead.whitelist);
             return;
         }
-        if (message.content === "$reboot" && admins.includes(message.author.id) && paradoxChannel && message.channel.id === paradoxChannelId.id) {
+        if (message.content === "$reboot" && admins.includes(message.author.id) && anticheatChannel && message.channel.id === anticheatChannelId.id) {
             console.log("Forcing a re connect.");
             process.exit(); // Exit the script
         }
@@ -250,14 +252,14 @@ bot.on("close", () => {
             .setTitle(config.setTitle)
             .setDescription("[ThirdEye]:" + " The client has lost connection to the server and will initiate a reboot in: " + remainingTime + " Seconds")
             .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
-        if (typeof paradoxChannelId === "object") {
-            paradoxChannelId.send({ embeds: [msgEmbed] });
+        if (typeof anticheatChannelId === "object") {
+            anticheatChannelId.send({ embeds: [msgEmbed] });
         } else {
             return console.log("I could not find the paradoxLogs channel in Discord. 4");
         }
     } else {
-        if (typeof paradoxChannelId === "object") {
-            paradoxChannelId.send(`[ThirdEye]: The client has lost connection to the server and will initiate a reboot in: **${remainingTime} ** Seconds`);
+        if (typeof anticheatChannelId === "object") {
+            anticheatChannelId.send(`[ThirdEye]: The client has lost connection to the server and will initiate a reboot in: **${remainingTime} ** Seconds`);
         } else {
             console.log("I could not find the paradoxLogs channel in Discord. 5");
         }
@@ -276,14 +278,14 @@ bot.on("close", () => {
                     .setDescription("[ThirdEye]:" + " Client is rebooting in: " + remainingTime + " Seconds")
                     .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
 
-                if (typeof paradoxChannelId === "object") {
-                    paradoxChannelId.send({ embeds: [msgEmbed] });
+                if (typeof anticheatChannelId === "object") {
+                    anticheatChannelId.send({ embeds: [msgEmbed] });
                 } else {
                     return console.log("I could not find the paradoxLogs channel in Discord. 6");
                 }
             } else {
-                if (typeof paradoxChannelId === "object") {
-                    paradoxChannelId.send(`[ThirdEye]: Client is rebooting in: **${remainingTime} ** Seconds`);
+                if (typeof anticheatChannelId === "object") {
+                    anticheatChannelId.send(`[ThirdEye]: Client is rebooting in: **${remainingTime} ** Seconds`);
                 } else {
                     return console.log("I could not find the paradoxLogs channel in Discord. 7");
                 }
@@ -374,193 +376,6 @@ bot.on("text", (packet: WhisperPacket | ChatPacket) => {
         }
     }
 });
-//Paradox Messages
-bot.on("text", (packet: WhisperPacket | ChatPacket) => {
-    const message = packet.message;
-
-    const isParadoxMessage =
-        message.includes("§r§4[§6Paradox§4]§r") ||
-        message.includes("§¶§cUAC STAFF §b► §d") ||
-        message.includes("§r§6[§aScythe§6]§r") ||
-        message.includes("§l§6[§4Paradox§6]§r") ||
-        message.includes("§l§6[§4Paradox AntiCheat Command Help§6]") ||
-        message.includes("§f§o§4[§6Paradox§4]§f§o") ||
-        message.includes("§f§4[§6Paradox§4]§f") ||
-        message.includes("§l§o§6[§4Paradox AntiCheat Command Help§6]§r§o");
-
-    if (!isParadoxMessage) {
-        return;
-    }
-
-    const obj = JSON.parse(message);
-    const rawText = obj.rawtext[0]?.text || "";
-
-    let paradoxMsg;
-    let correctedText;
-
-    // Is a separate logging channel enabled to send logs to that channel?
-    if (paradoxLogs === true) {
-        if (
-            rawText.includes("§r§4[§6Paradox§4]§r") ||
-            rawText.includes("§l§6[§4Paradox§6]§r") ||
-            rawText.includes("§l§6[§4Paradox AntiCheat Command Help§6]") ||
-            rawText.includes("§f§o§4[§6Paradox§4]§f§o") ||
-            rawText.includes("§f§4[§6Paradox§4]§f") ||
-            rawText.includes("§l§o§6[§4Paradox AntiCheat Command Help§6]§r§o")
-        ) {
-            paradoxMsg = rawText;
-            correctedText = autoCorrect(paradoxMsg, correction);
-        } else if (rawText.startsWith("§¶§cUAC STAFF §b► §d")) {
-            paradoxMsg =
-                rawText +
-                obj.rawtext
-                    .slice(1, 3)
-                    .map((t: { text: string }) => t.text)
-                    .join("");
-            correctedText = autoCorrect(paradoxMsg, correction);
-        } else if (rawText.startsWith("§r§6[§aScythe§6]§r")) {
-            paradoxMsg = rawText;
-            correctedText = autoCorrect(paradoxMsg, correction);
-        }
-
-        if (correctedText) {
-            if (config.useEmbed === true) {
-                if (correctedText.length >= 2000) {
-                    const moderationStartIndex = correctedText.indexOf("[Moderation Commands]");
-                    const optionalFeaturesStartIndex = correctedText.indexOf("[Optional Features]");
-                    const toolsUtilitiesStartIndex = correctedText.indexOf("[Tools and Utilites]");
-
-                    const moderationEndIndex = optionalFeaturesStartIndex !== -1 ? optionalFeaturesStartIndex : toolsUtilitiesStartIndex;
-                    const optionalFeaturesEndIndex = toolsUtilitiesStartIndex !== -1 ? toolsUtilitiesStartIndex : correctedText.length;
-
-                    const moderationMessage = correctedText.substring(moderationStartIndex, moderationEndIndex).trim();
-                    const optionalFeaturesMessage = correctedText.substring(optionalFeaturesStartIndex, optionalFeaturesEndIndex).trim();
-                    const toolsUtilitiesMessage = correctedText.substring(toolsUtilitiesStartIndex).trim();
-
-                    const messages = [moderationMessage, optionalFeaturesMessage, toolsUtilitiesMessage];
-
-                    messages.forEach((msg) => {
-                        if (msg.includes("has banned")) {
-                            var thumbUrl: string = "https://i.imgur.com/F18zcLY.png";
-                        }
-                        const embed = new EmbedBuilder()
-                            .setColor(config.setColor)
-                            .setTitle(config.setTitle)
-                            .setDescription("[In Game] " + msg)
-                            .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" })
-                            .setThumbnail(thumbUrl);
-
-                        if (typeof paradoxChannelId === "object") {
-                            paradoxChannelId.send({ embeds: [embed] });
-                        } else {
-                            console.log("I could not find the channel for the paradoxLogs Channel in Discord.");
-                        }
-                    });
-
-                    return;
-                }
-
-                const embed = new EmbedBuilder()
-                    .setColor(config.setColor)
-                    .setTitle(config.setTitle)
-                    .setDescription("[In Game] " + correctedText)
-                    .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
-
-                if (typeof paradoxChannelId === "object") {
-                    return paradoxChannelId.send({ embeds: [embed] });
-                } else {
-                    return console.log("I could not find the paradoxLogs channel in Discord.");
-                }
-            } else {
-                if (typeof paradoxChannelId === "object") {
-                    return paradoxChannelId.send(`[In Game] Paradox: ${paradoxMsg}`);
-                } else {
-                    return console.log("I could not find the paradoxLogs channel in Discord.");
-                }
-            }
-        }
-    }
-
-    // If not, then just send it to the normal channel
-    if (rawText.startsWith("§r§4[§6Paradox§4]§r")) {
-        const paradoxMsg = rawText.replace("§r§4[§6Paradox§4]§r", "");
-        if (config.useEmbed === true) {
-            const embed = new EmbedBuilder()
-                .setColor(config.setColor)
-                .setTitle(config.setTitle)
-                .setDescription("[In Game] " + "Paradox" + ": " + paradoxMsg)
-                .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
-
-            if (typeof channelId === "object") {
-                return channelId.send({ embeds: [embed] });
-            } else {
-                return console.log("I could not find the in-game channel in Discord.");
-            }
-        } else {
-            if (typeof channelId === "object") {
-                return channelId.send(`[In Game] Paradox: ${paradoxMsg}`);
-            } else {
-                return console.log("I could not find the in-game channel in Discord.");
-            }
-        }
-    }
-
-    if (rawText.startsWith("§¶§cUAC STAFF §b► §d")) {
-        paradoxMsg =
-            rawText +
-            obj.rawtext
-                .slice(1, 3)
-                .map((t: { text: string }) => t.text)
-                .join("");
-        correctedText = autoCorrect(paradoxMsg, correction);
-
-        if (config.useEmbed === true) {
-            const embed = new EmbedBuilder()
-                .setColor(config.setColor)
-                .setTitle(config.setTitle)
-                .setDescription("[In Game] " + correctedText)
-                .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
-
-            if (typeof channelId === "object") {
-                return channelId.send({ embeds: [embed] });
-            } else {
-                return console.log("I could not find the in-game channel in Discord.");
-            }
-        } else {
-            if (typeof channelId === "object") {
-                return channelId.send(`[In Game] Paradox: ${paradoxMsg}`);
-            } else {
-                return console.log("I could not find the in-game channel in Discord.");
-            }
-        }
-    }
-
-    if (rawText.startsWith("§r§6[§aScythe§6]§r")) {
-        paradoxMsg = rawText;
-        correctedText = autoCorrect(paradoxMsg, correction);
-
-        if (config.useEmbed === true) {
-            const embed = new EmbedBuilder()
-                .setColor(config.setColor)
-                .setTitle(config.setTitle)
-                .setDescription("[In Game] " + correctedText)
-                .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
-
-            if (typeof channelId === "object") {
-                return channelId.send({ embeds: [embed] });
-            } else {
-                return console.log("I could not find the in-game channel in Discord.");
-            }
-        } else {
-            if (typeof channelId === "object") {
-                return channelId.send(`[In Game] Paradox: ${paradoxMsg}`);
-            } else {
-                return console.log("I could not find the in-game channel in Discord.");
-            }
-        }
-    }
-});
-
 // Player leave messages.
 bot.on("text", (packet: WhisperPacket | ChatPacket) => {
     //Check for player leaving and report thi back to discord.
@@ -722,7 +537,7 @@ if (clientPermissionLevel !== "operator") {
     intervalId = setInterval(sendMessageToDiscord, 10000);
 }
 
-function autoCorrect(text: string, correction: { [key: string]: string }): string {
+export function autoCorrect(text: string, correction: { [key: string]: string }): string {
     const reg = new RegExp(Object.keys(correction).join("|"), "g");
     return text.replace(reg, (matched) => correction[matched as keyof typeof correction]);
 }
