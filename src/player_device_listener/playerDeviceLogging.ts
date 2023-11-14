@@ -3,6 +3,12 @@ import { EmbedBuilder, TextBasedChannel } from "discord.js";
 import config from "../config.js";
 import { Client } from "bedrock-protocol";
 
+/* Add to prevent the message being spammed this will allow the blacklist to work, 
+it seems that when a player leaves the range of the bot account 
+and returns it sends the message again.
+*/
+const Debug: boolean = false;
+
 export function addPlayerListener(bot: Client, channelId: TextBasedChannel, WhitelistRead: any) {
     const Whitelist = WhitelistRead.whitelist;
 
@@ -26,12 +32,13 @@ export function addPlayerListener(bot: Client, channelId: TextBasedChannel, Whit
 
             description = `[Server] ${packet.username}: Has been kicked as the device has been blacklisted: ${packet.device_os}`;
         }
-
-        if (config.useEmbed === true) {
-            const msgEmbed = new EmbedBuilder().setColor([0, 255, 0]).setTitle(config.setTitle).setDescription(description).setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
-            sendToChannel(channelId, { embeds: [msgEmbed] }, "I could not find the in-game channel in Discord. 2");
-        } else {
-            sendToChannel(channelId, description, "I could not find the in-game channel in Discord. 3");
+        if (Debug === true) {
+            if (config.useEmbed === true) {
+                const msgEmbed = new EmbedBuilder().setColor([0, 255, 0]).setTitle(config.setTitle).setDescription(description).setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
+                sendToChannel(channelId, { embeds: [msgEmbed] }, "I could not find the in-game channel in Discord. 2");
+            } else {
+                sendToChannel(channelId, description, "I could not find the in-game channel in Discord. 3");
+            }
         }
     });
 }
