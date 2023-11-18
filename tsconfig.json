@@ -1,7 +1,7 @@
 {
     "compileOnSave": false,
     "compilerOptions": {
-        "typeRoots": ["node_modules/@discordjs", "bedrock-protocol"],
+        "typeRoots": ["node_modules/@discordjs", "bedrock-protocol", "src/types"],
         "lib": ["ESNext"],
         "target": "ESNext",
         "module": "ESNext",
