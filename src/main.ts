@@ -512,7 +512,7 @@ bot.on("update_player_game_type", (packet: UpdatePlayerGameType) => {
 });
 
 //Check to see what the current permission level is alert the user via discord if the client needs to be opped.
-let intervalId: NodeJS.Timer;
+let intervalId: NodeJS.Timeout;
 
 function sendMessageToDiscord() {
     if (clientPermissionLevel === "member") {
