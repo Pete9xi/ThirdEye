@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from "fs";
-import { Client, GatewayIntentBits, EmbedBuilder, TextBasedChannel } from "discord.js";
+import { Client, GatewayIntentBits, EmbedBuilder, TextBasedChannel, Guild } from "discord.js";
 import { createClient, ClientOptions } from "bedrock-protocol";
 import config from "./config.js";
 import { setupDeathListener } from "./death_listener/deathMessage.js";
@@ -164,7 +164,7 @@ client.once("ready", (c) => {
         console.error(`Guild with ID ${config.guild} not found.`);
     }
     //Voice command listener
-    setupVoiceChatListener(bot, guild);
+    setupVoiceChatListener(bot, guild as Guild);
 });
 
 client.on("messageCreate", (message) => {
