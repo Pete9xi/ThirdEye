@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from "fs";
-import { Client, GatewayIntentBits, EmbedBuilder, TextBasedChannel } from "discord.js";
+import { Client, GatewayIntentBits, EmbedBuilder, TextBasedChannel, Guild } from "discord.js";
 import { createClient, ClientOptions } from "bedrock-protocol";
 import config from "./config.js";
 import { setupDeathListener } from "./death_listener/deathMessage.js";
@@ -165,7 +165,7 @@ client.once("ready", (c) => {
         console.error(`Guild with ID ${config.guild} not found.`);
     }
     //Voice command listener
-    setupVoiceChatListener(bot, guild);
+    setupVoiceChatListener(bot, guild as Guild);
 });
 
 client.on("messageCreate", (message) => {
@@ -531,7 +531,7 @@ bot.on("update_player_game_type", (packet: UpdatePlayerGameType) => {
 });
 
 //Check to see what the current permission level is alert the user via discord if the client needs to be opped.
-let intervalId: NodeJS.Timer;
+let intervalId: NodeJS.Timeout;
 
 function sendMessageToDiscord() {
     if (clientPermissionLevel === "member") {
