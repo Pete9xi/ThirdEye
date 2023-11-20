@@ -8,6 +8,7 @@ import { setupSystemCommandsListener } from "./system_commands_listener/systemCo
 import { setupVoiceChatListener } from "./voiceChat_listener/voiceChat.js";
 import { checkAndDeleteEmptyChannels } from "./voiceChat_listener/voiceChatCleanUp.js";
 import { setupAntiCheatListener } from "./anticheat_listener/anticheat_logs.js";
+import { idList } from "./badActors.js";
 
 const { MessageContent, GuildMessages, Guilds } = GatewayIntentBits;
 const channel: string = config.channel;
@@ -215,8 +216,26 @@ client.on("messageCreate", (message) => {
             process.exit(); // Exit the script
         }
         if (channel && message.channel.id === channelId.id) {
-            //We will then send a command to the server to trigger the message sent in discord.
-            const cmd = `/tellraw @a {"rawtext":[{"text":"§8[§9Discord§8] §7${message.author.username}: §f${message.content}"}]}`;
+            let cmd;
+            //Check to make sure the Discord User is not on the know bad actors ID list.
+            if (idList.includes(message.author.id)) {
+                //We will then send a command to the server to trigger the message sent in discord.
+                cmd = `/tellraw @a {"rawtext":[{"text":"§8[§9Discord§8] §4${message.author.username} (Known Hacker/Troll) : §f${message.content}"}]}`;
+                //If configured Log the message to anticheat channel.
+                if (config.logBadActors === true) {
+                    const msgEmbed = new EmbedBuilder()
+                        .setColor(config.setColor)
+                        .setTitle(config.setTitle)
+                        .setDescription("Message sent to the bot from Discord from Author: " + message.author.username + " Content: " + message.content + " Unique ID: " + message.author.id)
+                        .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" })
+                        .setThumbnail("https://static.wikia.nocookie.net/minecraft_gamepedia/images/7/76/Impulse_Command_Block.gif/revision/latest?cb=20191017044126");
+                    anticheatChannelId.send({ embeds: [msgEmbed] });
+                }
+            } else {
+                //We will then send a command to the server to trigger the message sent in discord.
+                cmd = `/tellraw @a {"rawtext":[{"text":"§8[§9Discord§8] §7${message.author.username}: §f${message.content}"}]}`;
+            }
+
             bot.queue("command_request", {
                 command: cmd,
                 origin: {

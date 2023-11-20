@@ -28,4 +28,7 @@ export default {
     //Put Your RoleID for admins to keep an eye on voice channels that get created
     voiceAdminRoleID: "",
     //Note all channels are created with a "v" in front this is used when cleaning up unused channels
+
+    //If set to true, when a known bad actor sends a message to ThirdEye via discord or a discord Client it will be logged to the anticheat channel.
+    logBadActors: true,
 };
