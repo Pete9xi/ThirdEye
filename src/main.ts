@@ -320,10 +320,10 @@ bot.on("close", () => {
 });
 
 //Send ingame message to discord.
-bot.on("text", (packet: WhisperPacket | ChatPacket) => {
+bot.on("text", (packet: JsonPacket | ChatPacket) => {
     //Check the packet type.
     switch (packet.type) {
-        case "json_whisper": {
+        case "json": {
             const msg = packet.message;
             const obj = JSON.parse(msg);
             if (obj.rawtext[0].text.includes("Discord")) {
