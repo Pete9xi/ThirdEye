@@ -326,6 +326,12 @@ bot.on("text", (packet: JsonPacket | ChatPacket) => {
         case "json": {
             const msg = packet.message;
             const obj = JSON.parse(msg);
+            /*As paradox is now using json packets for chat due to the restrictions in the API via the 1.20.60 update 
+            this checks to make sure the packet is not a command result etc where the text value is not present.
+            */
+            if (obj.rawtext[0].translate) {
+                break;
+            }
             if (obj.rawtext[0].text.includes("Discord")) {
                 //don't send the message otherwise it will loop
                 break;
