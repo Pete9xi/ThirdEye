@@ -64,7 +64,7 @@ const client = new Client({ intents: [Guilds, GuildMessages, MessageContent, "Gu
 client.login(token);
 
 let options;
-console.log("ThirdEye v1.0.6");
+console.log("ThirdEye v1.0.8");
 // bot options
 if (config.isRealm) {
     //Handel the realm config here!
@@ -176,7 +176,7 @@ client.on("messageCreate", (message) => {
     } else {
         //get the list if admins
         const admins = config.admins;
-        if (message.content.startsWith(cmdPrefix) && admins.includes(message.author.id) && anticheatChannel && message.channel.id === anticheatChannelId.id) {
+        if (message.content.startsWith(cmdPrefix) && !message.content.startsWith(cmdPrefix + "/") && admins.includes(message.author.id) && anticheatChannel && message.channel.id === anticheatChannelId.id) {
             console.log("command received: " + message.content + " From: " + message.author.id);
             bot.queue("text", {
                 type: "chat",
@@ -186,6 +186,24 @@ client.on("messageCreate", (message) => {
                 platform_chat_id: "",
                 message: `${message.content}`,
             });
+            return;
+        }
+        //Check to see if the user is running a minecraft slash command
+        if (message.content.startsWith(cmdPrefix + "/") && admins.includes(message.author.id) && anticheatChannel && message.channel.id === anticheatChannelId.id) {
+            console.log("command received: " + message.content + " From: " + message.author.id);
+            //remove the prefix data and create the command
+            let cmd = message.content.slice(2);
+            bot.queue("command_request", {
+                command: cmd,
+                origin: {
+                    type: "player",
+                    uuid: "",
+                    request_id: "",
+                },
+                internal: false,
+                version: 52,
+            });
+
             return;
         }
 
