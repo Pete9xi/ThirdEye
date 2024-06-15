@@ -6,12 +6,12 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@types/node": "20.12.7    ",
-    "bedrock-protocol": "3.36.0",
-    "discord.js": "14.14.1",
-    "prettier": "3.2.5",
+    "@types/node": "20.14.2    ",
+    "bedrock-protocol": "3.37.0",
+    "discord.js": "14.15.3",
+    "prettier": "3.3.2",
     "typescript": "5.4.5",
-    "discord-api-types": "0.37.82"
+    "discord-api-types": "0.37.89"
   },
   "prettier": {
     "trailingComma": "es5",
