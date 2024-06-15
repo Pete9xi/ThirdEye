@@ -49,9 +49,6 @@ export const correction = {
     "§o": "",
     "§k": "",
     "§¶": "",
-    "§3[§bUAC§3]§": "[UAC]",
-    "§¶§cUAC ►": "UAC ►",
-    "§¶§cUAC STAFF §b► §d": "UAC STAFF ►",
     "§r§6[§aScythe§6]§r": "",
     "§f§4[§6Paradox§4]§f": "Paradox",
     "\\n§l§o§6[§4Paradox AntiCheat Command Help§6]§r§o\\n": "Paradox AntiCheat Command Help",
@@ -362,7 +359,6 @@ bot.on("text", (packet: JsonPacket | ChatPacket) => {
 
             if (
                 obj.rawtext[0].text.includes("§r§4[§6Paradox§4]§r") ||
-                obj.rawtext[0].text.includes("UAC") ||
                 obj.rawtext[0].text.includes("§r§6[§aScythe§6]§r") ||
                 obj.rawtext[0].text.includes("§l§6[§4Paradox§6]§r") ||
                 obj.rawtext[0].text.includes("§l§6[§4Paradox AntiCheat Command Help§6]") ||
@@ -421,7 +417,7 @@ bot.on("text", (packet: JsonPacket | ChatPacket) => {
 });
 // Player leave messages.
 bot.on("text", (packet: WhisperPacket | ChatPacket) => {
-    //Check for player leaving and report thi back to discord.
+    //Check for player leaving and report this back to discord.
     if (packet.message.includes("§e%multiplayer.player.left")) {
         const msg = packet.parameters + ": Has left the server.";
         const username = "Server";
