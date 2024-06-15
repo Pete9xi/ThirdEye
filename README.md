@@ -27,7 +27,7 @@
     <p>This has been broken down into three parts:</p>
     <p>1. Creating the bot application</p>
     <p>2. Configuring the client script</p>
-    <p>3. Installing Node.js 18.16.0 LTS</p>
+    <p>3. Installing Node.js 20.9.0 LTS</p>
   </div>
 </div>
 
