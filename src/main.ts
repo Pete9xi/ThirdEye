@@ -61,7 +61,7 @@ const client = new Client({ intents: [Guilds, GuildMessages, MessageContent, "Gu
 client.login(token);
 
 let options;
-console.log("ThirdEye v1.0.8");
+console.log("ThirdEye v1.0.9");
 // bot options
 if (config.isRealm) {
     //Handel the realm config here!
