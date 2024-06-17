@@ -182,6 +182,7 @@ client.on("messageCreate", (message) => {
                 xuid: "",
                 platform_chat_id: "",
                 message: `${message.content}`,
+                filtered_message: "",
             });
             return;
         }
