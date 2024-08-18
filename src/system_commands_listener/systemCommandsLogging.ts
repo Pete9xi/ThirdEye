@@ -96,7 +96,7 @@ function handleTextEvent(packet: WhisperPacket | ChatPacket | JsonPacket, system
     if (!dontSendMessage) {
         const message = `[System Message] ${playerName}: ${successMessage} ${systemMessage}`;
         if (config.useEmbed) {
-            const msgEmbed = new EmbedBuilder().setColor(config.setColor).setTitle(config.setTitle).setDescription(message).setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
+            const msgEmbed = new EmbedBuilder().setColor(config.setColor).setTitle(config.setTitle).setDescription(message).setAuthor({ name: "‎", iconURL: config.logoURL });
 
             if (typeof systemCommandsChannelId === "object") {
                 systemCommandsChannelId.send({ embeds: [msgEmbed] });

@@ -87,7 +87,7 @@ function sendDeathMessage(channelId: TextBasedChannel, playername: string, reaso
             .setColor(config.setColor)
             .setTitle(config.setTitle)
             .setDescription("[In Game] " + playername + ": " + reason)
-            .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
+            .setAuthor({ name: "‎", iconURL: config.logoURL });
         if (typeof channelId === "object") {
             channelId.send({ embeds: [msgEmbed] });
         } else {
