@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="https://i.imgur.com/LEomQzi.png"style="width:200px;height:200px;">
+    <img src="https://i.imgur.com/XfoZ8XS.jpg"style="width:200px;height:200px;">
   <h2>ThirdEye</h2>
   <p>ThirdEye is a tool that enables two-way chat between Discord and Minecraft, along with logs for anticheats. It has integration with Paradox anticheat but is also compatible with other anticheats or no anticheat at all. It supports both BDS and Realms, and the configuration is done in the config.json file. To use ThirdEye, Node.js needs to be installed on the host machine.</p>
   <p>ThirdEye requires Node.js. It can run on various devices, such as a Raspberry Pi, an old Windows PC or Mac, or an old PC running a Linux distro like Ubuntu.</p>
@@ -105,6 +105,8 @@
 </div>
 
 <div align="center">
-  <h2>Credits</h2>
-  <p> Graphics created by Kvr#7119</p>
+  <h2>Contributors</h2>
+  <p> Visual1mpact: Conversion to TypeScript and various changes.</p>
+  <br>
+  <p>Kvr#7119: Original Logo</p>
 </div>
