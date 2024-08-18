@@ -25,14 +25,14 @@
   <div align="center">
     <h2>Installing ThirdEye</h2>
     <p>This has been broken down into three parts:</p>
-    <p>1. Creating the bot application</p>
+    <p>1. Creating the Discord application</p>
     <p>2. Configuring the client script</p>
     <p>3. Installing Node.js 20.9.0 LTS</p>
   </div>
 </div>
 
  <div>
-  <h2>Creating the bot application</h2>
+  <h2>Creating the Discord application</h2>
   <p>1. Head over to the Discord Developer Portal: <a href="https://discord.com/developers/applications" target="_blank">https://discord.com/developers/applications</a></p>
   <p>2. Click on "Create a new application"</p>
   <img src="https://i.imgur.com/VV9JapE.png">
