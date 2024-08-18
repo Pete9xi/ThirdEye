@@ -92,7 +92,7 @@ bot.on("spawn", () => {
             .setColor(config.setColor)
             .setTitle(config.setTitle)
             .setDescription("[ThirdEye]:" + " Client is logged in.")
-            .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
+            .setAuthor({ name: "‎", iconURL: config.logoURL });
 
         if (typeof anticheatChannelId === "object") {
             return anticheatChannelId.send({ embeds: [msgEmbed] });
@@ -243,7 +243,7 @@ client.on("messageCreate", (message) => {
                         .setColor(config.setColor)
                         .setTitle(config.setTitle)
                         .setDescription("Message sent to the bot from Discord from Author: " + message.author.username + " Content: " + message.content + " Unique ID: " + message.author.id)
-                        .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" })
+                        .setAuthor({ name: "‎", iconURL: config.logoURL })
                         .setThumbnail("https://static.wikia.nocookie.net/minecraft_gamepedia/images/7/76/Impulse_Command_Block.gif/revision/latest?cb=20191017044126");
                     anticheatChannelId.send({ embeds: [msgEmbed] });
                 }
@@ -286,7 +286,7 @@ bot.on("close", () => {
             .setColor(config.setColor)
             .setTitle(config.setTitle)
             .setDescription("[ThirdEye]:" + " The client has lost connection to the server and will initiate a reboot in: " + remainingTime + " Seconds")
-            .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
+            .setAuthor({ name: "‎", iconURL: config.logoURL });
         if (typeof anticheatChannelId === "object") {
             anticheatChannelId.send({ embeds: [msgEmbed] });
         } else {
@@ -311,7 +311,7 @@ bot.on("close", () => {
                     .setColor(config.setColor)
                     .setTitle(config.setTitle)
                     .setDescription("[ThirdEye]:" + " Client is rebooting in: " + remainingTime + " Seconds")
-                    .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
+                    .setAuthor({ name: "‎", iconURL: config.logoURL });
 
                 if (typeof anticheatChannelId === "object") {
                     anticheatChannelId.send({ embeds: [msgEmbed] });
@@ -377,7 +377,7 @@ bot.on("text", (packet: JsonPacket | ChatPacket) => {
                     .setColor(config.setColor)
                     .setTitle(config.setTitle)
                     .setDescription("[In Game] " + correctedText)
-                    .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
+                    .setAuthor({ name: "‎", iconURL: config.logoURL });
 
                 if (typeof channelId === "object") {
                     return channelId.send({ embeds: [msgEmbed] });
@@ -400,7 +400,7 @@ bot.on("text", (packet: JsonPacket | ChatPacket) => {
                     .setColor(config.setColor)
                     .setTitle(config.setTitle)
                     .setDescription("[In Game] " + packet.source_name + ": " + packet.message)
-                    .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
+                    .setAuthor({ name: "‎", iconURL: config.logoURL });
                 if (typeof channelId === "object") {
                     return channelId.send({ embeds: [msgEmbed] });
                 } else {
@@ -427,7 +427,7 @@ bot.on("text", (packet: WhisperPacket | ChatPacket) => {
                 .setColor([255, 0, 0])
                 .setTitle(config.setTitle)
                 .setDescription("[In Game] " + username + ": " + msg)
-                .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
+                .setAuthor({ name: "‎", iconURL: config.logoURL });
             if (typeof channelId === "object") {
                 return channelId.send({ embeds: [msgEmbed] });
             } else {
@@ -456,7 +456,7 @@ bot.on("text", (packet: WhisperPacket | ChatPacket) => {
                     .setColor([0, 255, 0])
                     .setTitle(config.setTitle)
                     .setDescription("[In Game] " + username + ": " + msg)
-                    .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
+                    .setAuthor({ name: "‎", iconURL: config.logoURL });
 
                 if (typeof channelId === "object") {
                     return channelId.send({ embeds: [msgEmbed] });
@@ -502,12 +502,7 @@ bot.on("update_abilities", (packet: UpdateAbilities) => {
         //update the var clientPermissionLevel.
         clientPermissionLevel = permissionLevel;
         if (typeof systemCommandsChannelId === "object") {
-            const msgEmbedOp = new EmbedBuilder()
-                .setColor(0x2ffc01)
-                .setTitle(config.setTitle)
-                .setDescription("[ThirdEye]: The bot is a operator.")
-                .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" })
-                .setThumbnail("https://i.imgur.com/bEgXSej.png");
+            const msgEmbedOp = new EmbedBuilder().setColor(0x2ffc01).setTitle(config.setTitle).setDescription("[ThirdEye]: The bot is a operator.").setAuthor({ name: "‎", iconURL: config.logoURL }).setThumbnail("https://i.imgur.com/bEgXSej.png");
             systemCommandsChannelId.send({ embeds: [msgEmbedOp] });
         } else {
             console.log("I could not find the channel in Discord. in sendMessageToDiscord()");
@@ -537,7 +532,7 @@ bot.on("update_player_game_type", (packet: UpdatePlayerGameType) => {
         clientGamemode = packet.gamemode;
         console.log("Bot is now in creative mode.");
         if (typeof systemCommandsChannelId === "object") {
-            const msgEmbedOp = new EmbedBuilder().setColor(0x2ffc01).setTitle(config.setTitle).setDescription("[ThirdEye]: The bot is now in creative mode.").setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" });
+            const msgEmbedOp = new EmbedBuilder().setColor(0x2ffc01).setTitle(config.setTitle).setDescription("[ThirdEye]: The bot is now in creative mode.").setAuthor({ name: "‎", iconURL: config.logoURL });
             systemCommandsChannelId.send({ embeds: [msgEmbedOp] });
         } else {
             console.log("I could not find the channel in Discord. in sendMessageToDiscord()");
@@ -561,7 +556,7 @@ function sendMessageToDiscord() {
                 .setColor(0xffff00)
                 .setTitle(config.setTitle)
                 .setDescription("[ThirdEye]: You need to op the bot via the server console.")
-                .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" })
+                .setAuthor({ name: "‎", iconURL: config.logoURL })
                 .setThumbnail("https://i.imgur.com/SO1qc2B.png");
             console.log("Sending warning message to discord to op the bot.");
             systemCommandsChannelId.send({ embeds: [msgEmbedOp] });

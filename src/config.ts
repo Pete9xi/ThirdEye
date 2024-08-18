@@ -31,4 +31,6 @@ export default {
 
     //If set to true, when a known bad actor sends a message to ThirdEye via discord or a discord Client it will be logged to the anticheat channel.
     logBadActors: true,
+    //New logo image if you dont like it feel free to change it.
+    logoURL: "https://i.imgur.com/XfoZ8XS.jpg",
 };
