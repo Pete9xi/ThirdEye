@@ -69,7 +69,7 @@ export function setupAntiCheatListener(bot: Client, channelId: TextBasedChannel)
                             .setColor(config.setColor)
                             .setTitle(config.setTitle)
                             .setDescription("[In Game] " + msg)
-                            .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" })
+                            .setAuthor({ name: "‎", iconURL: config.logoURL })
                             .setThumbnail(thumbUrl);
 
                         if (typeof channelId === "object") {
@@ -108,7 +108,7 @@ export function setupAntiCheatListener(bot: Client, channelId: TextBasedChannel)
                     .setColor(config.setColor)
                     .setTitle(config.setTitle)
                     .setDescription("[In Game] " + correctedText)
-                    .setAuthor({ name: "‎", iconURL: "https://i.imgur.com/FA3I1uu.png" })
+                    .setAuthor({ name: "‎", iconURL: config.logoURL })
                     .setThumbnail(thumbUrl);
 
                 sendToChannel(channelId, { embeds: [embed] }, "I could not find the in-game channel in Discord. 2");
