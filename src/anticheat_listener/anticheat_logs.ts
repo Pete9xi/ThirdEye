@@ -10,7 +10,6 @@ export function setupAntiCheatListener(bot: Client, channelId: TextBasedChannel)
 
         const isAntiCheatMessage =
             message.includes("§r§4[§6Paradox§4]§r") ||
-            message.includes("§¶§cUAC STAFF §b► §d") ||
             message.includes("§r§6[§aScythe§6]§r") ||
             message.includes("§l§6[§4Paradox§6]§r") ||
             message.includes("§l§6[§4Paradox AntiCheat Command Help§6]") ||
@@ -34,14 +33,6 @@ export function setupAntiCheatListener(bot: Client, channelId: TextBasedChannel)
             rawText.includes("§l§o§6[§4Paradox AntiCheat Command Help§6]§r§o")
         ) {
             antiCheatMsg = rawText;
-            correctedText = autoCorrect(antiCheatMsg, correction);
-        } else if (rawText.startsWith("§¶§cUAC STAFF §b► §d")) {
-            antiCheatMsg =
-                rawText +
-                obj.rawtext
-                    .slice(1, 3)
-                    .map((t: { text: string }) => t.text)
-                    .join("");
             correctedText = autoCorrect(antiCheatMsg, correction);
         } else if (rawText.startsWith("§r§6[§aScythe§6]§r")) {
             antiCheatMsg = rawText;
