@@ -13,6 +13,8 @@ export function setupAntiCheatListener(bot: Client, channelId: TextBasedChannel)
             message.includes("§r§6[§aScythe§6]§r") ||
             message.includes("§l§6[§4Paradox§6]§r") ||
             message.includes("§l§6[§4Paradox AntiCheat Command Help§6]") ||
+            message.includes("§2[§7Available Commands§2]§r") ||
+            message.includes("§2[§7Paradox§2]§o§7") ||
             message.includes("§f§o§4[§6Paradox§4]§f§o") ||
             message.includes("§f§4[§6Paradox§4]§f") ||
             message.includes("§l§o§6[§4Paradox AntiCheat Command Help§6]§r§o");
@@ -28,6 +30,8 @@ export function setupAntiCheatListener(bot: Client, channelId: TextBasedChannel)
             rawText.includes("§r§4[§6Paradox§4]§r") ||
             rawText.includes("§l§6[§4Paradox§6]§r") ||
             rawText.includes("§l§6[§4Paradox AntiCheat Command Help§6]") ||
+            rawText.includes("§2[§7Available Commands§2]§r") ||
+            rawText.includes("§2[§7Paradox§2]§o§7") ||
             rawText.includes("§f§o§4[§6Paradox§4]§f§o") ||
             rawText.includes("§f§4[§6Paradox§4]§f") ||
             rawText.includes("§l§o§6[§4Paradox AntiCheat Command Help§6]§r§o")

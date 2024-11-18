@@ -61,7 +61,7 @@ const client = new Client({ intents: [Guilds, GuildMessages, MessageContent, "Gu
 client.login(token);
 
 let options;
-console.log("ThirdEye v1.0.9");
+console.log("ThirdEye v1.0.10");
 // bot options
 if (config.isRealm) {
     //Handel the realm config here!
@@ -365,6 +365,8 @@ bot.on("text", (packet: JsonPacket | ChatPacket) => {
                 obj.rawtext[0].text.includes("§l§6[§4Paradox AntiCheat Command Help§6]") ||
                 obj.rawtext[0].text.includes("§f§o§4[§6Paradox§4]§f§o") ||
                 obj.rawtext[0].text.includes("§f§4[§6Paradox§4]§f") ||
+                obj.rawtext[0].text.includes("§2[§7Available Commands§2]§r") ||
+                obj.rawtext[0].text.includes("§2[§7Paradox§2]§o§7") ||
                 obj.rawtext[0].text.includes("§l§o§6[§4Paradox AntiCheat Command Help§6]§r§o")
             ) {
                 // this will prevent it crashing. or logging to the wrong channel.
