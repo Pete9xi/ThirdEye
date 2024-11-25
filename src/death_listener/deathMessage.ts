@@ -77,7 +77,7 @@ function getMobDeathReason(entity: string): string {
         "%entity.warden.name": "got flattened by the Warden.",
         "%entity.drowned.name": "was killed by a Drowned",
         "%entity.breeze.name": "was blown away by a Breeze.",
-        " %entity.ravager.name": "was run over by a Ravanger.",
+        "%entity.ravager.name": "was run over by a Ravanger.",
         default: "was killed by a mob - " + entity,
     };
 

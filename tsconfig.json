@@ -7,7 +7,7 @@
         "module": "ESNext",
         "sourceMap": false,
         "moduleResolution": "Node",
-        "outDir": "build",
+        "outDir": ".build",
         "removeComments": false,
         "allowJs": true,
         "checkJs": false,
