@@ -39,6 +39,7 @@ function getDeathReason(message: string, parameter: string): string {
         "death.attack.generic": "was killed by:" + parameter,
         "death.attack.flyIntoWall": "was killed by flying into the wall",
         "death.attack.wither": "was killed by a wither",
+        "death.attack.trident": "was forked by a Drowned.",
         default: "General Death - " + message + " - " + parameter,
     };
 
@@ -75,6 +76,8 @@ function getMobDeathReason(entity: string): string {
         "%entity.witch.name": "was killed by a Witch.",
         "%entity.warden.name": "got flattened by the Warden.",
         "%entity.drowned.name": "was killed by a Drowned",
+        "%entity.breeze.name": "was blown away by a Breeze.",
+        " %entity.ravager.name": "was run over by a Ravanger.",
         default: "was killed by a mob - " + entity,
     };
 
