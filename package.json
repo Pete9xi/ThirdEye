@@ -7,12 +7,12 @@
   "private": true,
   "devDependencies": {
     "@types/node": "22.10.1    ",
-    "bedrock-protocol": "3.39.0",
+    "bedrock-protocol": "3.43.0",
     "discord.js": "14.15.3",
     "prettier": "3.4.2",
     "typescript": "5.7.2",
     "discord-api-types": "0.37.110",
-    "minecraft-data" : "3.68.0"
+    "minecraft-data" : "3.84.1"
   },
   "prettier": {
     "trailingComma": "es5",
