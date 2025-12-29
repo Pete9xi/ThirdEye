@@ -1,10 +1,10 @@
-import { EmbedBuilder, TextBasedChannel } from "discord.js";
+import { EmbedBuilder, TextChannel } from "discord.js";
 import config from "../config.js";
 import { Client } from "bedrock-protocol";
 
 const excludedPackets: string[] = ["commands.tp.successVictim", "gameMode.changed", "commands.give.successRecipient"];
 
-function handleTextEvent(packet: WhisperPacket | ChatPacket | JsonPacket, systemCommandsChannelId: TextBasedChannel) {
+function handleTextEvent(packet: WhisperPacket | ChatPacket | JsonPacket, systemCommandsChannelId: TextChannel) {
     let rawtext: RawText[] = []; // Declare rawtext outside the if block
 
     if (packet.type === "json_whisper" || packet.type === "json") {
@@ -147,6 +147,6 @@ function getPotionResult(result: string): string {
     return result.replace(/%potion|\./g, "");
 }
 
-export function setupSystemCommandsListener(bot: Client, systemCommandsChannelId: TextBasedChannel) {
+export function setupSystemCommandsListener(bot: Client, systemCommandsChannelId: TextChannel) {
     bot.on("text", (packet: WhisperPacket | ChatPacket | JsonPacket) => handleTextEvent(packet, systemCommandsChannelId));
 }

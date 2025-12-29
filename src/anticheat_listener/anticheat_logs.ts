@@ -1,10 +1,10 @@
-import { EmbedBuilder, MessageCreateOptions, MessagePayload, TextBasedChannel } from "discord.js";
+import { EmbedBuilder, MessageCreateOptions, MessagePayload, TextChannel } from "discord.js";
 import config from "../config.js";
 import { autoCorrect } from "../main.js";
 import { correction } from "../main.js";
 import { Client } from "bedrock-protocol";
 let thumbUrl: string;
-export function setupAntiCheatListener(bot: Client, channelId: TextBasedChannel) {
+export function setupAntiCheatListener(bot: Client, channelId: TextChannel) {
     bot.on("text", (packet: WhisperPacket | ChatPacket) => {
         const message = packet.message;
 
@@ -113,7 +113,7 @@ export function setupAntiCheatListener(bot: Client, channelId: TextBasedChannel)
             }
         }
     });
-    function sendToChannel(channelId: TextBasedChannel, content: string | MessagePayload | MessageCreateOptions, errorMessage: string) {
+    function sendToChannel(channelId: TextChannel, content: string | MessagePayload | MessageCreateOptions, errorMessage: string) {
         if (typeof channelId === "object") {
             channelId.send(content);
         } else {

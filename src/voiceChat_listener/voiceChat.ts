@@ -1,6 +1,7 @@
 import { Channel, ChannelType, Guild, GuildMember, PermissionsBitField } from "discord.js";
 import { Client } from "bedrock-protocol";
 import config from "../config.js";
+import { runCMD } from "../main.js";
 export function setupVoiceChatListener(bot: Client, targetGuild: Guild) {
     //CreateVC
     bot.on("text", (packet) => {
@@ -80,16 +81,7 @@ export function setupVoiceChatListener(bot: Client, targetGuild: Guild) {
 
                                 console.log("Skipping channel creation.");
                                 const cmd = `/tellraw ${requester} {"rawtext":[{"text":"§8[§9VC Error§8] §6The following users are already in a private voice channel ${usernamesInPrivateChannels}. Your request has been canceled"}]}`;
-                                bot.queue("command_request", {
-                                    command: cmd,
-                                    origin: {
-                                        type: "player",
-                                        uuid: "",
-                                        request_id: "",
-                                    },
-                                    internal: false,
-                                    version: 52,
-                                });
+                                runCMD(cmd);
                                 return;
                             }
 
@@ -197,16 +189,7 @@ export function setupVoiceChatListener(bot: Client, targetGuild: Guild) {
 
                                 console.log("Skipping channel creation.");
                                 const cmd = `/tellraw ${requester} {"rawtext":[{"text":"§8[§9VC Error§8] §6The following users are already in a private voice channel ${usernamesInPrivateChannels}. Your request has been canceled"}]}`;
-                                bot.queue("command_request", {
-                                    command: cmd,
-                                    origin: {
-                                        type: "player",
-                                        uuid: "",
-                                        request_id: "",
-                                    },
-                                    internal: false,
-                                    version: 52,
-                                });
+                                runCMD(cmd);
                                 return;
                             }
 
@@ -460,16 +443,4 @@ export function setupVoiceChatListener(bot: Client, targetGuild: Guild) {
             }
         }
     });
-    function runCMD(cmd: string) {
-        bot.queue("command_request", {
-            command: cmd,
-            origin: {
-                type: "player",
-                uuid: "",
-                request_id: "",
-            },
-            internal: false,
-            version: 52,
-        });
-    }
 }

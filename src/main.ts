@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from "fs";
-import { Client, GatewayIntentBits, EmbedBuilder, TextBasedChannel, Guild } from "discord.js";
+import { Client, GatewayIntentBits, EmbedBuilder, Guild, TextChannel } from "discord.js";
 import { createClient, ClientOptions } from "bedrock-protocol";
 import config from "./config.js";
 import { setupDeathListener } from "./death_listener/deathMessage.js";
@@ -12,12 +12,12 @@ import { idList } from "./badActors.js";
 
 const { MessageContent, GuildMessages, Guilds } = GatewayIntentBits;
 const channel: string = config.channel;
-let channelId: TextBasedChannel;
+let channelId: TextChannel;
 const token = config.token;
 const anticheatChannel: string = config.antiCheatLogsChannel;
-let anticheatChannelId: TextBasedChannel;
+let anticheatChannelId: TextChannel;
 const systemCommandsChannel: string = config.systemCommandsChannel;
-let systemCommandsChannelId: TextBasedChannel;
+let systemCommandsChannelId: TextChannel;
 const anticheatLogs = config.antiCheatEnabled;
 const cmdPrefix = config.cmdPrefix;
 const logSystemCommands = config.logSystemCommands;
@@ -61,7 +61,7 @@ const client = new Client({ intents: [Guilds, GuildMessages, MessageContent, "Gu
 client.login(token);
 
 let options;
-console.log("ThirdEye v1.0.10");
+console.log("ThirdEye v1.0.12");
 // bot options
 if (config.isRealm) {
     //Handel the realm config here!
@@ -120,7 +120,7 @@ client.once("ready", (c) => {
     console.log(`Discord bot logged in as ${c.user.tag}`);
     const channelObj = client.channels.cache.get(channel);
     if (channelObj) {
-        channelId = channelObj as TextBasedChannel;
+        channelId = channelObj as TextChannel;
         // Call function if channel exists
         setupDeathListener(bot, channelId);
         addPlayerListener(bot, channelId, WhitelistRead);
@@ -131,7 +131,7 @@ client.once("ready", (c) => {
     if (anticheatLogs === true) {
         const anticheatChannelObj = client.channels.cache.get(anticheatChannel);
         if (anticheatChannelObj) {
-            anticheatChannelId = anticheatChannelObj as TextBasedChannel;
+            anticheatChannelId = anticheatChannelObj as TextChannel;
             setupAntiCheatListener(bot, anticheatChannelId);
         } else {
             console.log(`I could not find the paradoxLogs Channel in Discord. 3`);
@@ -141,7 +141,7 @@ client.once("ready", (c) => {
     if (logSystemCommands === true) {
         const systemChannelObj = client.channels.cache.get(systemCommandsChannel);
         if (systemChannelObj) {
-            systemCommandsChannelId = systemChannelObj as TextBasedChannel;
+            systemCommandsChannelId = systemChannelObj as TextChannel;
             setupSystemCommandsListener(bot, systemCommandsChannelId);
         } else {
             console.log(`I could not find the systemLogs Channel in Discord. 3`);
@@ -175,15 +175,7 @@ client.on("messageCreate", (message) => {
         const admins = config.admins;
         if (message.content.startsWith(cmdPrefix) && !message.content.startsWith(cmdPrefix + "/") && admins.includes(message.author.id) && anticheatChannel && message.channel.id === anticheatChannelId.id) {
             console.log("command received: " + message.content + " From: " + message.author.id);
-            bot.queue("text", {
-                type: "chat",
-                needs_translation: false,
-                source_name: config.username,
-                xuid: "",
-                platform_chat_id: "",
-                message: `${message.content}`,
-                filtered_message: "",
-            });
+            runText(message.content);
             return;
         }
         //Check to see if the user is running a minecraft slash command
@@ -191,17 +183,7 @@ client.on("messageCreate", (message) => {
             console.log("command received: " + message.content + " From: " + message.author.id);
             //remove the prefix data and create the command
             let cmd = message.content.slice(2);
-            bot.queue("command_request", {
-                command: cmd,
-                origin: {
-                    type: "player",
-                    uuid: "",
-                    request_id: "",
-                },
-                internal: false,
-                version: 52,
-            });
-
+            runCMD(cmd);
             return;
         }
 
@@ -251,17 +233,7 @@ client.on("messageCreate", (message) => {
                 //We will then send a command to the server to trigger the message sent in discord.
                 cmd = `/tellraw @a {"rawtext":[{"text":"§8[§9Discord§8] §7${message.author.username}: §f${message.content}"}]}`;
             }
-
-            bot.queue("command_request", {
-                command: cmd,
-                origin: {
-                    type: "player",
-                    uuid: "",
-                    request_id: "",
-                },
-                internal: false,
-                version: 52,
-            });
+            runCMD(cmd);
         }
     }
 });
@@ -512,16 +484,7 @@ bot.on("update_abilities", (packet: UpdateAbilities) => {
         //if it has op put it into creative.
         if (permissionLevel === "operator") {
             const cmd = `/gamemode creative @s`;
-            bot.queue("command_request", {
-                command: cmd,
-                origin: {
-                    type: "player",
-                    uuid: "",
-                    request_id: "",
-                },
-                internal: false,
-                version: 52,
-            });
+            runCMD(cmd);
             console.log("The bot has tried to put its self into creative mode.");
         }
     } else {
@@ -582,5 +545,33 @@ if (config.debug == true) {
     bot.on("text", (packet) => {
         const message = packet.message;
         console.log(message);
+    });
+}
+export function runCMD(cmd: string) {
+    bot.queue("command_request", {
+        command: cmd,
+        origin: {
+            type: "player",
+            uuid: "",
+            request_id: "",
+            player_entity_id: [0, 0],
+        },
+        internal: false,
+        version: "latest",
+    });
+}
+function runText(message: string) {
+    bot.queue("text", {
+        needs_translation: false,
+        category: "authored",
+        chat: "chat",
+        whisper: "whisper",
+        announcement: "announcement",
+        type: "chat",
+        source_name: config.username,
+        message: message,
+        xuid: "",
+        platform_chat_id: "",
+        has_filtered_message: false,
     });
 }

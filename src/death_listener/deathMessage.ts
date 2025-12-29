@@ -1,8 +1,8 @@
-import { EmbedBuilder, TextBasedChannel } from "discord.js";
+import { EmbedBuilder, TextChannel } from "discord.js";
 import config from "../config.js";
 import { Client } from "bedrock-protocol";
 
-export function setupDeathListener(bot: Client, channelId: TextBasedChannel) {
+export function setupDeathListener(bot: Client, channelId: TextChannel) {
     bot.on("text", (packet) => {
         if (packet.message.includes("death")) {
             let playername = packet.parameters[0];
@@ -84,7 +84,7 @@ function getMobDeathReason(entity: string): string {
     return mobDeathReasons[entity] || mobDeathReasons.default;
 }
 
-function sendDeathMessage(channelId: TextBasedChannel, playername: string, reason: string) {
+function sendDeathMessage(channelId: TextChannel, playername: string, reason: string) {
     if (config.useEmbed === true) {
         const msgEmbed = new EmbedBuilder()
             .setColor(config.setColor)
