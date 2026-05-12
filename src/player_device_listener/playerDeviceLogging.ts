@@ -74,8 +74,9 @@ export function addPlayerListener(bedrockClient: Client, channelId: TextChannel,
     console.log(chalk.cyan("Player Device Listener Initialized."));
 
     // ----------------------------
-    // add_player packet is not reliable for player joins as it is not sent if the joining player is out of the bots render distance.
-    // Thefore this is disabled by default.
+    // Player Join via add_player packet (obtainable device os and can be used to kick blacklisted devices)
+    // Note we teleport the bedrockClient to the joining player to ensure we receive the add_player packet as this is only sent to players in render distance.
+    // Recommend placing the bedrockClient in spectator mode!
     // ----------------------------
     if (config.useSystemPlayerJoinMessage === false) {
         bedrockClient.on("add_player", (packet: PlayerData) => {
@@ -83,13 +84,16 @@ export function addPlayerListener(bedrockClient: Client, channelId: TextChannel,
             const username = packet.username;
 
             // Skip if already reported
-            if (reportedPlayers.includes(username)) return;
+            if (reportedPlayers.includes(username)) {
+                console.log(chalk.yellow("[debug]: Player already reported:", username));
+                return;
+            }
 
             reportedPlayers.push(username);
             saveReportedPlayers(reportedPlayers);
 
             const deviceOS = getDeviceName(packet.device_os);
-            let description = `[In Game] ${username}: Has joined the server using ${deviceOS}`;
+            let description = `[In Game] ${username}: Has joined the server \n ${deviceOS}`;
 
             // Kick blacklisted devices
             if (config.blacklistDeviceTypes.includes(packet.device_os) && !Whitelist.includes(username)) {
@@ -117,9 +121,11 @@ export function addPlayerListener(bedrockClient: Client, channelId: TextChannel,
             /* we don't want to duplicate the join message as this is handled in the add_player packet.
            not this is only tirggered if the bot is in render distace as the playe rjoining soits not always triggered.
            */
+            runCMD(`/tp @p ${packet.parameters}`);
+            onPlayerJoin(packet.parameters);
+
             if (config.useSystemPlayerJoinMessage === true) {
                 const msg = packet.parameters + ": Has joined the server.";
-                onPlayerJoin(packet.parameters);
                 const username = "Server";
                 if (config.useEmbed === true) {
                     const embed = createEmbed({
@@ -160,11 +166,11 @@ export function addPlayerListener(bedrockClient: Client, channelId: TextChannel,
         onPlayerLeave(username);
 
         // Remove from reported players
-        console.log(chalk.bgYellowBright("[debug]: reportedPlayers Before remove:", JSON.stringify(reportedPlayers)));
-        console.log(chalk.bgYellowBright("[debug]: Removing player from reportedPlayers:", username));
+        console.log(chalk.yellow("[debug]: reportedPlayers Before remove:", JSON.stringify(reportedPlayers)));
+        console.log(chalk.yellow("[debug]: Removing player from reportedPlayers:", username));
         reportedPlayers = reportedPlayers.filter((p) => p !== username);
         saveReportedPlayers(reportedPlayers);
-        console.log(chalk.bgYellowBright("[debug]: reportedPlayers After remove:", JSON.stringify(reportedPlayers)));
+        console.log(chalk.yellow("[debug]: reportedPlayers After remove:", JSON.stringify(reportedPlayers)));
 
         // Discord output
         if (config.useEmbed) {

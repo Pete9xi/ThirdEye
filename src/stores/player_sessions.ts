@@ -37,15 +37,10 @@ function saveToFile() {
     fs.writeFileSync(FILE, JSON.stringify(playerSessions, null, 2));
 }
 
-//
-// PLAYER JOIN
-//
-export function onPlayerJoin(playerID: string, discordId?: string) {
-    const now = Date.now();
+function startSession(playerID: string, now = Date.now(), discordId?: string) {
     let player = playerSessions[playerID];
 
     if (!player) {
-        // First ever join
         player = {
             discordId,
             firstJoin: now,
@@ -57,38 +52,43 @@ export function onPlayerJoin(playerID: string, discordId?: string) {
 
         console.log(`New player: ${playerID} @ ${formatDateTime(now)}`);
     } else {
-        if (player.currentJoin) {
-            const MAX_SESSION_GAP = 5 * 60 * 1000;
-            const gap = now - player.currentJoin;
-
-            // Prevent duplicate joins
-            if (gap < 1000) {
-                console.log(`Duplicate join ignored for ${playerID}`);
-                return;
-            }
-
-            console.log(`Recovering missing leave for ${playerID}`);
-
-            const sessionTime = Math.min(gap, MAX_SESSION_GAP);
-
-            player.totalPlayTime += sessionTime;
-
-            player.sessions.push({
-                join: player.currentJoin,
-                leave: now,
-            });
-        }
-
-        // Start new session
         player.currentJoin = now;
         player.lastSeen = now;
 
         if (discordId) player.discordId = discordId;
-
-        console.log(`Returning player: ${playerID} @ ${formatDateTime(now)}`);
     }
 
     playerSessions[playerID] = player;
+}
+
+//
+// PLAYER JOIN
+//
+export function onPlayerJoin(playerID: string, discordId?: string) {
+    const now = Date.now();
+    let player = playerSessions[playerID];
+
+    if (!player) {
+        player = {
+            discordId,
+            firstJoin: now,
+            lastSeen: now,
+            totalPlayTime: 0,
+            sessions: [],
+            currentJoin: now,
+        };
+
+        playerSessions[playerID] = player;
+    }
+
+    if (!player.currentJoin) {
+        player.currentJoin = now;
+    }
+
+    player.lastSeen = now;
+    if (discordId) player.discordId = discordId;
+
+    console.log(`Player join: ${playerID} @ ${formatDateTime(now)}`);
     saveToFile();
 }
 
@@ -99,7 +99,7 @@ export function onPlayerLeave(playerID: string) {
     const now = Date.now();
     const player = playerSessions[playerID];
 
-    if (!player || !player.currentJoin) {
+    if (!player?.currentJoin) {
         console.log(`Leave ignored (no active session): ${playerID}`);
         return;
     }
@@ -116,7 +116,7 @@ export function onPlayerLeave(playerID: string) {
 
     delete player.currentJoin;
 
-    console.log(chalk.red(`Player left: ${playerID} | Session: ${formatTime(sessionTime)} | ${formatDateTime(now)}`));
+    console.log(chalk.red(`Player left: ${playerID} | ${formatTime(sessionTime)} | ${formatDateTime(now)}`));
 
     saveToFile();
 }
@@ -128,6 +128,9 @@ export function getPlayerSession(playerID: string) {
     return playerSessions[playerID];
 }
 
+export function getAllPlayerSessions() {
+    return playerSessions;
+}
 //
 // FORMAT TIME (ms → readable)
 //
@@ -171,4 +174,45 @@ export function formatDateTime(timestamp: number) {
     const seconds = String(date.getSeconds()).padStart(2, "0");
 
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+}
+export function reconcileSessions(onlinePlayers: string[]) {
+    const now = Date.now();
+    const onlineSet = new Set(onlinePlayers);
+
+    for (const playerID of onlineSet) {
+        // ensure player exists + session started
+        if (!playerSessions[playerID]) {
+            startSession(playerID, now);
+            continue;
+        }
+
+        const player = playerSessions[playerID];
+
+        if (!player.currentJoin) {
+            startSession(playerID, now);
+        }
+
+        player.lastSeen = now;
+    }
+
+    for (const playerID in playerSessions) {
+        const player = playerSessions[playerID];
+
+        if (player.currentJoin && !onlineSet.has(playerID)) {
+            console.log(chalk.yellow(`Fixing stale session for ${playerID}`));
+
+            const sessionTime = now - player.currentJoin;
+            player.totalPlayTime += sessionTime;
+            player.lastSeen = now;
+
+            player.sessions.push({
+                join: player.currentJoin,
+                leave: now,
+            });
+
+            delete player.currentJoin;
+        }
+    }
+
+    saveToFile();
 }

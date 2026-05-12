@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from "discord.js";
 import { deletePendingLink, setPendingLink } from "../../stores/pendingLinks.js";
 
 export default {
@@ -11,7 +11,7 @@ export default {
 
         await interaction.reply({
             content: `Your linking code is: **${code}**\nRun \`/link ${code}\` in Minecraft. This code will expire in 5 minutes.`,
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
         });
 
         // Optional: expire after 5 mins

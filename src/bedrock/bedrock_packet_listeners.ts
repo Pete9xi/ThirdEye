@@ -2,6 +2,7 @@ import { Client } from "bedrock-protocol";
 import chalk from "chalk";
 import config from "../config.js";
 import { reconnectBedrock } from "./bedrock.js";
+import { reconcileSessions } from "../stores/player_sessions.js";
 let clientPermissionLevel: string;
 let clientGamemode: string;
 
@@ -31,5 +32,19 @@ export function registerBedrockListeners(bedrockClient: Client) {
     bedrockClient.on("close", (packet) => {
         console.log(chalk.red("The connection to the server was closed: " + JSON.stringify(packet, null, 2)));
         reconnectBedrock();
+    });
+    bedrockClient.on("player_list", (packet) => {
+        const onlinePlayers: string[] = [];
+
+        for (const record of packet.records.records) {
+            if (record.username) {
+                onlinePlayers.push(record.username);
+            }
+        }
+
+        if (config.debug) {
+            console.log("Synced players:", onlinePlayers);
+        }
+        reconcileSessions(onlinePlayers);
     });
 }

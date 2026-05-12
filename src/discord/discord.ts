@@ -1,4 +1,4 @@
-import { Client, Collection, GatewayIntentBits, Interaction, SlashCommandBuilder, TextChannel } from "discord.js";
+import { Client, Collection, GatewayIntentBits, Interaction, MessageFlags, SlashCommandBuilder, TextChannel } from "discord.js";
 import { Client as BedrockClient } from "bedrock-protocol";
 import config from "../config.js";
 import path from "path";
@@ -35,7 +35,7 @@ export async function initDiscord(bedrockClient: BedrockClient, WhitelistRead: a
     // ─────────────────────────────────────────────
     // Discord Events
     // ─────────────────────────────────────────────
-    discordClient.once("clientReady", () => {
+    discordClient.once("clientReady", async () => {
         const shardId = discordClient.shard?.ids[0] ?? 0;
         console.log(chalk.green(`ThirdEye logged in as ${discordClient.user?.tag} | Shard ${shardId}`));
 
@@ -115,6 +115,7 @@ export async function initDiscord(bedrockClient: BedrockClient, WhitelistRead: a
             profanityChannelId,
         });
         bindAllListeners(bedrockClient);
+        await registerCommands(discordClient);
     });
 
     // ─────────────────────────────────────────────
@@ -224,34 +225,42 @@ export async function initDiscord(bedrockClient: BedrockClient, WhitelistRead: a
 
     const commands: SlashCommandBuilder[] = [];
 
-    // ─────────────────────────────────────────────
-    // Load commands into memory & prepare for registration
-    // ─────────────────────────────────────────────
+    // Load commands
     for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
         const commandModule = await import(pathToFileURL(filePath).href);
         const command: Command = commandModule.default;
+
         console.log(chalk.blue(`Loaded command: ${command.data.name}`));
 
-        // Add to memory for handling interactions
         discordClient.commands.set(command.data.name, command);
-
-        // Add to array for registration with Discord
         commands.push(command.data);
     }
 
-    // ─────────────────────────────────────────────
-    // Register commands for testing (guild commands)
-    // ─────────────────────────────────────────────
-    if (discordClient.application) {
-        await discordClient.application.commands.set(commands.map((c) => c.toJSON()));
-        console.log(chalk.green("✅ Slash commands registered"));
-    } else {
-        discordClient.once("clientReady", async () => {
-            await discordClient.application?.commands.set(commands.map((c) => c.toJSON()));
-            console.log(chalk.green("✅ Slash commands registered"));
-        });
-    }
+    const registerCommands = async (client: Client) => {
+        const body = commands.map((c) => c.toJSON());
+
+        try {
+            await client.application?.fetch();
+
+            const guild = config.isDev ? await client.guilds.fetch(config.guild).catch((): null => null) : null;
+
+            if (config.isDev) {
+                if (!guild) {
+                    console.error("❌ DEV MODE: Guild not found");
+                    return;
+                }
+
+                await guild.commands.set(body);
+                console.log(chalk.yellow("🧪 DEV MODE: Slash commands registered (guild)"));
+            } else {
+                await client.application?.commands.set(body);
+                console.log(chalk.green("🚀 PROD MODE: Slash commands registered (global)"));
+            }
+        } catch (err) {
+            console.error("❌ Failed to register commands:", err);
+        }
+    };
 
     discordClient.on("interactionCreate", async (interaction: Interaction) => {
         if (!interaction.isChatInputCommand()) return;
@@ -264,9 +273,9 @@ export async function initDiscord(bedrockClient: BedrockClient, WhitelistRead: a
         } catch (err) {
             console.error(err);
             if (interaction.replied || interaction.deferred) {
-                await interaction.followUp({ content: "❌ Something went wrong.", ephemeral: true });
+                await interaction.followUp({ content: "❌ Something went wrong.", flags: MessageFlags.Ephemeral });
             } else {
-                await interaction.reply({ content: "❌ Something went wrong.", ephemeral: true });
+                await interaction.reply({ content: "❌ Something went wrong.", flags: MessageFlags.Ephemeral });
             }
         }
     });

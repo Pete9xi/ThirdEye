@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
+import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from "discord.js";
 import { formatDate, getPlayerSession } from "../../stores/player_sessions.js";
 
 export default {
@@ -15,7 +15,7 @@ export default {
         if (!data) {
             return interaction.reply({
                 content: `❌ No data found for **${player}**`,
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
         }
 

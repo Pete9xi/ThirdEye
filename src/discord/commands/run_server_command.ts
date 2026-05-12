@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, GuildMember } from "discord.js";
+import { SlashCommandBuilder, ChatInputCommandInteraction, GuildMember, MessageFlags } from "discord.js";
 
 import config from "../../config.js";
 import { runCMD } from "../../bedrock/bedrock.js";
@@ -14,7 +14,7 @@ export default {
         const member = interaction.member as GuildMember;
 
         if (!member.roles.cache.some((role) => role.name === allowedRole)) {
-            return interaction.reply({ content: "⛔ You do not have permission to use this command.", ephemeral: true });
+            return interaction.reply({ content: "⛔ You do not have permission to use this command.", flags: MessageFlags.Ephemeral });
         }
 
         const command = interaction.options.getString("command", true);
