@@ -119,7 +119,7 @@ export function addPlayerListener(bedrockClient: Client, channelId: TextChannel,
     bedrockClient.on("text", (packet: WhisperPacket | ChatPacket) => {
         if (packet.message.includes("§e%multiplayer.player.joined")) {
             /* we don't want to duplicate the join message as this is handled in the add_player packet.
-           not this is only tirggered if the bot is in render distace as the playe rjoining soits not always triggered.
+            if enabled.
            */
             runCMD(`/tp @p ${packet.parameters}`);
             onPlayerJoin(packet.parameters);
