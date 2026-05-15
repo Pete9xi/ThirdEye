@@ -1,16 +1,16 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from "discord.js";
-import { formatTime, getPlayerSession } from "../../stores/player_sessions.js";
+import { formatTime, getPlayerSessionByUsername } from "../../stores/player_sessions.js";
 
 export default {
     data: new SlashCommandBuilder()
         .setName("playtime")
         .setDescription("Check playtime on the Minecraft server.")
-        .addStringOption((option) => option.setName("player").setDescription("Player name").setRequired(false)),
+        .addStringOption((option) => option.setName("player").setDescription("Player name").setRequired(true)),
 
     async execute(interaction: ChatInputCommandInteraction) {
-        const player = interaction.options.getString("player") || interaction.user.username;
+        const player = interaction.options.getString("player", true);
 
-        const data = getPlayerSession(player);
+        const data = getPlayerSessionByUsername(player);
 
         if (!data) {
             return interaction.reply({

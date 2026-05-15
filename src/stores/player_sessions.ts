@@ -18,6 +18,8 @@ type PlayerSession = {
     sessions: Session[];
     currentJoin?: number;
     lastSeenFromList?: number;
+    uuid?: string;
+    username?: string;
 };
 
 let playerSessions: Record<string, PlayerSession> = {};
@@ -41,7 +43,7 @@ function saveToFile() {
 //
 // PLAYER JOIN
 //
-export function onPlayerJoin(playerID: string) {
+/*export function onPlayerJoin(playerID: string) {
     const now = Date.now();
     const player = playerSessions[playerID];
 
@@ -101,7 +103,7 @@ export function onPlayerLeave(playerID: string) {
     console.log(`Player left: ${playerID}`);
     saveToFile();
 }
-
+*/
 //
 // GET DATA
 //
@@ -155,4 +157,112 @@ export function formatDateTime(timestamp: number) {
     const seconds = String(date.getSeconds()).padStart(2, "0");
 
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+}
+
+export function onPlayerAdd(uuid: string, now = Date.now(), username?: string) {
+    let player = playerSessions[uuid];
+
+    if (!player) {
+        player = playerSessions[uuid] = {
+            firstJoin: now,
+            lastSeen: now,
+            totalPlayTime: 0,
+            sessions: [],
+            username,
+        };
+
+        console.log(chalk.green(`[JOIN NEW] ${getPlayerLabel(uuid, player)} firstJoin=${formatTime(0)}`));
+    }
+
+    if (username) {
+        player.username = username;
+    }
+
+    if (player.currentJoin) {
+        player.lastSeenFromList = now;
+
+        console.log(chalk.yellow(`[JOIN IGNORE] ${getPlayerLabel(uuid, player)} already active | lastSeenFromList updated`));
+        return;
+    }
+
+    player.currentJoin = now;
+    player.lastSeen = now;
+    player.lastSeenFromList = now;
+
+    console.log(chalk.green(`[JOIN] ${getPlayerLabel(uuid, player)} at ${new Date(now).toISOString()}`));
+
+    saveToFile();
+}
+
+export function onPlayerRemove(uuid: string, now = Date.now()) {
+    const player = playerSessions[uuid];
+
+    if (!player?.currentJoin) {
+        console.log(chalk.yellow(`[LEAVE IGNORE] ${getPlayerLabel(uuid, player)} had no active session`));
+        return;
+    }
+
+    const sessionTime = now - player.currentJoin;
+
+    player.totalPlayTime += sessionTime;
+    player.lastSeen = now;
+
+    player.sessions.push({
+        join: player.currentJoin,
+        leave: now,
+    });
+
+    console.log(chalk.red(`[LEAVE] ${getPlayerLabel(uuid, player)} | session=${formatTime(sessionTime)} | total=${formatTime(player.totalPlayTime)}`));
+
+    delete player.currentJoin;
+
+    saveToFile();
+}
+
+export function reconcileFullSnapshot(activeUUIDs: Set<string>, now: number) {
+    let changed = false;
+
+    for (const uuid in playerSessions) {
+        const player = playerSessions[uuid];
+
+        if (player.currentJoin && !activeUUIDs.has(uuid)) {
+            const sessionTime = now - player.currentJoin;
+
+            player.totalPlayTime += sessionTime;
+
+            player.sessions.push({
+                join: player.currentJoin,
+                leave: now,
+            });
+
+            console.log(chalk.red(`[RECONCILE LEAVE] ${getPlayerLabel(uuid, player)} | session=${formatTime(sessionTime)} | total=${formatTime(player.totalPlayTime)}`));
+
+            delete player.currentJoin;
+
+            changed = true;
+        }
+    }
+
+    if (changed) {
+        console.log(chalk.yellow(`[RECONCILE] Changes detected, saving...`));
+        saveToFile();
+    } else {
+        console.log(chalk.green(`[RECONCILE] No changes`));
+    }
+}
+export function getPlayerSessionByUsername(username: string) {
+    const lower = username.toLowerCase();
+
+    for (const uuid in playerSessions) {
+        const player = playerSessions[uuid];
+
+        if (player.username?.toLowerCase() === lower) {
+            return player;
+        }
+    }
+
+    return null;
+}
+function getPlayerLabel(uuid: string, player?: any) {
+    return player?.username ? `${player.username} (${uuid})` : uuid;
 }

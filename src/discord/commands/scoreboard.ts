@@ -9,7 +9,10 @@ export default {
         const players = getAllPlayerSessions();
 
         const sorted = Object.entries(players)
-            .filter(([name]) => !isExcluded(name))
+            .filter(([uuid, data]) => {
+                // exclude by UUID OR username
+                return !isExcluded(uuid) && !isExcluded(data.username ?? "");
+            })
             .sort(([, a], [, b]) => b.totalPlayTime - a.totalPlayTime)
             .slice(0, 10);
 
@@ -18,7 +21,9 @@ export default {
         }
 
         const leaderboard = sorted
-            .map(([name, data], index) => {
+            .map(([uuid, data], index) => {
+                const name = data.username ?? uuid;
+
                 return `**#${index + 1}** ${name} — ${formatTime(data.totalPlayTime)}`;
             })
             .join("\n");

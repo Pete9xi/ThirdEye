@@ -55,6 +55,11 @@ export const correction = {
     "§t": "",
     "§u": "",
 
+    //Custom
+    "": "[Console] ",
+    "": "[PC] ",
+    "": "[Mobile] ",
+
     // Rare / malformed formatting character
     "§¶": "",
 };

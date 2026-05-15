@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
-import { formatDateTime, getPlayerSession } from "../../stores/player_sessions.js";
+import { formatDateTime, getPlayerSessionByUsername } from "../../stores/player_sessions.js";
 
 export default {
     data: new SlashCommandBuilder()
@@ -10,7 +10,7 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         const player = interaction.options.getString("player") || interaction.user.username;
 
-        const data = getPlayerSession(player);
+        const data = getPlayerSessionByUsername(player);
 
         if (!data) {
             return interaction.reply({

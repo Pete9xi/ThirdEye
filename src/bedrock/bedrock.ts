@@ -7,10 +7,12 @@ import { bindAllListeners } from "../discord/bedrock_listener_manager.js";
 
 let bedrockClient: Client;
 let reconnecting = false;
+let intSync: boolean;
 
 export function initBedrock(): Client {
     const client = createNewClient();
     bedrockClient = client;
+    intSync = true;
     return client;
 }
 
@@ -71,6 +73,7 @@ export function reconnectBedrock() {
             }
 
             reconnecting = false;
+            intSync = true;
             reconnectBedrock();
         };
 
@@ -125,4 +128,10 @@ export function runText(message: string) {
 
 export function getBedrockClient(): Client {
     return bedrockClient;
+}
+export function setIntSync(bool: boolean) {
+    intSync = bool;
+}
+export function getIntSync(): boolean {
+    return intSync;
 }

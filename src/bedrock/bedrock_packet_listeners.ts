@@ -1,8 +1,8 @@
 import { Client } from "bedrock-protocol";
 import chalk from "chalk";
 import config from "../config.js";
-import { reconnectBedrock } from "./bedrock.js";
-
+import { getIntSync, reconnectBedrock, setIntSync } from "./bedrock.js";
+import { onPlayerAdd, onPlayerRemove, reconcileFullSnapshot } from "../stores/player_sessions.js";
 let clientPermissionLevel: string;
 let clientGamemode: string;
 
@@ -32,5 +32,50 @@ export function registerBedrockListeners(bedrockClient: Client) {
     bedrockClient.on("close", (packet) => {
         console.log(chalk.red("The connection to the server was closed: " + JSON.stringify(packet, null, 2)));
         reconnectBedrock();
+    });
+
+    bedrockClient.on("player_list", (packet) => {
+        const now = Date.now();
+        const type = packet.records.type;
+
+        const active = new Map<string, string>(); // uuid -> username
+
+        for (const record of packet.records.records) {
+            active.set(record.uuid, record.username);
+        }
+
+        // =========================
+        // INITIAL SYNC (BOOT / RECONNECT)
+        // =========================
+        if (getIntSync()) {
+            console.log("🔄 Running initial player sync...");
+
+            // 1. mark all current players as active
+            for (const [uuid, username] of active) {
+                onPlayerAdd(uuid, now, username);
+            }
+
+            // 2. reconcile stale sessions from previous runtime
+            reconcileFullSnapshot(new Set(active.keys()), now);
+
+            // 3. mark sync complete
+            setIntSync(false);
+            return;
+        }
+
+        // =========================
+        // LIVE MODE
+        // =========================
+        if (type === "add") {
+            for (const [uuid, username] of active) {
+                onPlayerAdd(uuid, now, username);
+            }
+        }
+
+        if (type === "remove") {
+            for (const record of packet.records.records) {
+                onPlayerRemove(record.uuid, now);
+            }
+        }
     });
 }
