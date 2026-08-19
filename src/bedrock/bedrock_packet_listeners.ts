@@ -5,6 +5,8 @@ import { getIntSync, reconnectBedrock, setIntSync } from "./bedrock.js";
 import { onPlayerAdd, onPlayerRemove, reconcileFullSnapshot } from "../stores/player_sessions.js";
 let clientPermissionLevel: string;
 let clientGamemode: string;
+const initialPlayers = new Map<string, string>();
+let initialSyncTimer: NodeJS.Timeout | null = null;
 
 export function registerBedrockListeners(bedrockClient: Client) {
     bedrockClient.on("packet_violation_warning", (packet) => {
@@ -33,47 +35,69 @@ export function registerBedrockListeners(bedrockClient: Client) {
         console.log(chalk.red("The connection to the server was closed: " + JSON.stringify(packet, null, 2)));
         reconnectBedrock();
     });
-
     bedrockClient.on("player_list", (packet) => {
         const now = Date.now();
-        const type = packet.records.type;
 
-        const active = new Map<string, string>(); // uuid -> username
+        console.log(`[PLAYER_LIST] count=${packet.records.length}`);
 
-        for (const record of packet.records.records) {
-            active.set(record.uuid, record.username);
-        }
-
-        // =========================
-        // INITIAL SYNC (BOOT / RECONNECT)
-        // =========================
+        // =========================================
+        // INITIAL SYNC
+        // =========================================
         if (getIntSync()) {
-            console.log("🔄 Running initial player sync...");
+            for (const record of packet.records) {
+                console.log(`[PLAYER_LIST] ${record.type} ${record.uuid} -> ${record.username}`);
 
-            // 1. mark all current players as active
-            for (const [uuid, username] of active) {
-                onPlayerAdd(uuid, now, username);
+                if (record.type === "add") {
+                    initialPlayers.set(record.uuid, record.username);
+                }
             }
 
-            // 2. reconcile stale sessions from previous runtime
-            reconcileFullSnapshot(new Set(active.keys()), now);
+            console.log(`[INITIAL SYNC] Collected ${initialPlayers.size} player(s)`);
 
-            // 3. mark sync complete
-            setIntSync(false);
+            // More player_list packets may still be coming.
+            // Reset the timer whenever another one arrives.
+            if (initialSyncTimer !== null) {
+                clearTimeout(initialSyncTimer);
+            }
+
+            initialSyncTimer = setTimeout(() => {
+                const syncNow = Date.now();
+                const playerCount = initialPlayers.size;
+
+                console.log(`🔄 Running initial player sync... ${playerCount} players found`);
+
+                for (const [uuid, username] of initialPlayers) {
+                    console.log(`[INITIAL SYNC] calling onPlayerAdd: ${username} ${uuid}`);
+
+                    onPlayerAdd(uuid, syncNow, username);
+                }
+
+                reconcileFullSnapshot(new Set(initialPlayers.keys()), syncNow);
+
+                // Clear temporary sync state.
+                initialPlayers.clear();
+                initialSyncTimer = null;
+
+                // Initial sync is now complete.
+                setIntSync(false);
+
+                console.log(`[INITIAL SYNC] Complete - ${playerCount} players`);
+            }, 500);
+
             return;
         }
 
-        // =========================
+        // =========================================
         // LIVE MODE
-        // =========================
-        if (type === "add") {
-            for (const [uuid, username] of active) {
-                onPlayerAdd(uuid, now, username);
-            }
-        }
+        // =========================================
+        for (const record of packet.records) {
+            if (record.type === "add") {
+                onPlayerAdd(record.uuid, now, record.username);
 
-        if (type === "remove") {
-            for (const record of packet.records.records) {
+                continue;
+            }
+
+            if (record.type === "remove") {
                 onPlayerRemove(record.uuid, now);
             }
         }

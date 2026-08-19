@@ -9,8 +9,8 @@
     "@types/node": "25.0.3    ",
     "discord-api-types": "0.38.37",
     "discord.js": "14.25.1",
-    "minecraft-data": "^3.110.0",
-    "bedrock-protocol": "^3.56.0",
+    "minecraft-data": "^3.113.2",
+    "bedrock-protocol": "^3.58.2",
     "prettier": "3.7.4",
     "typescript": "5.9.2"
   },
@@ -36,8 +36,8 @@
   },
   "dependencies": {
     "chalk": "^5.6.2",
-    "minecraft-data": "^3.110.0",
-    "bedrock-protocol": "^3.56.0",
+    "minecraft-data": "^3.113.2",
+    "bedrock-protocol": "^3.58.2",
     "discord.js": "14.25.1"
   }
 }
