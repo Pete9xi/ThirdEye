@@ -19,7 +19,7 @@ export default {
     useEmbed: true,
     setColor: [0, 153, 255] as const,
     setTitle: "My Servers Name!",
-    AuthType: false,
+    AuthType: true,
     admins: [""],
     blacklistDeviceTypes: [],
     // Prefix for the command default is $ ie $voiceChannelCreate

@@ -3,78 +3,135 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const filePath = path.join(path.dirname(fileURLToPath(import.meta.url)), "profanity.txt");
+// O(1) Whitelist set preventing false positives
+const WHITELIST_SET = new Set(["class", "pass", "assistant"]);
 
-const raw = fs.readFileSync(filePath, "utf-8");
+/**
+ * Normalizes raw string input into a unique, sorted array of words.
+ * @param {string} raw - File text contents.
+ * @returns {string[]} Filtered array of normalized words sorted by length.
+ */
+function parseWordList(raw: string): string[] {
+    const words = raw
+        .split(/\r?\n/)
+        .map((w) =>
+            w
+                .replace(/\uFEFF/g, "")
+                .trim()
+                .toLowerCase()
+        )
+        .filter((w) => w.length > 1);
 
-// ─────────────────────────────────────────────
-// Clean + normalize word list
-// ─────────────────────────────────────────────
-const words = raw
-    .split(/\r?\n/)
-    .map((w) => w.replace(/\uFEFF/g, "")) // remove BOM
-    .map((w) => w.trim().toLowerCase()) // trim + lowercase
-    .filter((w) => w.length > 1); // remove junk
+    return Array.from(new Set(words)).sort((a, b) => b.length - a.length);
+}
 
-// remove duplicates + sort longest first
-const uniqueWords = [...new Set(words)].sort((a, b) => b.length - a.length);
+/**
+ * Safely loads profanity list from disk relative to execution directory.
+ * Returns an empty array if the file does not exist.
+ * @returns {string[]} Parsed profanity word list.
+ */
+function loadProfanityFile(): string[] {
+    const filePath = path.join(path.dirname(fileURLToPath(import.meta.url)), "profanity.txt");
 
-// ─────────────────────────────────────────────
-// Regex helpers
-// ─────────────────────────────────────────────
-function escapeRegex(str: string) {
+    if (!fs.existsSync(filePath)) {
+        console.log(chalk.yellow(`[PROFANITY] File not found: ${filePath}. Continuing with empty list.`));
+        return [];
+    }
+
+    try {
+        const raw = fs.readFileSync(filePath, "utf-8");
+        return parseWordList(raw);
+    } catch (err) {
+        console.log(chalk.red(`[PROFANITY] Failed to read ${filePath}: ${err}`));
+        return [];
+    }
+}
+
+/**
+ * Escapes special characters for regex string interpolation.
+ * @param {string} str - Unescaped raw string.
+ * @returns {string} Escaped regex string.
+ */
+function escapeRegex(str: string): string {
     return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-// Split into:
-// 1. normal words (letters only)
-// 2. special words (numbers/symbols)
-const normalWords = uniqueWords.filter((w) => /^[a-z]+$/.test(w));
-const specialWords = uniqueWords.filter((w) => !/^[a-z]+$/.test(w));
+/**
+ * Compiles a RegExp matcher pattern or returns null if the word list is empty.
+ * @param {string[]} wordList - Array of target words.
+ * @param {boolean} useBoundaries - Wrap pattern with word boundaries.
+ * @returns {RegExp | null} Compiled RegExp or null.
+ */
+function compileRegex(wordList: string[], useBoundaries: boolean): RegExp | null {
+    if (wordList.length === 0) return null;
+    const pattern = wordList.map(escapeRegex).join("|");
+    return new RegExp(useBoundaries ? `\\b(${pattern})\\b` : pattern, "gi");
+}
 
-const normalRegex = new RegExp(`\\b(${normalWords.map(escapeRegex).join("|")})\\b`, "gi");
+/**
+ * Evaluates whether a matched word is whitelisted in O(1) time complexity.
+ * @param {string} match - Detected string match.
+ * @returns {boolean} True if term is whitelisted.
+ */
+function isWhitelisted(match: string): boolean {
+    return WHITELIST_SET.has(match.toLowerCase());
+}
 
-const specialRegex = new RegExp(specialWords.map(escapeRegex).join("|"), "gi");
+/**
+ * Applies regex censoring replacement rules on input message text.
+ * @param {string} text - Message text to sanitize.
+ * @param {RegExp | null} regex - Pattern engine to apply.
+ * @param {Set<string>} detectedSet - O(1) tracking set for profane matches.
+ * @returns {string} Processed text output.
+ */
+function applyCensorship(text: string, regex: RegExp | null, detectedSet: Set<string>): string {
+    if (!regex) return text;
 
-// Optional whitelist (prevents false positives)
-const whitelist = ["class", "pass", "assistant"];
-
-// ─────────────────────────────────────────────
-// Main filter
-// ─────────────────────────────────────────────
-export function censorMessage(message: string) {
-    let foundWords: string[] = [];
-    let result = message;
-
-    // Skip whitelist
-    for (const word of whitelist) {
-        const safe = new RegExp(`\\b${escapeRegex(word)}\\b`, "gi");
-        result = result.replace(safe, (match) => `__WHITELIST__${match}__`);
-    }
-
-    // Normal words (with boundaries)
-    result = result.replace(normalRegex, (match) => {
-        foundWords.push(match);
+    return text.replace(regex, (match) => {
+        if (isWhitelisted(match)) {
+            return match;
+        }
+        detectedSet.add(match);
         return "*".repeat(match.length);
     });
+}
 
-    // Special words (no boundaries)
-    result = result.replace(specialRegex, (match) => {
-        foundWords.push(match);
-        return "*".repeat(match.length);
-    });
-
-    // Restore whitelist
-    result = result.replace(/__WHITELIST__(.*?)__/g, "$1");
-
-    // ─────────────────────────────────────────────
-    // Logging
-    // ─────────────────────────────────────────────
-    if (foundWords.length > 0) {
-        console.log(chalk.red(`[PROFANITY DETECTED] Words: [${[...new Set(foundWords)].join(", ")}] | Message: "${message}"`));
+/**
+ * Outputs detection logs to stdout.
+ * @param {Set<string>} detectedSet - Set of detected unique words.
+ * @param {string} message - Original raw input string.
+ */
+function logResult(detectedSet: Set<string>, message: string): void {
+    if (detectedSet.size > 0) {
+        const uniqueMatches = Array.from(detectedSet).join(", ");
+        console.log(chalk.red(`[PROFANITY DETECTED] Words: [${uniqueMatches}] | Message: "${message}"`));
     } else {
         console.log(chalk.gray(`[CLEAN] ${message}`));
     }
+}
+
+// Global cached pre-compiled regex engine setup
+const uniqueWords = loadProfanityFile();
+const normalWords = uniqueWords.filter((w) => /^[a-z]+$/.test(w));
+const specialWords = uniqueWords.filter((w) => !/^[a-z]+$/.test(w));
+
+const normalRegex = compileRegex(normalWords, true);
+const specialRegex = compileRegex(specialWords, false);
+
+/**
+ * Replaces matching profane words in a text string with asterisks.
+ * @param {string} message - Input string message.
+ * @returns {string} Filtered message.
+ */
+export function censorMessage(message: string): string {
+    if (!message) return message;
+
+    const detectedSet = new Set<string>();
+
+    let result = applyCensorship(message, normalRegex, detectedSet);
+    result = applyCensorship(result, specialRegex, detectedSet);
+
+    logResult(detectedSet, message);
 
     return result;
 }
