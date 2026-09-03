@@ -95,7 +95,7 @@ export function addPlayerListener(bedrockClient: Client, channelId: TextChannel,
             let description = `[In Game] ${username}: Has joined the server \n ${deviceOS}`;
 
             // Kick blacklisted devices
-            if (config.blacklistDeviceTypes.includes(packet.device_os) && !Whitelist.includes(username)) {
+            if ((config.blacklistDeviceTypes as string[]).includes(packet.device_os) && !Whitelist.includes(username)) {
                 const cmd = `/kick ${username} device is blacklisted.`;
                 runCMD(cmd);
                 description = `[Server] ${username}: Kicked as device is blacklisted (${packet.device_os})`;

@@ -4,7 +4,7 @@ import { autoCorrect, correction } from "../functions/correction.js";
 import { Client } from "bedrock-protocol";
 import { createEmbed } from "../functions/embedBuilder.js";
 import chalk from "chalk";
-let thumbUrl: string;
+let thumbUrl: string | undefined;
 export function setupAntiCheatListener(bedrockClient: Client, channelId: TextChannel) {
     console.log(chalk.cyan("AntiCheat Listener initialized."));
     bedrockClient.on("text", (packet: WhisperPacket | ChatPacket) => {
@@ -76,8 +76,8 @@ export function setupAntiCheatListener(bedrockClient: Client, channelId: TextCha
                         thumbUrl = "https://i.imgur.com/oClQXNb.png";
                         break;
                     default:
-                        //expects undefined or null if no url is provided.
-                        thumbUrl = null;
+                        // Expects undefined if no URL is provided.
+                        thumbUrl = undefined;
                         break;
                 }
 

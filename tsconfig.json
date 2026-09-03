@@ -4,10 +4,11 @@
         "typeRoots": ["node_modules/@discordjs", "bedrock-protocol", "src/types"],
         "lib": ["ESNext"],
         "target": "ESNext",
-        "module": "ESNext",
-        "sourceMap": false,
-        "moduleResolution": "Node",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "rootDir": "src",
         "outDir": "build",
+        "sourceMap": false,
         "removeComments": false,
         "allowJs": true,
         "checkJs": false,
@@ -16,8 +17,9 @@
         "noUnusedLocals": true,
         "noImplicitAny": true,
         "resolveJsonModule": true,
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true
     },
     "include": ["src"],
-    "exclude": ["node_modules, addon"],
+    "exclude": ["node_modules", "addon"]
 }

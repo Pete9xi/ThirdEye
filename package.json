@@ -6,13 +6,18 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@types/node": "25.0.3    ",
-    "discord-api-types": "0.38.37",
-    "discord.js": "14.25.1",
-    "minecraft-data": "^3.113.2",
-    "bedrock-protocol": "^3.58.2",
-    "prettier": "3.7.4",
-    "typescript": "5.9.2"
+    "@types/node": "26.4.1    ",
+    "discord-api-types": "0.38.55",
+    "discord.js": "14.27.0",
+    "minecraft-data": "^3.115.0",
+    "bedrock-protocol": "^3.58.3",
+    "prettier": "3.9.6",
+    "typescript": "7.0.2",
+    "chalk": "^6.0.0",
+    "uuid": "^14.0.2"
+  },
+  "overrides": {
+    "uuid": "^14.0.2"
   },
   "prettier": {
     "trailingComma": "es5",
@@ -33,11 +38,5 @@
     "mkdir_win": "@if exist build (rd /s /q build && mkdir build) else (mkdir build)",
     "copy_assets_win": "@powershell Copy-Item -Path ^(\\\"src\\Install_NodeJS_Modules.bat\\\",\\\"src\\Run.bat\\\",\\\"src\\whitelist.json\\\",\\\"package.json\\\",\\\"LICENSE\\\",\\\"README.md\\\"^) -Destination \"build\" -Recurse",
     "build_win": "npm run clean_win && npm run mkdir_win 1>nul && node node_modules\\typescript\\bin\\tsc -p tsconfig.json && npm run copy_assets_win 1>nul && node modify-package.js"
-  },
-  "dependencies": {
-    "chalk": "^5.6.2",
-    "minecraft-data": "^3.113.2",
-    "bedrock-protocol": "^3.58.2",
-    "discord.js": "14.25.1"
   }
 }

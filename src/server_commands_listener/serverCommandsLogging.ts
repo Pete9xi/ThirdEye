@@ -18,16 +18,16 @@ function handleTextEvent(packet: WhisperPacket | ChatPacket | JsonPacket, system
         return; // Exclude this packet
     }
 
-    let systemMessage: string;
-    let successMessage: string;
-    let results: string[];
+    let systemMessage = "";
+    let successMessage = "";
+    let results: string[] = [];
     const playerName = rawtext?.[1]?.translate || "Server";
 
     if (packet.type === "json") {
         const rawtextArray = rawtext[3]?.with?.rawtext?.map((item) => item.text) || [];
         results = rawtextArray.filter(Boolean);
         systemMessage = results.join(" ");
-        successMessage = rawtext?.[3]?.translate;
+        successMessage = rawtext?.[3]?.translate ?? "";
     }
 
     let dontSendMessage = false;
